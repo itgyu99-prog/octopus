@@ -1,0 +1,37 @@
+# Separate project and generated release archives
+/My project/
+*.zip
+
+# Unity generated files; Assets and .meta must remain tracked
+**/[Ll]ibrary/
+**/[Tt]emp/
+**/[Oo]bj/
+**/[Bb]uild/
+**/[Bb]uilds/
+**/[Ll]ogs/
+**/[Uu]ser[Ss]ettings/
+**/MemoryCaptures/
+**/Recordings/
+*.log
+*.csproj
+*.sln
+*.slnx
+*.user
+*.pidb
+*.booproj
+
+# Local editor, credentials, and operating system files
+.vs/
+.vscode/
+.idea/
+.codex/
+.agents/
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.pem
+*.key
+Thumbs.db
+.DS_Store

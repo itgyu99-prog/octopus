@@ -1,0 +1,230 @@
+{
+  "project": "Source/문어_유한맵",
+  "categories": {
+    "maps": {
+      "title": "맵",
+      "purpose": "해변 배경, 맵 경계, 월드 표시",
+      "primary": [
+        "Assets/Scripts/World/ArenaBuilder.cs",
+        "Assets/Scripts/World/WorldView.cs"
+      ],
+      "related": [
+        "Assets/Scripts/Core/GameConfig.cs",
+        "Assets/Scripts/Core/RuntimeArt.cs",
+        "Assets/Resources/Art/Beach.bytes",
+        "Assets/Scenes/SampleScene.unity"
+      ],
+      "anchors": {
+        "Assets/Scripts/World/GameSession.cs": [
+          "RandomInterior",
+          "RandomEdge",
+          "ActiveCenter"
+        ]
+      }
+    },
+    "characters": {
+      "title": "캐릭터",
+      "purpose": "플레이어 이동, 입력, 카메라, 문어 애니메이션",
+      "primary": [
+        "Assets/Scripts/Player/*.cs"
+      ],
+      "related": [
+        "Assets/Scripts/Core/RuntimeArt.cs",
+        "Assets/Resources/OctopusWalk.bytes",
+        "Assets/Resources/OctopusArmStretch.shader",
+        "Assets/Resources/Art/Basic.bytes",
+        "Assets/Resources/Art/Attack.bytes",
+        "Assets/Resources/Art/Whip.bytes"
+      ]
+    },
+    "monsters": {
+      "title": "몬스터",
+      "purpose": "일반 적 생성·이동, 보스 패턴·처치",
+      "primary": [],
+      "related": [
+        "Assets/Scripts/Core/GameConfig.cs",
+        "Assets/Scripts/Core/GameTypes.cs",
+        "Assets/Scripts/World/WorldView.cs"
+      ],
+      "anchors": {
+        "Assets/Scripts/World/GameSession.cs": [
+          "TickEnemy",
+          "EnemyContact",
+          "SpawnWave",
+          "SpawnBoss",
+          "ClearLiveBosses",
+          "OnBossDefeated",
+          "KillEnemy",
+          "TickBossPattern",
+          "ChaseBoss",
+          "TickChargeBoss",
+          "TickBulletBoss",
+          "TickAreaBoss",
+          "TickBossBullet"
+        ]
+      }
+    },
+    "combat": {
+      "title": "전투",
+      "purpose": "피해 판정, 상태이상, 근접·투사체 공격",
+      "primary": [
+        "Assets/Scripts/Combat/*.cs"
+      ],
+      "related": [
+        "Assets/Scripts/Player/OctopusPlayer.cs",
+        "Assets/Scripts/Core/GameTypes.cs"
+      ],
+      "anchors": {
+        "Assets/Scripts/World/GameSession.cs": [
+          "ApplyDamage",
+          "DamageCircle",
+          "DamageCone",
+          "DamageLine",
+          "HitEnemy",
+          "TryMeleeArc",
+          "StrikeWhip",
+          "NearestEnemy"
+        ]
+      }
+    },
+    "abilities": {
+      "title": "속성·요소",
+      "purpose": "기본 속성, 합성 요소, 특수능력 및 효과",
+      "primary": [
+        "Assets/Scripts/Elements/*.cs"
+      ],
+      "related": [
+        "Assets/Resources/GameplayRules.json",
+        "Assets/Scripts/Core/GameplayRules.cs",
+        "Assets/Scripts/Player/OctopusPlayer.cs",
+        "Assets/Scripts/UI/CombinePanel.cs",
+        "Assets/Resources/Art/Element_*.bytes",
+        "Assets/Resources/Art/Special_*.bytes"
+      ],
+      "anchors": {
+        "Assets/Scripts/World/GameSession.cs": [
+          "SpawnAllySpirit",
+          "SpawnPiercingMeteor",
+          "CastBlackFlame",
+          "InfectFlame"
+        ],
+        "Assets/Scripts/Player/OctopusPlayer.cs": [
+          "GrantElement",
+          "TickAttributeCycle",
+          "CanCombine",
+          "ServerCombine"
+        ]
+      }
+    },
+    "progression": {
+      "title": "성장·아이템",
+      "purpose": "스테이지 진행, 능력 선택, 납품, 드랍·회복",
+      "primary": [
+        "Assets/Scripts/Core/Upgrades.cs",
+        "Assets/Scripts/World/PearlStackVisual.cs"
+      ],
+      "related": [
+        "Assets/Resources/GameplayRules.json",
+        "Assets/Scripts/Core/GameplayRules.cs",
+        "Assets/Scripts/Player/OctopusPlayer.cs",
+        "Assets/Resources/Art/Relic*.bytes"
+      ],
+      "anchors": {
+        "Assets/Scripts/World/GameSession.cs": [
+          "TickStageTransition",
+          "CompleteStage",
+          "StartArtifactStage",
+          "ClearFieldForNextStage",
+          "TickArtifacts",
+          "TickPotions",
+          "CollectPickup",
+          "TryDropAttribute",
+          "DropBossSpecial",
+          "AttributeNeeded"
+        ],
+        "Assets/Scripts/Player/OctopusPlayer.cs": [
+          "GrantStageChoice",
+          "RollOffers",
+          "ChooseUpgradeServerRpc",
+          "TryPickup"
+        ]
+      }
+    },
+    "ui": {
+      "title": "UI",
+      "purpose": "로비, 대기실, HUD, 합성창, 개발 메뉴",
+      "primary": [
+        "Assets/Scripts/UI/*.cs"
+      ],
+      "related": [
+        "Assets/Scripts/Core/GameTypes.cs"
+      ],
+      "anchors": {
+        "Assets/Scripts/World/GameSession.cs": [
+          "ApplyPhaseUi"
+        ]
+      }
+    },
+    "network": {
+      "title": "네트워크",
+      "purpose": "LAN·Relay, 접속·준비, 서버 권한·상태 동기화",
+      "primary": [
+        "Assets/Scripts/Net/GameBootstrap.cs",
+        "Assets/Scripts/Net/NetworkPrefabFactory.cs",
+        "Assets/Scripts/Net/RelaySession.cs"
+      ],
+      "related": [
+        "Packages/manifest.json",
+        "Assets/DefaultNetworkPrefabs.asset"
+      ],
+      "anchors": {
+        "Assets/Scripts/World/GameSession.cs": [
+          "OnNetworkSpawn",
+          "OnNetworkDespawn",
+          "CanStart",
+          "SelectStartingElementRpc",
+          "SetReadyRpc",
+          "BroadcastActors",
+          "OnActorsMessage"
+        ]
+      }
+    },
+    "shared": {
+      "title": "공통",
+      "purpose": "공용 타입, 설정 데이터, 아트 로딩 및 세션 중심부",
+      "primary": [
+        "Assets/Scripts/Core/GameConfig.cs",
+        "Assets/Scripts/Core/GameTypes.cs",
+        "Assets/Scripts/Core/GameplayRules.cs",
+        "Assets/Scripts/Core/RuntimeArt.cs",
+        "Assets/Scripts/Core/SpriteFactory.cs",
+        "Assets/Scripts/World/GameSession.cs"
+      ],
+      "related": [
+        "Assets/Resources/GameplayRules.json"
+      ],
+      "anchors": {
+        "Assets/Scripts/World/GameSession.cs": [
+          "ServerTick",
+          "Update",
+          "BeginGame",
+          "CheckGameOver"
+        ]
+      }
+    },
+    "checks": {
+      "title": "검증·빌드",
+      "purpose": "Unity 에디터 검사, 협동 검사, 빌드·배포 설정",
+      "primary": [
+        "Assets/Editor/*.cs",
+        "Assets/Scripts/Net/CoopSystemChecks.cs"
+      ],
+      "related": [
+        "ProjectSettings/ProjectVersion.txt",
+        "ProjectSettings/EditorBuildSettings.asset",
+        "Packages/manifest.json",
+        "../../.gitignore"
+      ]
+    }
+  }
+}

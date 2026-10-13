@@ -1,0 +1,22 @@
+{
+  "attributeDropChance": 0.02,
+  "waterProjectileCount": 8,
+  "attributeRepeatInterval": 0.22,
+  "requiredPieces": [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30],
+  "recipes": [
+    {"first":1,"second":2,"result":1},
+    {"first":1,"second":3,"result":2},
+    {"first":2,"second":3,"result":4},
+    {"first":3,"second":5,"result":12},
+    {"first":2,"second":5,"result":11},
+    {"first":1,"second":5,"result":13}
+  ],
+  "abilities": [
+    {"combo":1,"damage":14,"range":3.8,"duration":4,"cooldown":10},
+    {"combo":2,"damage":12,"range":0.28,"duration":1.2,"cooldown":10},
+    {"combo":4,"damage":45,"range":4,"duration":3.5,"cooldown":10},
+    {"combo":11,"damage":25,"range":1.2,"duration":4,"cooldown":10},
+    {"combo":12,"damage":12,"range":0.28,"duration":1.2,"cooldown":10},
+    {"combo":13,"damage":25,"range":4.5,"duration":3,"cooldown":10}
+  ]
+}
