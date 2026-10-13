@@ -177,13 +177,28 @@ namespace OctopusSurvivors
                 byte rank=player.UpAttrRank.Value;Check(!player.GrantElement(ElementId.Fire)&&player.UpAttrRank.Value==rank,"duplicate attribute adds no rank or slot");
             }
             foreach(var element in GameplayRules.BasicElements)Check(!s.AttributeNeeded(element),"no redundant team-wide attribute drops: "+element);
-            // Rotation uses the same timer for four consecutive casts; an early tick must not skip ahead.
-            p.ActiveSlot.Value=0;typeof(OctopusPlayer).GetField("attributeCycleLeft",Hidden).SetValue(p,0f);
-            for(byte i=0;i<4;i++)
+            ResetField(s);
+            var cooldowns=(float[])typeof(OctopusPlayer).GetField("attributeCooldowns",Hidden).GetValue(p);
+            Array.Clear(cooldowns,0,cooldowns.Length);
+            Call(p,"TickAttributeCycle",.01f);
+            foreach(var kind in new[]{ActorKind.FlameAura,ActorKind.WaterEmitter,ActorKind.ThornEmitter,ActorKind.CurrentEmitter})
+                Check(Actors(s).FindAll(a=>a.Kind==kind).Count==1,"all owned attributes cast together: "+kind);
+            int castCount=Actors(s).Count;
+            Call(p,"TickAttributeCycle",2.9f);
+            Check(Actors(s).Count==castCount,"attributes wait their own three-second cooldown");
+            cooldowns[1]=.05f; // A newly ready attribute cannot wait for another slot.
+            Call(p,"TickAttributeCycle",.06f);
+            Check(Actors(s).Count==castCount+1&&p.CastElement==ElementId.Water,"staggered water cooldown fires independently");
+            Call(p,"TickAttributeCycle",.05f);
+            Check(Actors(s).Count==castCount+4,"remaining three attributes fire without rotating slots");
+            Check(Mathf.Abs(p.MoveSpeedValue-4.7f*1.25f)<.0001f,"base movement speed increased 1.25 times");
+            p.UpMoveSpeed.Value=10;
+            Check(Mathf.Abs(p.MoveSpeedValue-5.875f)<.0001f,"legacy speed picks cannot change fixed movement speed");
+            p.UpMoveSpeed.Value=0;
+            for(int roll=0;roll<30;roll++)
             {
-                Call(p,"TickAttributeCycle",GameConfig.AttributeCycle);
-                Check(p.CastElement==p.SlotElement(i),"rotation casts slot "+i);
-                var last=p.CastElement;Call(p,"TickAttributeCycle",.01f);Check(p.CastElement==last,"rotation does not fire extra attribute in same interval");
+                Call(p,"RollOffers");
+                for(int choice=0;choice<3;choice++)Check(p.Offer(choice)!=UpgradeId.MoveSpeed,"movement speed excluded from offers");
             }
             Check(p.ServerCombine(0,1),"synthesis available at stage one");
             Check(p.HasElement(ElementId.Fire)&&p.HasElement(ElementId.Water),"synthesis retains ingredients");
@@ -192,6 +207,7 @@ namespace OctopusSurvivors
             foreach(var player in OctopusPlayer.All){player.transform.position=Vector3.zero;player.NetPos.Value=Vector2.zero;}
             TestAbilities(s,p);
             ResetField(s);s.CastBasicAbility(p,ElementId.Fire,1);yield return null;Capture("fire-field");
+            ResetField(s);s.CastPlannedCombo(p,ComboId.Soda);yield return null;Capture("soda-bottles");
             GameHud.Instance.ToggleCombine();yield return null;Capture("four-attributes-combine");GameHud.Instance.ToggleCombine();
             while(!solo&&OctopusPlayer.All.Exists(other=>other!=p&&other.ComboCount==0))yield return null;
             ResetField(s);
@@ -243,7 +259,7 @@ namespace OctopusSurvivors
                     Vector2 sum=Vector2.zero;
                     for(int i=0;i<GameplayRules.Data.waterProjectileCount;i++)sum+=shots[shots.Count-1-i].Vel.normalized;
                     Check(sum.sqrMagnitude<.001f,"water directions evenly cover full circle");
-                    if(pulse>0)Check(Vector2.Angle(shots[0].Vel,shots[shots.Count-GameplayRules.Data.waterProjectileCount].Vel)<.01f,"repeat retains volley direction");
+                    if(pulse>0)Check(Mathf.Abs(Vector2.Angle(shots[shots.Count-2*GameplayRules.Data.waterProjectileCount].Vel,shots[shots.Count-GameplayRules.Data.waterProjectileCount].Vel)-12f)<.01f,"repeat rotates volley by twelve degrees");
                 }
                 Check(emitter.Dead,"water emitter stops after requested volleys");
                 ResetField(s);s.CastBasicAbility(p,ElementId.Electric,level);
@@ -257,15 +273,41 @@ namespace OctopusSurvivors
             }
             ResetField(s);s.CastBasicAbility(p,ElementId.Fire,1);
             var fire=Actors(s).Find(a=>a.Kind==ActorKind.FlameAura);
-            var inside=Target(s,p.Pos);var outside=Target(s,p.Pos+Vector2.right*(fire.Size+1f));
+            Vector2 installed=fire.Pos;p.transform.position=(Vector3)(installed+Vector2.up*5f);p.NetPos.Value=p.Pos;
+            var inside=Target(s,installed);var outside=Target(s,installed+Vector2.right*(fire.Size+1f));
             Call(s,"TickPlannedAbility",fire,.1f);float hp=inside.Hp;Call(s,"TickPlannedAbility",fire,.1f);
             Check(inside.Hp<hp&&outside.Hp==outside.MaxHp,"flame field damages entire interior over time only");
+            Check(fire.Pos==installed,"fire remains installed after player moves");
+            p.transform.position=Vector3.zero;p.NetPos.Value=Vector2.zero;
             float baseRadius=fire.Size;s.CastBasicAbility(p,ElementId.Fire,3);
             Check(Actors(s).Exists(a=>a.Kind==ActorKind.FlameAura&&a.Size>baseRadius),"flame range grows with attribute upgrade");
-            ResetField(s);var enemy=Target(s,p.Pos+Vector2.right*.7f);s.CastBasicAbility(p,ElementId.Water,1);
+            ResetField(s);s.CastBasicAbility(p,ElementId.Water,1);
             var water=Actors(s).Find(a=>a.Kind==ActorKind.WaterEmitter);Call(s,"TickPlannedAbility",water,.01f);
-            var shot=Actors(s).Find(a=>a.Kind==ActorKind.Droplet);Call(s,"TickProjectile",shot,.01f);
+            var shot=Actors(s).Find(a=>a.Kind==ActorKind.Droplet);var enemy=Target(s,shot.Pos+shot.Vel*.01f);Call(s,"TickProjectile",shot,.01f);
             Check(enemy.Hp<enemy.MaxHp,"water retains projectile damage and collision");
+            Vector2 previousDirection=water.Vel;
+            s.CastBasicAbility(p,ElementId.Water,1);
+            var waterCasts=Actors(s).FindAll(a=>a.Kind==ActorKind.WaterEmitter);
+            Check(Mathf.Abs(Vector2.Angle(previousDirection,waterCasts[waterCasts.Count-1].Vel)-12f)<.01f,"next water cast also changes direction");
+            ResetField(s);
+            var vines=new List<SimActor>();for(int i=0;i<5;i++)vines.Add(Target(s,p.Pos+Vector2.right*(1f+i)));
+            s.CastBasicAbility(p,ElementId.Grass,1);
+            var grass=Actors(s).Find(a=>a.Kind==ActorKind.ThornEmitter);Call(s,"TickPlannedAbility",grass,.01f);
+            Check(vines.FindAll(a=>a.Hp<a.MaxHp).Count==3&&Actors(s).FindAll(a=>a.Kind==ActorKind.Vine).Count==3,"grass pulse attacks three targets with three visible thorns");
+            ResetField(s);s.CastPlannedCombo(p,ComboId.Soda);
+            var bottles=Actors(s).FindAll(a=>a.Kind==ActorKind.SodaWave);
+            Check(bottles.Count==5,"soda spawns five bottles");
+            Check(Vector2.Distance(bottles[0].Pos,bottles[1].Pos)>.1f,"soda bottles start at different map positions");
+            foreach(var bottle in bottles)
+            {
+                Vector2 origin=bottle.Pos,velocity=bottle.Vel;
+                for(int tick=0;tick<35;tick++)
+                {
+                    Call(s,"TickPlannedAbility",bottle,.1f);
+                    Check(FiniteBeach.Walkable(bottle.Pos,bottle.Size),"soda remains inside map");
+                }
+                Check(Vector2.Distance(origin,bottle.Pos)>.1f&&Vector2.Angle(velocity,bottle.Vel)>.01f,"soda flies and changes direction");
+            }
         }
         void Capture(string name)
         {

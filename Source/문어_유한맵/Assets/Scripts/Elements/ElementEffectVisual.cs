@@ -59,12 +59,16 @@ namespace OctopusSurvivors
                     }
                     break;
                 case ActorKind.SodaWave:
-                    for (int row = 0; row < 3; row++)
-                    {
-                        var wave = new Vector2[13];
-                        for (int i = 0; i < wave.Length; i++) wave[i] = new Vector2(-.8f + i * .13f, (row - 1) * .38f + Mathf.Sin(i * .7f + t * 9f) * .16f);
-                        Curve(wave, .13f, row == 1 ? Color.white : Cyan);
-                    }
+                    // PET bottle silhouette, neck, cap, label and carbonation.
+                    Curve(new[]{new Vector2(-.22f,-.55f),new Vector2(.22f,-.55f),new Vector2(.28f,-.38f),
+                        new Vector2(.28f,.22f),new Vector2(.13f,.4f),new Vector2(.13f,.58f),
+                        new Vector2(-.13f,.58f),new Vector2(-.13f,.4f),new Vector2(-.28f,.22f),
+                        new Vector2(-.28f,-.38f),new Vector2(-.22f,-.55f)}, .045f, new Color(.7f,.95f,1f,.9f));
+                    Curve(new[]{new Vector2(-.14f,.59f),new Vector2(.14f,.59f)}, .13f, Cyan);
+                    Curve(new[]{new Vector2(-.24f,-.05f),new Vector2(.24f,-.05f)}, .22f, Cyan);
+                    for(int i=0;i<4;i++)
+                        Blob(new Vector2(Mathf.Sin(i*2.4f)*.15f, -.4f+Mathf.Repeat(t*.6f+i*.21f,.75f)),.035f,Color.white);
+                    transform.rotation=Quaternion.Euler(0f,0f,Mathf.Atan2(_direction.y,_direction.x)*Mathf.Rad2Deg-90f);
                     break;
                 case ActorKind.LemonShot:
                     Blob(Vector2.zero, .9f, new Color(.95f,.8f,.1f));

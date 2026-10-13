@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace OctopusSurvivors
 {
-    // 서버만 판정한다. 기존 CastCombo에서 한 번 호출하며 순환 타이머를 변경하지 않는다.
+    // 서버만 판정한다. 기존 CastCombo에서 한 번 호출하며 개별 쿨타임를 변경하지 않는다.
     public sealed partial class GameSession
     {
         SimActor Effect(ActorKind kind, Vector2 pos, Vector2 direction, float radius,

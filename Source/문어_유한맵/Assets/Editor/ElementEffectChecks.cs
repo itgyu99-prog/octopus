@@ -37,7 +37,7 @@ namespace OctopusSurvivors.EditorTools
 
         void OnGUI()
         {
-            EditorGUILayout.HelpBox("플레이 모드에서 호스트로 게임을 시작한 뒤 사용하세요. 테스트 버튼은 현재 조합/자동 순환을 바꾸지 않고 효과를 한 번 발동합니다.", MessageType.Info);
+            EditorGUILayout.HelpBox("플레이 모드에서 호스트로 게임을 시작한 뒤 사용하세요. 테스트 버튼은 현재 조합/개별 쿨타임을 바꾸지 않고 효과를 한 번 발동합니다.", MessageType.Info);
             _level = EditorGUILayout.IntSlider("테스트 강화 단계", _level, 1, 5);
             var session = GameSession.Instance;
             var player = OctopusPlayer.Local;

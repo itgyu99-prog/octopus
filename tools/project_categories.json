@@ -34,7 +34,8 @@
         "Assets/Resources/OctopusArmStretch.shader",
         "Assets/Resources/Art/Basic.bytes",
         "Assets/Resources/Art/Attack.bytes",
-        "Assets/Resources/Art/Whip.bytes"
+        "Assets/Resources/Art/Whip.bytes",
+        "Assets/Scripts/Core/GameConfig.cs"
       ]
     },
     "monsters": {
@@ -113,6 +114,11 @@
           "TickAttributeCycle",
           "CanCombine",
           "ServerCombine"
+        ],
+        "Assets/Scripts/Elements/PlannedAbilities.cs": [
+          "CastBasicAbility",
+          "CastPlannedCombo",
+          "TickPlannedAbility"
         ]
       }
     },

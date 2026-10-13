@@ -18,11 +18,11 @@ namespace OctopusSurvivors
                     Effect(ActorKind.FlameAura, p.Pos, Vector2.zero, 1.3f + .3f * l, 2.5f, 35f * upgradeMul, p, l);
                     break;
                 case ElementId.Water:
-                    var water = Effect(ActorKind.WaterEmitter, p.Pos, dir, .1f, l * GameplayRules.Data.attributeRepeatInterval, 27f * upgradeMul, p, l);
+                    var water = Effect(ActorKind.WaterEmitter, p.Pos, p.NextWaterDirection(dir), .1f, l * GameplayRules.Data.attributeRepeatInterval, 27f * upgradeMul, p, l);
                     water.Bounces = l;
                     break;
                 case ElementId.Grass:
-                    Effect(ActorKind.ThornEmitter, p.Pos, Vector2.zero, 9f, 4 * .16f, 19f * upgradeMul, p, 1);
+                    Effect(ActorKind.ThornEmitter, p.Pos, Vector2.zero, 9f, 4 * .16f, 19f * upgradeMul, p, 3 + (l - 1));
                     break;
                 case ElementId.Electric:
                     var current = Effect(ActorKind.CurrentEmitter, p.Pos, dir, 6.1f, l * GameplayRules.Data.attributeRepeatInterval, 24f * upgradeMul, p, l);
@@ -57,12 +57,29 @@ namespace OctopusSurvivors
                     Effect(ActorKind.FruitTree, p.Pos, Vector2.zero, t.range, t.duration, damage, p, l);
                     break;
                 case ComboId.Soda:
-                    Effect(ActorKind.SodaWave, p.Pos, dir * 6f, t.range, t.duration, damage, p, l);
+                    for (int i = 0; i < 5; i++)
+                    {
+                        Vector2 spot = RandomSodaPosition(p.Pos, t.range);
+                        var bottle = Effect(ActorKind.SodaWave, spot, AbilityRunner.Rotate(Vector2.right, Random.Range(0f, 360f)) * 6f,
+                            t.range, t.duration, damage, p, l);
+                        bottle.ContactCooldown = Random.Range(.3f, .8f);
+                    }
                     break;
                 case ComboId.BlueFlame:
                     Effect(ActorKind.ChainEmitter, p.Pos, Vector2.zero, t.range, t.duration, damage, p, l);
                     break;
             }
+        }
+
+        Vector2 RandomSodaPosition(Vector2 fallback, float radius)
+        {
+            for (int attempt = 0; attempt < 64; attempt++)
+            {
+                Vector2 spot = new Vector2(Random.Range(-FiniteBeach.Width * .5f, FiniteBeach.Width * .5f),
+                    Random.Range(-FiniteBeach.Height * .5f, FiniteBeach.Height * .5f));
+                if (FiniteBeach.Walkable(spot, radius)) return spot;
+            }
+            return GameConfig.ClampToMap(fallback, radius);
         }
 
         bool TickPlannedAbility(SimActor a, float dt)
@@ -79,7 +96,7 @@ namespace OctopusSurvivors
                     DamageCircle(a.Pos, a.Size, a.Damage * dt, StatusMask.Slow, .3f, 0f);
                     break;
                 case ActorKind.FlameAura:
-                    a.Pos = a.Owner.Pos;
+                    // Installed at the cast position; never follows the owner.
                     DamageCircle(a.Pos, a.Size, a.Damage * dt, StatusMask.Burn, 1.2f, 8f);
                     break;
                 case ActorKind.ThornEmitter:
@@ -98,7 +115,7 @@ namespace OctopusSurvivors
                             int count = Mathf.Max(4, GameplayRules.Data.waterProjectileCount);
                             for (int i = 0; i < count; i++)
                             {
-                                Vector2 shot = AbilityRunner.Rotate(a.Vel, i * 360f / count);
+                                Vector2 shot = AbilityRunner.Rotate(a.Vel, i * 360f / count + (a.EffectLevel - a.Bounces - 1) * 12f);
                                 SpawnProjectile(ActorKind.Droplet, a.Pos + shot * .6f, shot * 9.5f, .28f, 2.2f, a.Damage, a.Owner, StatusMask.Slow);
                             }
                         }
@@ -121,7 +138,7 @@ namespace OctopusSurvivors
                         DamageCircle(a.Pos, a.Size, a.Damage, StatusMask.None, 0f, 0f);
                     }
                     Vector2 next = a.Pos + a.Vel * dt;
-                    if (!FiniteBeach.Walkable(next, a.Size)) a.Vel = -a.Vel;
+                    if (!FiniteBeach.Walkable(next, a.Size)) a.Vel = AbilityRunner.Rotate(-a.Vel, Random.Range(-45f, 45f)) * 6f;
                     else a.Pos = next;
                     a.ContactCooldown -= dt;
                     if (a.ContactCooldown <= 0f) { a.ContactCooldown = .8f; a.Vel = AbilityRunner.Rotate(a.Vel, Random.Range(-80f, 80f)) * 6f; }

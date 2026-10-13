@@ -339,23 +339,22 @@ namespace OctopusSurvivors
             SetFireRing(0f);
         }
 
-        float attributeCycleLeft;
+        readonly float[] attributeCooldowns = new float[4];
+        int waterCastCount;
+        public Vector2 NextWaterDirection(Vector2 facing) => AbilityRunner.Rotate(facing, (waterCastCount++ % 30) * 12f);
         readonly float[] comboCooldowns = new float[3];
         void TickAttributeCycle(float dt)
         {
-            attributeCycleLeft -= dt;
-            if (attributeCycleLeft > 0f) return;
-            for (byte i = 0; i < 4; i++)
+            for (byte slot = 0; slot < 4; slot++)
             {
-                byte slot = (byte)((ActiveSlot.Value + i) % 4);
                 var element = SlotElement(slot);
                 if (element == ElementId.None) continue;
-                attributeCycleLeft = GameConfig.AttributeCycle * GameConfig.AttributeCdMul(UpAttrCd.Value);
+                attributeCooldowns[slot] -= dt;
+                if (attributeCooldowns[slot] > 0f) continue;
+                attributeCooldowns[slot] = GameConfig.AttributeCycle * GameConfig.AttributeCdMul(UpAttrCd.Value);
                 CastElement = element;
                 CastLevel = EffectiveAttrLevel(slot);
                 GameSession.Instance.CastBasicAbility(this, element, CastLevel);
-                ActiveSlot.Value = (byte)((slot + 1) % 4);
-                break;
             }
         }
         void TickComboCycle(float dt)
@@ -658,7 +657,7 @@ namespace OctopusSurvivors
             {
                 case UpgradeId.Attack: UpAttack.Value++; break;
                 case UpgradeId.Range: UpRange.Value++; break;
-                case UpgradeId.MoveSpeed: UpMoveSpeed.Value++; break;
+                case UpgradeId.MoveSpeed: break; // Retain the ID for network compatibility; no speed investment.
                 case UpgradeId.AttributeRank: UpAttrRank.Value++; break;
                 case UpgradeId.ElementRank: UpElemRank.Value++; break;
                 case UpgradeId.AttributeCooldown: UpAttrCd.Value++; break;
@@ -672,7 +671,7 @@ namespace OctopusSurvivors
             }
         }
 
-        public float MoveSpeedValue => GameConfig.MoveSpeed(UpMoveSpeed.Value);
+        public float MoveSpeedValue => GameConfig.BaseMoveSpeed;
 
         public float MeleeDamageValue => GameConfig.MeleeDamage(UpAttack.Value);
 

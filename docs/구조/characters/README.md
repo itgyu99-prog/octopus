@@ -19,6 +19,7 @@
 - `Source/문어_유한맵/Assets/Resources/Art/Whip.bytes`
 - `Source/문어_유한맵/Assets/Resources/OctopusArmStretch.shader`
 - `Source/문어_유한맵/Assets/Resources/OctopusWalk.bytes`
+- `Source/문어_유한맵/Assets/Scripts/Core/GameConfig.cs`
 - `Source/문어_유한맵/Assets/Scripts/Core/RuntimeArt.cs`
 
 ## 범위 검색

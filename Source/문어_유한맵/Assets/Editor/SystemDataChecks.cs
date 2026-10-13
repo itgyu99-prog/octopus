@@ -13,8 +13,8 @@ namespace OctopusSurvivors.EditorTools
             FiniteMapChecks.Verify();
             if (GameplayRules.Data.recipes.Length != 6 || GameplayRules.Data.abilities.Length != 6)
                 throw new Exception("Expected six recipes and effects");
-            if (Upgrades.All.Length != 6 || Array.IndexOf(Upgrades.All, UpgradeId.MaxHp) < 0)
-                throw new Exception("Expected six stage upgrades including health");
+            if (Upgrades.All.Length != 5 || Array.IndexOf(Upgrades.All, UpgradeId.MaxHp) < 0 || Array.IndexOf(Upgrades.All, UpgradeId.MoveSpeed) >= 0)
+                throw new Exception("Expected five stage upgrades including health and excluding movement speed");
             for (int stage=1;stage<=15;stage++) if (GameConfig.RequiredPieces(stage)<=0) throw new Exception("Invalid stage requirement");
             foreach(var tuning in GameplayRules.Data.abilities)
                 if(tuning.damage<=0 || tuning.range<=0 || tuning.duration<=0 || tuning.cooldown<=0)

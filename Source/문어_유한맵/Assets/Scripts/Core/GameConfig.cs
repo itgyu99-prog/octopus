@@ -19,7 +19,7 @@ namespace OctopusSurvivors
         public const float PlayerRadius = 0.42f;
         public const float EnemyRadius = 0.32f;
 
-        public const float BaseMoveSpeed = 4.7f;
+        public const float BaseMoveSpeed = 5.875f;
         public const float MoveSpeedPerPick = 0.8f;
 
         public const float BaseMaxHp = 100f;
@@ -103,7 +103,7 @@ namespace OctopusSurvivors
         public const float Knockback = 7.5f;
         public const float BossKnockback = 2.6f;
 
-        public static float MoveSpeed(int picks) => BaseMoveSpeed + picks * MoveSpeedPerPick;
+        public static float MoveSpeed(int picks) => BaseMoveSpeed;
 
         public static float MaxHp(int picks) => BaseMaxHp + picks * MaxHpPerPick;
 

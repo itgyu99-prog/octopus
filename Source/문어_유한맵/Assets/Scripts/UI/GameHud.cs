@@ -445,8 +445,7 @@ namespace OctopusSurvivors
             var id = p.SlotElement(slot);
             if (id == ElementId.None)
                 return "-";
-            string mark = p.ActiveSlot.Value == slot ? ">" : " ";
-            return $"{mark} {ElementRules.Name(id)}";
+            return ElementRules.Name(id);
         }
     }
 }

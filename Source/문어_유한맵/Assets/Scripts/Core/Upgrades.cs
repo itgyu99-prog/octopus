@@ -7,7 +7,6 @@ namespace OctopusSurvivors
         public static readonly UpgradeId[] All =
         {
             UpgradeId.MaxHp,
-            UpgradeId.MoveSpeed,
             UpgradeId.AttributeRank,
             UpgradeId.ElementRank,
             UpgradeId.AttributeCooldown,
@@ -78,7 +77,7 @@ namespace OctopusSurvivors
                 case UpgradeId.ElementRank:
                     return $"요소/특수요소 피해 +{picks * 30}% → +{(picks + 1) * 30}%";
                 case UpgradeId.AttributeCooldown:
-                    return $"{GameConfig.AttributeCycle * GameConfig.AttributeCdMul(picks):0.0}초 → {GameConfig.AttributeCycle * GameConfig.AttributeCdMul(picks + 1):0.0}초 주기";
+                    return $"{GameConfig.AttributeCycle * GameConfig.AttributeCdMul(picks):0.0}초 → {GameConfig.AttributeCycle * GameConfig.AttributeCdMul(picks + 1):0.0}초 · 각 속성";
                 case UpgradeId.ElementCooldown:
                     return $"{(1f - GameConfig.ElementCdMul(picks)) * 100f:0}% → {(1f - GameConfig.ElementCdMul(picks + 1)) * 100f:0}% 감소";
                 default:

@@ -33,9 +33,9 @@
 ## `Assets/Scripts/Player/OctopusPlayer.cs` 진입 함수
 
 - `GrantStageChoice` — 326행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `RollOffers` — 570행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ChooseUpgradeServerRpc` — 634행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TryPickup` — 438행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `RollOffers` — 569행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ChooseUpgradeServerRpc` — 633행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TryPickup` — 437행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 
