@@ -232,5 +232,59 @@
         "../../.gitignore"
       ]
     }
+  },
+  "additional_projects": {
+    "ashen-oath": {
+      "project": "Source/정령기사",
+      "docs": "docs/정령기사/구조",
+      "categories": {
+        "game": {
+          "title": "게임·전투",
+          "purpose": "정령기사 이동, 룬 획득, 정령 공격, 적과 보스, 성장, 승패",
+          "primary": [
+            "Assets/Scripts/OathGame.cs"
+          ],
+          "related": [],
+          "anchors": {
+            "Assets/Scripts/OathGame.cs": [
+              "StartRun",
+              "AcquireSpirit",
+              "CastSpirit",
+              "TickWaves",
+              "Bless",
+              "Finish"
+            ]
+          }
+        },
+        "art": {
+          "title": "아트·성소",
+          "purpose": "기사·정령·적 스프라이트, 룬, 성소 바닥과 장식",
+          "primary": [
+            "Assets/Scripts/OathArt.cs"
+          ],
+          "related": []
+        },
+        "ui": {
+          "title": "UI",
+          "purpose": "시작, 안내, HUD, 축복 선택, 일시정지, 결과 화면",
+          "primary": [
+            "Assets/Scripts/OathHud.cs"
+          ],
+          "related": []
+        },
+        "checks": {
+          "title": "검증·빌드",
+          "purpose": "Windows 빌드, 실제 플레이 흐름 검증과 화면 캡처",
+          "primary": [
+            "Assets/Scripts/OathChecks.cs",
+            "Assets/Editor/OathBuild.cs"
+          ],
+          "related": [
+            "Packages/manifest.json",
+            "ProjectSettings/ProjectVersion.txt"
+          ]
+        }
+      }
+    }
   }
 }

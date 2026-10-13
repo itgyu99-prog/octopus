@@ -34,3 +34,7 @@
 - `Library`, `Temp`, `Build`, `Logs`: Unity 생성물. 기본 검색에서 제외.
 
 현재 몬스터와 여러 시스템은 GameSession.cs를 공유한다. 이 색인은 실제 위치를 안내하며 코드·Resources 경로·Unity GUID는 유지한다.
+
+## 별도 게임 프로젝트
+
+- `Source/정령기사` — `python tools/project_index.py --project ashen-oath --category game`

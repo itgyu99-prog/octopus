@@ -1,5 +1,6 @@
 # 작업 시작 안내
 
+- 사용자가 별도 새 게임으로 요청한 **정령기사 / 잿빛 서약**은 `Source/정령기사`가 수정 기준이다. 해당 프로젝트의 `README.md`, `AGENTS.md` 및 `docs/정령기사/구조/README.md`를 사용하며 색인은 `python tools/project_index.py --project ashen-oath --category game`으로 조회한다. 아래 문어 게임 경로는 문어 게임 작업에 적용한다.
 - 수정 기준 Unity 프로젝트는 `Source/문어_유한맵`이다. `My project`, Windows 배포 폴더, ZIP은 수정 기준이 아니다.
 - 먼저 `docs/구조/README.md`만 읽고 요청에 해당하는 카테고리의 `README.md`를 선택한다. 모든 카테고리나 개발 이력을 한꺼번에 읽지 않는다.
 - 범주: 맵, 캐릭터, 몬스터, 전투, 속성·요소, 성장·아이템, UI, 네트워크, 공통, 검증·빌드.
