@@ -17,13 +17,13 @@ LAN·Relay, 접속·준비, 서버 권한·상태 동기화
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `OnNetworkSpawn` — 138행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `OnNetworkDespawn` — 159행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CanStart` — 192행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SelectStartingElementRpc` — 101행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SetReadyRpc` — 211행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `BroadcastActors` — 2074행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `OnActorsMessage` — 2139행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `OnNetworkSpawn` — 139행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `OnNetworkDespawn` — 160행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CanStart` — 193행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SelectStartingElementRpc` — 102행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SetReadyRpc` — 212행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `BroadcastActors` — 2071행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `OnActorsMessage` — 2136행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

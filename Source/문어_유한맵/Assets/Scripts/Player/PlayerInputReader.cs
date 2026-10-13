@@ -7,6 +7,7 @@ namespace OctopusSurvivors
     {
         readonly InputAction _move;
         readonly InputAction _attack;
+        readonly InputAction _dash;
         readonly InputAction _interact;
         readonly InputAction _combine;
         readonly InputAction _transform;
@@ -22,6 +23,10 @@ namespace OctopusSurvivors
                 .With("Down", "<Keyboard>/downArrow")
                 .With("Left", "<Keyboard>/leftArrow")
                 .With("Right", "<Keyboard>/rightArrow");
+
+            _dash = new InputAction("Dash", InputActionType.Button);
+            _dash.AddBinding("<Keyboard>/leftShift");
+            _dash.AddBinding("<Keyboard>/rightShift");
 
             _attack = new InputAction("Attack", InputActionType.Button);
             _attack.AddBinding("<Keyboard>/leftCtrl");
@@ -55,6 +60,7 @@ namespace OctopusSurvivors
         {
             _move.Enable();
             _attack.Enable();
+            _dash.Enable();
             _interact.Enable();
             _combine.Enable();
             _transform.Enable();
@@ -68,6 +74,7 @@ namespace OctopusSurvivors
         {
             _move.Disable();
             _attack.Disable();
+            _dash.Disable();
             _interact.Disable();
             _combine.Disable();
             _transform.Disable();
@@ -89,6 +96,7 @@ namespace OctopusSurvivors
         }
 
         public Vector2 Move => _move.ReadValue<Vector2>();
+        public bool DashPressed => _dash.WasPressedThisFrame();
         public bool AttackPressed => _attack.WasPressedThisFrame();
         public bool InteractPressed => _interact.WasPressedThisFrame();
         public bool CombinePressed => _combine.WasPressedThisFrame();

@@ -80,6 +80,12 @@ namespace OctopusSurvivors
         float _downedClock;
         float _meleeCd;
         float _hitIFrame;
+        public readonly NetworkVariable<byte> ExtraDash = new NetworkVariable<byte>(0);
+        public readonly NetworkVariable<byte> DashCharges = new NetworkVariable<byte>(1);
+        public readonly NetworkVariable<float> DashRechargeLeft = new NetworkVariable<float>(0f);
+        float _dashLeft;
+        Vector2 _dashDirection;
+        public int MaxDashCharges => 1 + ExtraDash.Value;
         PlayerInputReader _input;
         UpgradeId[] _offerPool;
         Transform _body;
@@ -167,7 +173,7 @@ namespace OctopusSurvivors
                     if (pixels[y * bodySprite.texture.width + x].a > 16)
                     { low = Mathf.Min(low, y); high = Mathf.Max(high, y); }
             float bodyHeight = Mathf.Max(1, high - low + 1) / bodySprite.pixelsPerUnit;
-            _bodyBaseScale = Vector3.one * (GameConfig.CameraSize * 2f * .06f / bodyHeight);
+            _bodyBaseScale = Vector3.one * (GameConfig.CameraSize * 2f * GameConfig.PlayerScreenHeight / bodyHeight);
             _body.localScale = _bodyBaseScale;
             _bodyGroundOffset = (bodySprite.texture.height * .5f - low) / bodySprite.pixelsPerUnit * _bodyBaseScale.y - GameConfig.PlayerRadius * .5f;
             var shader = Resources.Load<Shader>("OctopusArmStretch");
@@ -212,6 +218,8 @@ namespace OctopusSurvivors
             {
                 MoveInput.Value = LanLobby.IsVisible ? Vector2.zero : _input.Move;
 
+                if (_input.DashPressed && !LanLobby.IsVisible)
+                    DashServerRpc(_input.Move);
                 if (_input.AttackPressed)
                     PressServerRpc(1);
                 if (_input.InteractPressed)
@@ -253,6 +261,7 @@ namespace OctopusSurvivors
 
             if (Downed.Value)
             {
+                _dashLeft = 0f;
                 AttackLeft.Value = 0f;
                 HopZ.Value = 0f;
                 Invincible.Value = false;
@@ -268,7 +277,19 @@ namespace OctopusSurvivors
             if (move.sqrMagnitude > 0.01f)
                 Facing.Value = move.normalized;
 
-            transform.position = FiniteBeach.Move(transform.position, (Vector2)transform.position + move * MoveSpeedValue * dt, GameConfig.PlayerRadius);
+            if (DashCharges.Value < MaxDashCharges)
+            {
+                DashRechargeLeft.Value = Mathf.Max(0f, DashRechargeLeft.Value - dt);
+                if (DashRechargeLeft.Value <= 0f)
+                {
+                    DashCharges.Value++;
+                    DashRechargeLeft.Value = DashCharges.Value < MaxDashCharges ? GameConfig.DashRecharge : 0f;
+                }
+            }
+            float dashStep = Mathf.Min(dt, _dashLeft);
+            Vector2 travel = _dashDirection * GameConfig.DashSpeed * dashStep + move * MoveSpeedValue * (dt - dashStep);
+            _dashLeft = Mathf.Max(0f, _dashLeft - dt);
+            transform.position = FiniteBeach.Move(transform.position, (Vector2)transform.position + travel, GameConfig.PlayerRadius);
             NetPos.Value = transform.position;
 
             if (GameSession.Instance == null || !GameSession.Instance.CombatActive)
@@ -318,6 +339,7 @@ namespace OctopusSurvivors
         public void StopCombat()
         {
             if (!IsServer) return;
+            _dashLeft = 0f;
             CancelCasts();
             AttackLeft.Value = 0f;
             ComboWindow.Value = false;
@@ -385,6 +407,19 @@ namespace OctopusSurvivors
                 case 4: ToggleTransform(); break;
                 case 5: CastSpecial(); break;
             }
+        }
+
+        [ServerRpc]
+        void DashServerRpc(Vector2 direction)
+        {
+            if (GameSession.Instance == null || !GameSession.Instance.CombatActive || Downed.Value ||
+                DashCharges.Value == 0 || _dashLeft > 0f || direction.sqrMagnitude < .01f ||
+                float.IsNaN(direction.x) || float.IsNaN(direction.y) || float.IsInfinity(direction.x) || float.IsInfinity(direction.y)) return;
+            _dashDirection = direction.normalized;
+            Facing.Value = _dashDirection;
+            _dashLeft = GameConfig.DashDuration;
+            if (DashCharges.Value == MaxDashCharges) DashRechargeLeft.Value = GameConfig.DashRecharge;
+            DashCharges.Value--;
         }
 
         void DoMelee()
@@ -592,6 +627,8 @@ namespace OctopusSurvivors
             Offer0.Value = choices > 0 ? (byte)_offerPool[0] : (byte)0;
             Offer1.Value = choices > 0 ? (byte)_offerPool[1 % choices] : (byte)0;
             Offer2.Value = choices > 0 ? (byte)_offerPool[2 % choices] : (byte)0;
+            if (ExtraDash.Value == 0 && Random.value < GameConfig.ExtraDashOfferChance)
+                Offer2.Value = (byte)UpgradeId.ExtraDash;
         }
 
         public UpgradeId Offer(int index)
@@ -609,6 +646,7 @@ namespace OctopusSurvivors
         {
             switch (id)
             {
+                case UpgradeId.ExtraDash: return ExtraDash.Value;
                 case UpgradeId.Attack: return UpAttack.Value;
                 case UpgradeId.Range: return UpRange.Value;
                 case UpgradeId.MoveSpeed: return UpMoveSpeed.Value;
@@ -655,6 +693,9 @@ namespace OctopusSurvivors
         {
             switch (id)
             {
+                case UpgradeId.ExtraDash:
+                    if (ExtraDash.Value == 0) { ExtraDash.Value = 1; DashCharges.Value++; }
+                    break;
                 case UpgradeId.Attack: UpAttack.Value++; break;
                 case UpgradeId.Range: UpRange.Value++; break;
                 case UpgradeId.MoveSpeed: break; // Retain the ID for network compatibility; no speed investment.

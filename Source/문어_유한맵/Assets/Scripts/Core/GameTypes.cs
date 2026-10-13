@@ -53,7 +53,8 @@ namespace OctopusSurvivors
         AttributeRank = 5,
         ElementRank = 6,
         AttributeCooldown = 7,
-        ElementCooldown = 8
+        ElementCooldown = 8,
+        ExtraDash = 9
     }
 
     public enum ActorKind : byte

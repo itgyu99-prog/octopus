@@ -44,3 +44,16 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 - 이동속도: 기본 5.875(4.7의 1.25배), 과거 이동속도 투자 값의 영향 없음, 반복 선택지 생성에서 이동속도 제외 확인.
 - 2인 LAN: `COOP HOST PASS` / `COOP CLIENT PASS`, 종료 0/0. 속성·합성·보상 RPC·이동·스테이지 전환 회귀 검사 통과. 새 효과도 기존 서버 액터 스냅샷 경로를 사용하며 네트워크 레코드 형식은 유지했다.
 - 로그: 프로젝트 `Logs/system-validation-build.log`, `system-solo.log`, `system-coop-host.log`, `system-coop-guest.log` 갱신. 이번 변경에서는 Relay 및 실제 두 PC 검사를 재실행하지 않았다. 정상 생존 플레이의 난이도/장기 밸런스는 자동 검사 범위 밖이다.
+
+
+## 2026-10-13 넓은 시야·화염 방사·충전 대시·속성 몬스터
+
+- Unity 6000.5.7f1 검증 빌드 및 시스템 데이터/지형 경계 검사 통과. `Build/Validation` 재사용, 배포 ZIP 없음.
+- 카메라 11, 캐릭터 화면 높이 4%(1080p 기준 43.2px). 기존 해변 그림 비율과 2×2 화면 크기의 맵 유지.
+- 1인: `SOLO TEST PASS`. 화염이 적이 더 많은 전방 부채꼴을 선택하고 뒤쪽 적은 맞히지 않는지, 이동 중 시전자 추적/강화 범위를 확인.
+- 대시: 1회 소모/빈 게이지 재사용 거부/3초 충전/강화 중복 적용 방지/획득 후 선택지 제외/강화 후 2회 연속 사용 통과.
+- 불·물·풀·전기 적 처치 경로마다 고정 시드 400회 표본 검사: 드랍 발생과 같은 속성만 드랍됨을 확인. 기존 2% 확률 및 팀 중복 제외 유지.
+- 2인 LAN 회귀: `COOP HOST PASS`, `COOP CLIENT PASS`. 합성·보상·이동·스테이지 전환과 새 공격/드랍/대시의 호스트 판정 검사 통과.
+- `Build/Validation/Screenshots/host-fire-field.png`를 열어 캐릭터 비율, 4종 몬스터 실루엣, 화염 방사, 대시 횟수/게이지를 확인.
+- 최신 로그: `Logs/system-validation-build.log`, `system-solo.log`, `system-coop-host.log`, `system-coop-guest.log`. 구 카메라 8.5 기대값 때문에 중단된 첫 검사는 `system-solo.failed.log`에 보존하고 새 기준으로 수정 후 통과.
+- 실제 두 PC 및 Relay 재검사, 참가자 키보드 대시의 지연 체감, 장시간 생존 밸런스는 이번 자동 검사 범위 밖이다.

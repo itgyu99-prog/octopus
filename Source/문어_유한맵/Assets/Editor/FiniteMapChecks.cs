@@ -25,10 +25,10 @@ namespace OctopusSurvivors.EditorTools
             var body=OctopusSheet.Frame(OctopusAnim.Idle,0);
             var pixels=body.texture.GetPixels32(); int lo=body.texture.height,hi=0;
             for(int y=0;y<body.texture.height;y++) for(int x=0;x<body.texture.width;x++) if(pixels[y*body.texture.width+x].a>16){lo=Mathf.Min(lo,y);hi=Mathf.Max(hi,y);}
-            float scale=GameConfig.CameraSize*2*.06f/((hi-lo+1)/body.pixelsPerUnit);
+            float scale=GameConfig.CameraSize*2*GameConfig.PlayerScreenHeight/((hi-lo+1)/body.pixelsPerUnit);
             float height=(hi-lo+1)/body.pixelsPerUnit*scale/(2*GameConfig.CameraSize)*1080;
-            if(Mathf.Abs(height-64.8f)>.01f) throw new Exception("Body size");
-            Debug.Log("FINITE_MAP_CHECKS_PASSED: source aspect, 2x2 viewport, 64.8px body, shore/rock exclusion, 72 swept paths and out-of-bounds spawns.");
+            if(Mathf.Abs(height-43.2f)>.01f) throw new Exception("Body size");
+            Debug.Log("FINITE_MAP_CHECKS_PASSED: source aspect, 2x2 viewport, 43.2px body, shore/rock exclusion, 72 swept paths and out-of-bounds spawns.");
         }
         public static void VerifyAndBuild(){Verify(); BuildTool.BuildWindows();}
     }

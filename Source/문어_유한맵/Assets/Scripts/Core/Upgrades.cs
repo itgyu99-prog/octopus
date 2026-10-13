@@ -17,6 +17,7 @@ namespace OctopusSurvivors
         {
             switch (id)
             {
+                case UpgradeId.ExtraDash: return "대시 1회 추가";
                 case UpgradeId.Attack: return "평타 공격력";
                 case UpgradeId.Range: return "평타 사거리";
                 case UpgradeId.MoveSpeed: return "이동속도";
@@ -49,6 +50,7 @@ namespace OctopusSurvivors
         {
             switch (id)
             {
+                case UpgradeId.ExtraDash: return 1;
                 case UpgradeId.AttributeRank:
                 case UpgradeId.ElementRank:
                     return GameConfig.MaxRankPicks;
@@ -64,6 +66,7 @@ namespace OctopusSurvivors
         {
             switch (id)
             {
+                case UpgradeId.ExtraDash: return "최대 충전 1회 → 2회\n희귀 · 한 번만 획득";
                 case UpgradeId.Attack:
                     return $"{GameConfig.MeleeDamage(picks):0} → {GameConfig.MeleeDamage(picks + 1):0}";
                 case UpgradeId.Range:

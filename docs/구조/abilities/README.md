@@ -31,23 +31,23 @@
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `SpawnAllySpirit` — 1783행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnPiercingMeteor` — 1792행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CastBlackFlame` — 1813행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `InfectFlame` — 1848행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnAllySpirit` — 1780행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnPiercingMeteor` — 1789행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CastBlackFlame` — 1810행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `InfectFlame` — 1845행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Player/OctopusPlayer.cs` 진입 함수
 
-- `GrantElement` — 463행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickAttributeCycle` — 346행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CanCombine` — 474행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ServerCombine` — 491행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `GrantElement` — 498행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickAttributeCycle` — 368행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CanCombine` — 509행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ServerCombine` — 526행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/PlannedAbilities.cs` 진입 함수
 
 - `CastBasicAbility` — 9행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CastPlannedCombo` — 34행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickPlannedAbility` — 85행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CastPlannedCombo` — 56행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickPlannedAbility` — 107행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

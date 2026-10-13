@@ -9,6 +9,7 @@ namespace OctopusSurvivors
     {
         public ushort Id;
         public ActorKind Kind;
+        public ElementId Element;
         public Vector2 Pos;
         public Vector2 Vel;
         public float Size;
@@ -470,7 +471,7 @@ namespace OctopusSurvivors
             _delayed.Clear();
             // Clear combat actors directly: no KillEnemy, XP or loot side effects.
             foreach (var actor in _actors)
-                if (actor.Kind != ActorKind.Statue && !KeepOnStageClear(actor.Kind)) actor.Dead = true;
+                if (actor.Kind != ActorKind.Statue && !ElementRules.IsSpecialPickup(actor.Kind)) actor.Dead = true;
             foreach (var player in OctopusPlayer.All)
                 if (player != null && player.IsSpawned)
                 {
@@ -851,6 +852,8 @@ namespace OctopusSurvivors
             }
 
             float speed = GameConfig.EnemySpeed(Elapsed.Value);
+            if (enemy.Kind == ActorKind.Enemy)
+                speed *= enemy.Element == ElementId.Electric ? 1.5f : enemy.Element == ElementId.Grass ? .72f : enemy.Element == ElementId.Fire ? 1.15f : .9f;
             if (enemy.Kind == ActorKind.Boss) speed *= 0.65f;
             if (enemy.SlowTime > 0f) speed *= 0.45f;
             if (enemy.StunTime > 0f || enemy.RootTime > 0f) speed = 0f;
@@ -973,7 +976,9 @@ namespace OctopusSurvivors
             for (int i = 0; i < count; i++)
             {
                 var e = Create(ActorKind.Enemy, RandomEdge(), 0.7f);
-                e.Hp = e.MaxHp = GameConfig.EnemyHp(Elapsed.Value);
+                e.Element = GameplayRules.BasicElements[Random.Range(0, GameplayRules.BasicElements.Length)];
+                e.Size = e.Element == ElementId.Grass ? 1.05f : e.Element == ElementId.Electric ? .65f : .8f;
+                e.Hp = e.MaxHp = GameConfig.EnemyHp(Elapsed.Value) * (e.Element == ElementId.Grass ? 1.6f : e.Element == ElementId.Electric ? .7f : 1f);
             }
         }
 
@@ -1429,7 +1434,7 @@ namespace OctopusSurvivors
                 OnBossDefeated(enemy.Pos);
             else
             {
-                TryDropAttribute(enemy.Pos);
+                TryDropAttribute(enemy.Pos, enemy.Element);
                 if (Stage.Value % GameConfig.BossEvery != 0 && Random.value < GameConfig.ArtifactDropChance)
                     SpawnMarker(ActorKind.ArtifactPiece, enemy.Pos, 0.42f);
                 if (Random.value < GameConfig.PotionDropChance)
@@ -1443,13 +1448,10 @@ namespace OctopusSurvivors
                 if (player != null && player.IsSpawned && !player.HasElement(element)) return true;
             return false;
         }
-        void TryDropAttribute(Vector2 pos)
+        void TryDropAttribute(Vector2 pos, ElementId element)
         {
-            if (Random.value >= GameplayRules.Data.attributeDropChance) return;
-            var candidates = new List<ElementId>(4);
-            foreach (var element in GameplayRules.BasicElements)
-                if (AttributeNeeded(element)) candidates.Add(element);
-            if (candidates.Count > 0) SpawnPickup(candidates[Random.Range(0, candidates.Count)], pos);
+            if (element != ElementId.None && AttributeNeeded(element) && Random.value < GameplayRules.Data.attributeDropChance)
+                SpawnPickup(element, pos);
         }
 
         void StartArtifactStage(int stage)
@@ -1492,11 +1494,6 @@ namespace OctopusSurvivors
             }
 
             _delayed.Clear();
-        }
-
-        static bool KeepOnStageClear(ActorKind kind)
-        {
-            return ElementRules.IsAttributePickup(kind) || ElementRules.IsSpecialPickup(kind);
         }
 
         void TickPotions()
@@ -2065,7 +2062,7 @@ namespace OctopusSurvivors
                 var a = _actors[i];
                 if (a.Dead)
                     continue;
-                _view.Show(a.Id, a.Kind, a.Pos, a.Size, PackFlags(a), a.Age, a.Duration, PackHp(a));
+                _view.Show(a.Id, a.Kind, a.Pos, a.Size, PackFlags(a), a.Age, VisualDuration(a), PackHp(a));
             }
 
             _view.EndFrame();
@@ -2113,7 +2110,7 @@ namespace OctopusSurvivors
                     writer.WriteValueSafe(a.Pos.y);
                     writer.WriteValueSafe(a.Size);
                     writer.WriteValueSafe(a.Age);
-                    writer.WriteValueSafe(a.Duration);
+                    writer.WriteValueSafe(VisualDuration(a));
                     writer.WriteValueSafe(PackHp(a));
                     written++;
                 }
@@ -2172,6 +2169,9 @@ namespace OctopusSurvivors
             if (_viewChunksGot >= _viewChunksNeed)
                 _view.EndFrame();
         }
+
+        // Enemy snapshots use the otherwise unused duration channel for their visual element.
+        static float VisualDuration(SimActor a) => a.Kind == ActorKind.Enemy ? (float)a.Element : a.Duration;
 
         static byte PackFlags(SimActor a)
         {

@@ -19,7 +19,7 @@
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `ApplyPhaseUi` — 176행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ApplyPhaseUi` — 177행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

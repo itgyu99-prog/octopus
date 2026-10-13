@@ -124,7 +124,7 @@ namespace OctopusSurvivors
             using var writer=new FastBufferWriter(1,Allocator.Temp);writer.WriteValueSafe((byte)1);
             NetworkManager.Singleton.CustomMessagingManager.SendNamedMessage(channel,host?1ul:NetworkManager.ServerClientId,writer,NetworkDelivery.ReliableSequenced);
         }
-        int UpgradeTotal(OctopusPlayer p){int total=0;foreach(var id in Upgrades.All)total+=p.UpgradeCount(id);return total;}
+        int UpgradeTotal(OctopusPlayer p){int total=p.ExtraDash.Value;foreach(var id in Upgrades.All)total+=p.UpgradeCount(id);return total;}
         void ResetField(GameSession s){Call(s,"ClearFieldForNextStage");Actors(s).RemoveAll(a=>a.Dead);}
         SimActor Target(GameSession s,Vector2 pos)
         {
@@ -166,7 +166,7 @@ namespace OctopusSurvivors
             var arena=GameObject.Find("FiniteBeachArena");
             Check(Mathf.Abs(arena.transform.localScale.x-arena.transform.localScale.y)<.001f,"background uses uniform scale without stretch");
             Check(Mathf.Abs(FiniteBeach.Width/FiniteBeach.Height-(float)texture.width/texture.height)<.001f,"background matches original image aspect");
-            Check(Camera.main.orthographicSize==8.5f&&FiniteBeach.Height<51f,"background reduced with camera size unchanged");
+            Check(Camera.main.orthographicSize==11f&&GameConfig.PlayerScreenHeight==.04f,"wide camera and compact player ratio");
             Check(GameplayRules.Data.attributeDropChance==.02f,"attribute drop chance reduced to two percent");
             Check(!s.SpecialUnlocked.Value,"specials unavailable before boss five");
             p.DevSetSpecial((byte)SpecialId.Meteor);Check(p.Special.Value==0,"developer grant also respects special gate");
@@ -205,8 +205,33 @@ namespace OctopusSurvivors
             Check(p.ServerCombine(0,2)&&p.ServerCombine(0,3)&&!p.ServerCombine(1,2),"three combo maximum enforced");
             ResetField(s);p.transform.position=Vector3.zero;p.NetPos.Value=Vector2.zero;
             foreach(var player in OctopusPlayer.All){player.transform.position=Vector3.zero;player.NetPos.Value=Vector2.zero;}
+            var randomState=UnityEngine.Random.state;
+            var savedSlots=new byte[]{p.Slot0.Value,p.Slot1.Value,p.Slot2.Value,p.Slot3.Value};
+            p.Slot0.Value=p.Slot1.Value=p.Slot2.Value=p.Slot3.Value=0;
+            UnityEngine.Random.InitState(4917);
+            foreach(var element in GameplayRules.BasicElements)
+            {
+                ResetField(s);
+                for(int trial=0;trial<400;trial++)
+                {
+                    var enemy=Target(s,new Vector2(5,0)); enemy.Element=element;
+                    Call(s,"KillEnemy",enemy);
+                    Actors(s).RemoveAll(a=>a.Dead);
+                }
+                var drops=Actors(s).FindAll(a=>ElementRules.IsAttributePickup(a.Kind));
+                Check(drops.Count>0&&drops.TrueForAll(a=>a.Kind==ElementRules.PickupKind(element)),"monster death drops matching element: "+element);
+            }
+            UnityEngine.Random.state=randomState;
+            p.Slot0.Value=savedSlots[0];p.Slot1.Value=savedSlots[1];p.Slot2.Value=savedSlots[2];p.Slot3.Value=savedSlots[3];
+            ResetField(s);
             TestAbilities(s,p);
-            ResetField(s);s.CastBasicAbility(p,ElementId.Fire,1);yield return null;Capture("fire-field");
+            ResetField(s);
+            for(int i=0;i<GameplayRules.BasicElements.Length;i++)
+            {
+                var enemy=Target(s,new Vector2(2f+i*1.3f,2f));
+                enemy.Element=GameplayRules.BasicElements[i]; enemy.Size=1f; enemy.StunTime=0f;
+            }
+            s.CastBasicAbility(p,ElementId.Fire,1);yield return null;Capture("fire-field");
             ResetField(s);s.CastPlannedCombo(p,ComboId.Soda);yield return null;Capture("soda-bottles");
             GameHud.Instance.ToggleCombine();yield return null;Capture("four-attributes-combine");GameHud.Instance.ToggleCombine();
             while(!solo&&OctopusPlayer.All.Exists(other=>other!=p&&other.ComboCount==0))yield return null;
@@ -271,16 +296,39 @@ namespace OctopusSurvivors
                 Call(s,"TickPlannedAbility",waves[0],.25f);
                 foreach(var target in targets)Check(target.Hp<target.MaxHp,"electric wave damages all directions");
             }
-            ResetField(s);s.CastBasicAbility(p,ElementId.Fire,1);
+            ResetField(s);
+            p.transform.position=Vector3.zero;p.NetPos.Value=Vector2.zero;
+            var inside=Target(s,new Vector2(2f,.2f));Target(s,new Vector2(3f,-.3f));
+            var outside=Target(s,new Vector2(-2f,0f));
+            s.CastBasicAbility(p,ElementId.Fire,1);
             var fire=Actors(s).Find(a=>a.Kind==ActorKind.FlameAura);
-            Vector2 installed=fire.Pos;p.transform.position=(Vector3)(installed+Vector2.up*5f);p.NetPos.Value=p.Pos;
-            var inside=Target(s,installed);var outside=Target(s,installed+Vector2.right*(fire.Size+1f));
-            Call(s,"TickPlannedAbility",fire,.1f);float hp=inside.Hp;Call(s,"TickPlannedAbility",fire,.1f);
-            Check(inside.Hp<hp&&outside.Hp==outside.MaxHp,"flame field damages entire interior over time only");
-            Check(fire.Pos==installed,"fire remains installed after player moves");
+            Call(s,"TickPlannedAbility",fire,.1f);
+            Check(inside.Hp<inside.MaxHp&&outside.Hp==outside.MaxHp,"fire breath chooses crowded cone and excludes rear target");
+            p.transform.position=Vector3.up;p.NetPos.Value=p.Pos;
+            Call(s,"TickPlannedAbility",fire,.1f);
+            Check(fire.Pos==p.Pos,"fire breath follows caster");
             p.transform.position=Vector3.zero;p.NetPos.Value=Vector2.zero;
             float baseRadius=fire.Size;s.CastBasicAbility(p,ElementId.Fire,3);
             Check(Actors(s).Exists(a=>a.Kind==ActorKind.FlameAura&&a.Size>baseRadius),"flame range grows with attribute upgrade");
+            Call(p,"DashServerRpc",Vector2.right);p.MoveInput.Value=Vector2.zero;
+            p.ServerTick(GameConfig.DashDuration);
+            Check(p.Pos.x>3f&&p.DashCharges.Value==0,"dash moves quickly and consumes one charge");
+            Vector2 dashEnd=p.Pos;Call(p,"DashServerRpc",Vector2.right);p.ServerTick(.01f);
+            Check(p.Pos==dashEnd,"empty dash charge rejects repeated use");
+            p.ServerTick(GameConfig.DashRecharge);
+            Check(p.DashCharges.Value==1,"dash recharges after cooldown");
+            Call(p,"ApplyUpgrade",UpgradeId.ExtraDash);Call(p,"ApplyUpgrade",UpgradeId.ExtraDash);
+            Check(p.MaxDashCharges==2&&p.DashCharges.Value==2,"rare dash upgrade applies only once");
+            for(int roll=0;roll<100;roll++)
+            {
+                Call(p,"RollOffers");
+                Check(p.Offer(0)!=UpgradeId.ExtraDash&&p.Offer(1)!=UpgradeId.ExtraDash&&p.Offer(2)!=UpgradeId.ExtraDash,"owned extra dash excluded from offers");
+            }
+            Call(p,"DashServerRpc",Vector2.left);p.ServerTick(GameConfig.DashDuration);
+            Call(p,"DashServerRpc",Vector2.right);p.ServerTick(GameConfig.DashDuration);
+            Check(p.DashCharges.Value==0,"upgraded dash allows two successive uses");
+            p.ExtraDash.Value=0;p.DashCharges.Value=1;p.DashRechargeLeft.Value=0;
+            p.transform.position=Vector3.zero;p.NetPos.Value=Vector2.zero;
             ResetField(s);s.CastBasicAbility(p,ElementId.Water,1);
             var water=Actors(s).Find(a=>a.Kind==ActorKind.WaterEmitter);Call(s,"TickPlannedAbility",water,.01f);
             var shot=Actors(s).Find(a=>a.Kind==ActorKind.Droplet);var enemy=Target(s,shot.Pos+shot.Vel*.01f);Call(s,"TickProjectile",shot,.01f);

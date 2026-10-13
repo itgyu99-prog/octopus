@@ -21,7 +21,7 @@ namespace OctopusSurvivors
         static readonly Color Leaf = new Color(0.3f, 0.8f, 0.24f);
 
         public static bool IsDirectional(ActorKind k) => k == ActorKind.MowerBlade || k == ActorKind.Jellyfish ||
-            k == ActorKind.ChainArc || k == ActorKind.CurrentFan || k == ActorKind.MagnetPair || k == ActorKind.MagnetBlast;
+            k == ActorKind.FlameAura || k == ActorKind.ChainArc || k == ActorKind.CurrentFan || k == ActorKind.MagnetPair || k == ActorKind.MagnetBlast;
         public static bool Supports(ActorKind k) => (k >= ActorKind.SteamField && k <= ActorKind.MagnetBlast) || (k >= ActorKind.SodaWave && k <= ActorKind.RadialCurrent);
 
         public void Configure(ActorKind kind, float radius, byte flags, float age, float duration)
@@ -89,12 +89,13 @@ namespace OctopusSurvivors
                     Arc(Vector2.left,Vector2.right,new Color(.2f,.5f,1f),t);
                     break;
                 case ActorKind.FlameAura:
-                    Blob(Vector2.zero, 1f, new Color(1f,.25f,.02f,.25f));
-                    for(int i=0;i<24;i++)
+                    for(int i=0;i<32;i++)
                     {
-                        Vector2 flame=Polar(i*2.4f,.75f*Mathf.Sqrt((i+.5f)/24f));
-                        Blob(flame,.13f,new Color(1f,.2f,.02f,.65f));
-                        Curve(new[]{flame,flame+new Vector2(Mathf.Sin(t*9f+i)*.06f,.12f)},.07f,new Color(1f,.8f,.15f,.8f));
+                        float travel = Mathf.Repeat(t * 2.5f + i / 32f, 1f);
+                        float angle = Mathf.Sin(i * 7.13f) * Mathf.PI / 6f;
+                        Vector2 flame = Polar(angle, travel * .94f);
+                        Blob(flame, .035f + travel * .075f, new Color(1f,.25f,.02f,1f-travel*.7f));
+                        Blob(flame, .02f + travel * .035f, new Color(1f,.85f,.2f,1f-travel));
                     }
                     break;
                 case ActorKind.RadialCurrent:

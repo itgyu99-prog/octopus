@@ -17,6 +17,8 @@ namespace OctopusSurvivors
 
         GameObject _root;
         Text _hpText;
+        Text _dashText;
+        Image _dashFill;
         Text _loadout;
         Text _keys;
         Text _over;
@@ -77,6 +79,8 @@ namespace OctopusSurvivors
             _hpText = UiUtil.Label(_root.transform, new Vector2(40, -62), new Vector2(420, 32), 22, Color.white);
             _loadout = UiUtil.Label(_root.transform, new Vector2(112, -105), new Vector2(688, 365), 22, Color.white);
             _loadout.alignment = TextAnchor.UpperLeft;
+            UiUtil.Bar(_root.transform, new Vector2(40, -490), new Vector2(220, 12), new Color(.08f,.13f,.2f,.8f), new Color(.3f,.85f,1f), out _dashFill);
+            _dashText = UiUtil.Label(_root.transform, new Vector2(40, -508), new Vector2(340, 32), 19, Color.white);
             _slot3Icon = HudIcon(_root.transform, new Vector2(42f, -261f), 46f);
             _slot2Icon = HudIcon(_root.transform, new Vector2(42f, -209f), 46f);
             _slot0Icon = HudIcon(_root.transform, new Vector2(42f, -105f), 46f);
@@ -302,6 +306,9 @@ namespace OctopusSurvivors
             float hp = p.Hp.Value;
             float max = Mathf.Max(1f, p.MaxHp.Value);
             _hpFill.fillAmount = hp / max;
+            _dashFill.fillAmount = p.DashCharges.Value == p.MaxDashCharges ? 1f : 1f - p.DashRechargeLeft.Value / GameConfig.DashRecharge;
+            _dashText.text = $"Shift 대시 {p.DashCharges.Value}/{p.MaxDashCharges}" +
+                (p.DashCharges.Value < p.MaxDashCharges ? $" · {p.DashRechargeLeft.Value:0.0}초" : " · 충전 완료");
             _hpText.text = p.Downed.Value ? "다운" : $"HP  {Mathf.CeilToInt(hp)} / {Mathf.CeilToInt(max)}";
 
             var session = GameSession.Instance;

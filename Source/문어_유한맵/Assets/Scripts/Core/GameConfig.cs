@@ -14,7 +14,13 @@ namespace OctopusSurvivors
 
         // 유한 필드 실제 치수는 FiniteBeach에서 기준 시야의 가로 2배 × 세로 2배로 정의한다.
         public const float MapSize = 72f;
-        public const float CameraSize = 8.5f;
+        public const float CameraSize = 11f;
+
+        public const float PlayerScreenHeight = .04f;
+        public const float DashRecharge = 3f;
+        public const float DashDuration = .18f;
+        public const float DashSpeed = 22f;
+        public const float ExtraDashOfferChance = .05f;
 
         public const float PlayerRadius = 0.42f;
         public const float EnemyRadius = 0.32f;

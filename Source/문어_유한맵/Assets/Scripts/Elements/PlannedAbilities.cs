@@ -15,7 +15,7 @@ namespace OctopusSurvivors
             switch (id)
             {
                 case ElementId.Fire:
-                    Effect(ActorKind.FlameAura, p.Pos, Vector2.zero, 1.3f + .3f * l, 2.5f, 35f * upgradeMul, p, l);
+                    Effect(ActorKind.FlameAura, p.Pos, DensestFireDirection(p.Pos, dir, 4f + .3f * l), 4f + .3f * l, 1.25f, 70f * upgradeMul, p, l);
                     break;
                 case ElementId.Water:
                     var water = Effect(ActorKind.WaterEmitter, p.Pos, p.NextWaterDirection(dir), .1f, l * GameplayRules.Data.attributeRepeatInterval, 27f * upgradeMul, p, l);
@@ -29,6 +29,28 @@ namespace OctopusSurvivors
                     current.Bounces = l;
                     break;
             }
+        }
+
+        public Vector2 DensestFireDirection(Vector2 origin, Vector2 fallback, float range)
+        {
+            int best = 0;
+            Vector2 result = fallback;
+            // Test both cone edges: finds the largest group, even between two targets.
+            foreach (var candidate in _actors)
+            {
+                if (candidate.Dead || (candidate.Kind != ActorKind.Enemy && candidate.Kind != ActorKind.Boss) ||
+                    (candidate.Pos-origin).sqrMagnitude > range*range) continue;
+                for (int side = -1; side <= 1; side++)
+                {
+                    Vector2 direction = AbilityRunner.Rotate((candidate.Pos-origin).normalized, side * 29.9f);
+                    int count = 0;
+                    foreach (var enemy in _actors)
+                        if (!enemy.Dead && (enemy.Kind == ActorKind.Enemy || enemy.Kind == ActorKind.Boss) &&
+                            (enemy.Pos-origin).sqrMagnitude <= range*range && Vector2.Angle(direction, enemy.Pos-origin) <= 30f) count++;
+                    if (count > best) { best = count; result = direction; }
+                }
+            }
+            return result;
         }
 
         public void CastPlannedCombo(OctopusPlayer p, ComboId combo)
@@ -96,8 +118,8 @@ namespace OctopusSurvivors
                     DamageCircle(a.Pos, a.Size, a.Damage * dt, StatusMask.Slow, .3f, 0f);
                     break;
                 case ActorKind.FlameAura:
-                    // Installed at the cast position; never follows the owner.
-                    DamageCircle(a.Pos, a.Size, a.Damage * dt, StatusMask.Burn, 1.2f, 8f);
+                    a.Pos = a.Owner.Pos;
+                    DamageCone(a.Pos, a.Vel, a.Size, 60f, a.Damage * dt, StatusMask.Burn, 1.2f, 8f);
                     break;
                 case ActorKind.ThornEmitter:
                     a.Pos = a.Owner.Pos;

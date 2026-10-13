@@ -55,8 +55,8 @@ namespace OctopusSurvivors
                 _views[id] = sr;
             }
 
-            sr.sprite = SpriteFor(kind);
-            sr.color = ColorFor(kind, extra);
+            sr.sprite = kind == ActorKind.Enemy ? RuntimeArt.ElementMonster((ElementId)Mathf.RoundToInt(duration)) : SpriteFor(kind);
+            sr.color = kind == ActorKind.Enemy && extra == 0 ? Color.white : ColorFor(kind, extra);
             sr.sortingOrder = OrderFor(kind);
             float world = Mathf.Max(0.15f, size);
             bool floatingPickup = ElementRules.IsAttributePickup(kind) || ElementRules.IsSpecialPickup(kind);

@@ -55,6 +55,43 @@ namespace OctopusSurvivors
             return _whip[Mathf.Clamp(frame, 0, 7)];
         }
 
+        // Original pixel art: ember imp, water slime, leaf beetle, spark bat.
+        public static Sprite ElementMonster(ElementId element)
+        {
+            string key = "Monster_" + element;
+            if (Singles.TryGetValue(key, out var cached)) return cached;
+            const int n = 32;
+            var texture = new Texture2D(n,n,TextureFormat.RGBA32,false) { filterMode = FilterMode.Point };
+            var pixels = new Color[n*n]; var mask = new bool[n*n];
+            Color body = element == ElementId.Fire ? new Color(.94f,.25f,.12f) : element == ElementId.Water ? new Color(.15f,.65f,.95f) : element == ElementId.Grass ? new Color(.3f,.67f,.2f) : new Color(.85f,.65f,1f);
+            for(int y=1;y<n-1;y++) for(int x=1;x<n-1;x++)
+            {
+                float dx=x-15.5f, dy=y-14f;
+                bool shape;
+                if(element==ElementId.Fire)
+                    shape=dx*dx/80f+dy*dy/90f<1f || (y>20&&y<29&&Mathf.Abs(dx)>4&&Mathf.Abs(dx)<(30-y)*.8f) || (y<9&&y>3&&Mathf.Abs(dx)>3&&Mathf.Abs(dx)<8);
+                else if(element==ElementId.Water)
+                    shape=dx*dx/150f+(y-11f)*(y-11f)/65f<1f || (y>14&&y<28&&Mathf.Abs(dx)<(28-y)*.5f);
+                else if(element==ElementId.Grass)
+                    shape=dx*dx/85f+dy*dy/100f<1f || (Mathf.Abs(dx)>7&&Mathf.Abs(dx)<14&&(y==8||y==9||y==15||y==16)) || (y>22&&y<30&&Mathf.Abs(dx-(y-23)*.6f)<3);
+                else
+                    shape=dx*dx/32f+dy*dy/70f<1f || (Mathf.Abs(dx)>4&&Mathf.Abs(dx)<15&&y>12&&y<24-Mathf.Abs(dx)*.35f&&((x+y)%7>1||y>18));
+                mask[y*n+x]=shape;
+            }
+            for(int y=1;y<n-1;y++) for(int x=1;x<n-1;x++)
+            {
+                int i=y*n+x; if(!mask[i]) continue;
+                bool edge=!mask[i-1]||!mask[i+1]||!mask[i-n]||!mask[i+n];
+                pixels[i]=edge?new Color(.12f,.12f,.19f):Color.Lerp(body,Color.white,y/128f);
+                if(y>=15&&y<=18&&(x==11||x==12||x==19||x==20)) pixels[i]=new Color(1f,.97f,.7f);
+                if(y>=15&&y<=17&&(x==12||x==20)) pixels[i]=new Color(.12f,.1f,.17f);
+                if(y==10&&x>=14&&x<=17) pixels[i]=new Color(.2f,.1f,.15f);
+            }
+            texture.SetPixels(pixels);texture.Apply();
+            var sprite=Sprite.Create(texture,new Rect(0,0,n,n),new Vector2(.5f,.5f),n,0,SpriteMeshType.FullRect);
+            Singles[key]=sprite;return sprite;
+        }
+
         public static Texture2D BeachTexture() => LoadTexture("Beach");
 
         public static Sprite Icon(string name)

@@ -45,7 +45,8 @@
       "related": [
         "Assets/Scripts/Core/GameConfig.cs",
         "Assets/Scripts/Core/GameTypes.cs",
-        "Assets/Scripts/World/WorldView.cs"
+        "Assets/Scripts/World/WorldView.cs",
+        "Assets/Scripts/Core/RuntimeArt.cs"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
