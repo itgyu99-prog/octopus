@@ -9,3 +9,10 @@
 ## 2026-10-13 시야·속성 몬스터·대시
 
 - 불을 60도 화염 방사로 변경. 사거리 4.3~5.5 안의 최다 적 방향을 발동 시 선택하고 1.25초간 플레이어를 따라 방사한다. 기본 초당 피해 70으로 기존 총 피해량 유지.
+
+- 2026-10-13: WaterVfx(물 4 비행/8 적중 프레임, 최대 192개 로컬 재사용 파편)를 먼저 Unity 렌더 검증 후 HdSpellVisual로 기본 속성 및 13종 합성 표시를 확장. 캐릭터/배경은 그대로, 기존 판정 수치와 발사 타이밍은 변경하지 않음. 불은 사용자 확인대로 화염 방사 유지.
+- Resources/Vfx: WaterAtlas(4×4), ElementAtlas(4×4), ComboAtlas(4×6), LegacyAtlas(4×7). Built-in SpriteRenderer와 기본 알파 블렌딩을 사용하며 추가 Bloom/렌더 파이프라인 변경은 없음.
+- 이미지 제작: 내장 imagegen 사용. 프롬프트 핵심은 'transparent alpha, isolated 4-column sprite atlas, organic textured liquid/flame/lightning, consistent animation rows, no text/grid/overlap'. 물은 비행·물보라·파편, 기본은 화염방사·전기방출·덩굴·타격, 합성은 안개/고추/과일나무/탄산/레몬/푸른화염, 기존 합성은 화산/해초/이끼돌/전자레인지/제초기/해파리/자석. 실제 PNG를 Resources에 저장하여 실행 의존성이 작업자 경로에 남지 않음.
+- Unity 메뉴/배치 검증: CombatVisualChecks.WaterPreview, CombatVisualChecks.AllPreviews. 미리보기는 docs/검증의 고정 파일에 저장. 강한 폭발에만 최대 .045 월드 단위·.1초 로컬 카메라 흔들림.
+
+- 2026-10-14: DetailAtlas에 과일/물고기/씨앗/용암탄 분리. 생성 시트의 실제 여백에 맞춰 행·열 UV를 지정해 인접 프레임 잔여 픽셀을 제거했다. 프롬프트와 최종 게임 캡처는 docs/검증/README.md에 기록.

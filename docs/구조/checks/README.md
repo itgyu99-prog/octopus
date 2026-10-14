@@ -8,10 +8,13 @@ Unity 에디터 검사, 협동 검사, 빌드·배포 설정
 
 - `Source/문어_유한맵/Assets/Editor/BuildTool.cs`
 - `Source/문어_유한맵/Assets/Editor/CharacterVisualChecks.cs`
+- `Source/문어_유한맵/Assets/Editor/CombatVisualChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/ElementEffectChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/FiniteMapChecks.cs`
+- `Source/문어_유한맵/Assets/Editor/GiantMonsterSetup.cs`
 - `Source/문어_유한맵/Assets/Editor/SystemDataChecks.cs`
 - `Source/문어_유한맵/Assets/Scripts/Net/CoopSystemChecks.cs`
+- `Source/문어_유한맵/Assets/Scripts/Net/GiantCombatChecks.cs`
 
 ## 관련 파일
 

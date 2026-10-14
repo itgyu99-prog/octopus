@@ -1,0 +1,676 @@
+fileFormatVersion: 2
+guid: 1b526c485b19a89409be86794f3f9867
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1524770684515651200
+    second: WaterAtlas_0
+  - first:
+      213: -5915446275458801276
+    second: WaterAtlas_1
+  - first:
+      213: 7561972176623581759
+    second: WaterAtlas_2
+  - first:
+      213: -8210983827862299418
+    second: WaterAtlas_3
+  - first:
+      213: -2374933221874891490
+    second: WaterAtlas_4
+  - first:
+      213: 9184521882233989515
+    second: WaterAtlas_5
+  - first:
+      213: -6212406713333271268
+    second: WaterAtlas_6
+  - first:
+      213: 6219938197711299188
+    second: WaterAtlas_7
+  - first:
+      213: -8286792583051416683
+    second: WaterAtlas_8
+  - first:
+      213: 3943081627284769872
+    second: WaterAtlas_9
+  - first:
+      213: -7393347398644623905
+    second: WaterAtlas_10
+  - first:
+      213: -6862381861380043670
+    second: WaterAtlas_11
+  - first:
+      213: -7693534643525800218
+    second: WaterAtlas_12
+  - first:
+      213: -2159705354281044340
+    second: WaterAtlas_13
+  - first:
+      213: -4817352242774111820
+    second: WaterAtlas_14
+  - first:
+      213: -7402258221076529179
+    second: WaterAtlas_15
+  - first:
+      213: -2750650230210530021
+    second: WaterAtlas_16
+  - first:
+      213: -8449734076278819022
+    second: WaterAtlas_17
+  - first:
+      213: -759446421587454689
+    second: WaterAtlas_18
+  - first:
+      213: 3669309772092637663
+    second: WaterAtlas_19
+  - first:
+      213: -5833897588628058898
+    second: WaterAtlas_20
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WaterAtlas_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1254
+        height: 1245
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08e0c76ebd2192510800000000000000
+      internalID: 1524770684515651200
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_1
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 1221
+        width: 44
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 481ee5f24fc18eda0800000000000000
+      internalID: -5915446275458801276
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_2
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 1211
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3a390d21a581f860800000000000000
+      internalID: 7561972176623581759
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_3
+      rect:
+        serializedVersion: 2
+        x: 790
+        y: 1215
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ec5ac356b9bc0e80800000000000000
+      internalID: -8210983827862299418
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_4
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 1186
+        width: 21
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e158fd051da8a0fd0800000000000000
+      internalID: -2374933221874891490
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_5
+      rect:
+        serializedVersion: 2
+        x: 1073
+        y: 1223
+        width: 84
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b89eb5e7df9f57f70800000000000000
+      internalID: 9184521882233989515
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_6
+      rect:
+        serializedVersion: 2
+        x: 354
+        y: 1197
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c15b48b420919c9a0800000000000000
+      internalID: -6212406713333271268
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_7
+      rect:
+        serializedVersion: 2
+        x: 551
+        y: 1196
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 472277f06d8a15650800000000000000
+      internalID: 6219938197711299188
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_8
+      rect:
+        serializedVersion: 2
+        x: 683
+        y: 1200
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59be0ef0d066ffc80800000000000000
+      internalID: -8286792583051416683
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1139
+        width: 5
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05c8da249d3a8b630800000000000000
+      internalID: 3943081627284769872
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 821
+        width: 102
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd59aba66bd856990800000000000000
+      internalID: -7393347398644623905
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_11
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 700
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6ccb573e0ce3c0a0800000000000000
+      internalID: -6862381861380043670
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 518
+        width: 15
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6eeab79f0031b3590800000000000000
+      internalID: -7693534643525800218
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_13
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 166
+        width: 5
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c86b1924c6f2702e0800000000000000
+      internalID: -2159705354281044340
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_14
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 7
+        width: 393
+        height: 286
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b9848b98a3552db0800000000000000
+      internalID: -4817352242774111820
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_15
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 7
+        width: 45
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5efb405ed55e54990800000000000000
+      internalID: -7402258221076529179
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_16
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 5
+        width: 28
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1574fe603ab3d9d0800000000000000
+      internalID: -2750650230210530021
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_17
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 13
+        width: 28
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23733e050a38cba80800000000000000
+      internalID: -8449734076278819022
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_18
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 12
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f159657d087e575f0800000000000000
+      internalID: -759446421587454689
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_19
+      rect:
+        serializedVersion: 2
+        x: 914
+        y: 0
+        width: 188
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd183700cc10ce230800000000000000
+      internalID: 3669309772092637663
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterAtlas_20
+      rect:
+        serializedVersion: 2
+        x: 1114
+        y: 15
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eec01dd6d05d90fa0800000000000000
+      internalID: -5833897588628058898
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaterAtlas_0: 1524770684515651200
+      WaterAtlas_1: -5915446275458801276
+      WaterAtlas_10: -7393347398644623905
+      WaterAtlas_11: -6862381861380043670
+      WaterAtlas_12: -7693534643525800218
+      WaterAtlas_13: -2159705354281044340
+      WaterAtlas_14: -4817352242774111820
+      WaterAtlas_15: -7402258221076529179
+      WaterAtlas_16: -2750650230210530021
+      WaterAtlas_17: -8449734076278819022
+      WaterAtlas_18: -759446421587454689
+      WaterAtlas_19: 3669309772092637663
+      WaterAtlas_2: 7561972176623581759
+      WaterAtlas_20: -5833897588628058898
+      WaterAtlas_3: -8210983827862299418
+      WaterAtlas_4: -2374933221874891490
+      WaterAtlas_5: 9184521882233989515
+      WaterAtlas_6: -6212406713333271268
+      WaterAtlas_7: 6219938197711299188
+      WaterAtlas_8: -8286792583051416683
+      WaterAtlas_9: 3943081627284769872
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

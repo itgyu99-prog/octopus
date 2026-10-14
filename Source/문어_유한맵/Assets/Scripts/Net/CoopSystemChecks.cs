@@ -13,6 +13,7 @@ namespace OctopusSurvivors
     public sealed class CoopSystemChecks : MonoBehaviour
     {
         bool host, solo, relay, started, ready, guestReady, registered, done, finishRequested;
+        bool sawGiantVisual;
         int guestMovementChecks;
         float deadline, nextPick;
         int observedPending = -1;
@@ -70,6 +71,8 @@ namespace OctopusSurvivors
                     NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("revision.done",(sender,reader)=>finishRequested=true);
                     if(relay&&host) System.IO.File.WriteAllText(Application.dataPath+"/../revision-relay-code.txt",RelaySession.JoinCode);
                 }
+                if(!host && !sawGiantVisual && UnityEngine.Object.FindObjectsByType<GiantMonsterVisual>(FindObjectsInactive.Exclude).Length>=5)
+                {sawGiantVisual=true;Capture("giant-monsters-client");Debug.Log("GIANT CLIENT SNAPSHOT PASS: all five species visible");}
                 if(!s.IsPlaying)
                 {
                     byte selected=host?s.HostElement.Value:s.GuestElement.Value;
@@ -114,7 +117,7 @@ namespace OctopusSurvivors
                             guestMovementChecks++;guestMoving=false;
                         }
                     }
-                    if(finishRequested&&guestMovementChecks==4){Debug.Log("COOP CLIENT PASS");done=true;Application.Quit(0);}
+                    if(finishRequested&&guestMovementChecks==4){Check(sawGiantVisual,"giant visual snapshots received");Debug.Log("COOP CLIENT PASS");done=true;Application.Quit(0);}
                 }
             }
             catch(Exception e){Debug.LogError("COOP CHECK FAILED: "+e);done=true;Application.Quit(2);}
@@ -225,6 +228,27 @@ namespace OctopusSurvivors
             p.Slot0.Value=savedSlots[0];p.Slot1.Value=savedSlots[1];p.Slot2.Value=savedSlots[2];p.Slot3.Value=savedSlots[3];
             ResetField(s);
             TestAbilities(s,p);
+            ResetField(s);
+            GiantCombatChecks.Run(s,p);
+            ResetField(s);
+            for(int i=0;i<5;i++)
+            {
+                var d=GiantMonsterDefinition.Find(i+1);
+                var e=Target(s,p.Pos+new Vector2((i-2)*3.4f,3.5f));
+                e.Giant=d;e.Size=.8f*d.sizeMultiplier;e.Hp=e.MaxHp=100000;
+                e.StunTime=0;e.GiantState=GiantState.PrepareAttack;e.SkillTime=5;e.SkillPoint=Vector2.down;e.Damage=0;
+            }
+            yield return Seconds(.6f);Capture("giant-monsters");
+            s.CastBasicAbility(p,ElementId.Water,3);
+            yield return Seconds(.22f);Capture("water-hd");
+            float vfxStart=Time.realtimeSinceStartup;int vfxFrames=0;
+            while(Time.realtimeSinceStartup-vfxStart<2f)
+            {
+                if(vfxFrames%15==0)s.CastBasicAbility(p,ElementId.Water,3);
+                vfxFrames++;yield return null;
+            }
+            Debug.Log("VFX LIVE SAMPLE: "+vfxFrames+" frames / "+(Time.realtimeSinceStartup-vfxStart).ToString("F2")+" seconds, repeated water + five giants");
+
             ResetField(s);
             for(int i=0;i<GameplayRules.BasicElements.Length;i++)
             {

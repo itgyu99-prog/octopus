@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eb10792b41257e41844b67cbea9185d, type: 3}
+  m_Name: Giant5
+  m_EditorClassIdentifier: Assembly-CSharp::OctopusSurvivors.GiantMonsterDefinition
+  id: 5
+  displayName: "\uAC70\uB300 \uC131\uAC8C"
+  attackPattern: 4
+  unlockStage: 11
+  spawnWeight: 1
+  hpMultiplier: 15
+  damageMultiplier: 2
+  speedMultiplier: 0.5
+  sizeMultiplier: 3.5
+  attackRange: 2.6
+  attackCooldown: 3.5
+  prepareTime: 0.8
+  recoveryTime: 0.8
+  chargeSpeed: 12
+  chargeDistance: 8
+  projectileSpeed: 7
+  projectileDistance: 9
+  projectileCount: 5
+  enragedHpRatio: 0.4
+  defenseDamageMultiplier: 0.3
+  knockbackMultiplier: 0.18
+  defenseDuration: 2.5
+  counterCooldown: 0.8
+  experienceReward: 10
+  prefab: {fileID: 2951393554874164823, guid: 03f1032d238dfac46921eb94cd97cf93, type: 3}
+  idleFrames: []
+  attackFrames: []
+  animator: {fileID: 0}

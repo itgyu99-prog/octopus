@@ -5,3 +5,5 @@
 - Relay 검사에서는 호스트가 참가 코드 파일을 쓰는 동안 참가자가 읽으면 잠시 재시도하도록 처리했다. 실제 게임의 코드 입력 방식과는 별개인 자동 검증용 파일이다.
 - 로그는 프로젝트 `Logs/system-*.log`, 빌드는 `Build/Validation`·`Build/Windows`를 재사용한다. 어제의 실패 로그와 이번 실패 로그는 보존한다. 최신 결과는 `docs/검증/README.md`에서 관리한다.
 - 최종 결과: 1인·LAN 2인·실제 Relay 2인 통과. 개발/일반 Windows 빌드, 데이터·맵 검사 통과. 일반 빌드의 게임 로직 DLL은 갱신됐으며 자동 검사 코드는 일반 빌드에서 제외된다.
+
+- 2026-10-14: CombatVisualChecks/GiantCombatChecks 추가. 고정 combat-*.log와 Build/Validation에서 거대 5종 서버 전투·스폰·2인 표시 및 고해상도 VFX 검증. 최종 결과/에셋 설정은 docs/검증/README.md.

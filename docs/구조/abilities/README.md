@@ -10,8 +10,10 @@
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementEffects.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementEffectVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementRules.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/HdSpellVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/PlannedAbilities.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/SpecialAbilities.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/WaterVfx.cs`
 
 ## 관련 파일
 
@@ -25,16 +27,26 @@
 - `Source/문어_유한맵/Assets/Resources/Art/Special_Meteorite.bytes`
 - `Source/문어_유한맵/Assets/Resources/Art/Special_Spirit.bytes`
 - `Source/문어_유한맵/Assets/Resources/GameplayRules.json`
+- `Source/문어_유한맵/Assets/Resources/Vfx/ComboAtlas.png`
+- `Source/문어_유한맵/Assets/Resources/Vfx/ComboAtlas.png.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/DetailAtlas.png`
+- `Source/문어_유한맵/Assets/Resources/Vfx/DetailAtlas.png.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/ElementAtlas.png`
+- `Source/문어_유한맵/Assets/Resources/Vfx/ElementAtlas.png.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/LegacyAtlas.png`
+- `Source/문어_유한맵/Assets/Resources/Vfx/LegacyAtlas.png.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/WaterAtlas.png`
+- `Source/문어_유한맵/Assets/Resources/Vfx/WaterAtlas.png.meta`
 - `Source/문어_유한맵/Assets/Scripts/Core/GameplayRules.cs`
 - `Source/문어_유한맵/Assets/Scripts/Player/OctopusPlayer.cs`
 - `Source/문어_유한맵/Assets/Scripts/UI/CombinePanel.cs`
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `SpawnAllySpirit` — 1780행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnPiercingMeteor` — 1789행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CastBlackFlame` — 1810행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `InfectFlame` — 1845행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnAllySpirit` — 1802행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnPiercingMeteor` — 1811행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CastBlackFlame` — 1832행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `InfectFlame` — 1867행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Player/OctopusPlayer.cs` 진입 함수
 

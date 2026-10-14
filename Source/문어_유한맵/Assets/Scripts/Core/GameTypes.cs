@@ -112,7 +112,7 @@ namespace OctopusSurvivors
         AllySpirit = 69,
         SodaWave = 71, LemonShot = 72, FruitTree = 73, Fruit = 74,
         ChainEmitter = 75, ChainArc = 76, FlameAura = 77, ThornEmitter = 78, CurrentEmitter = 79,
-        Mist = 80, WaterEmitter = 81, RadialCurrent = 82,
+        Mist = 80, WaterEmitter = 81, RadialCurrent = 82, WaterImpact = 83, GiantSpike = 84,
         PiercingMeteor = 70
     }
 

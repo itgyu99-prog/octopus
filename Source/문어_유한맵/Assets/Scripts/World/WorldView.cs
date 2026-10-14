@@ -55,7 +55,7 @@ namespace OctopusSurvivors
                 _views[id] = sr;
             }
 
-            sr.sprite = kind == ActorKind.Enemy ? RuntimeArt.ElementMonster((ElementId)Mathf.RoundToInt(duration)) : SpriteFor(kind);
+            sr.sprite = kind == ActorKind.Enemy ? (duration < 1000 ? RuntimeArt.ElementMonster((ElementId)Mathf.RoundToInt(duration)) : null) : SpriteFor(kind);
             sr.color = kind == ActorKind.Enemy && extra == 0 ? Color.white : ColorFor(kind, extra);
             sr.sortingOrder = OrderFor(kind);
             float world = Mathf.Max(0.15f, size);
@@ -67,6 +67,7 @@ namespace OctopusSurvivors
             }
             else
                 _floatingPickups.Remove(id);
+            if (kind == ActorKind.GiantSpike) world *= 2.5f;
             if (kind == ActorKind.Statue)
                 world *= 1.4f;
             bool hit = kind == ActorKind.Enemy || kind == ActorKind.Boss
@@ -87,7 +88,7 @@ namespace OctopusSurvivors
             else
             {
                 sr.transform.localScale = Vector3.one * world;
-                if (kind == ActorKind.Shockwave || ElementEffectVisual.IsDirectional(kind))
+                if (kind == ActorKind.Shockwave || kind == ActorKind.GiantSpike || ElementEffectVisual.IsDirectional(kind))
                     sr.transform.rotation = Quaternion.Euler(0f, 0f, extra / 255f * 360f);
                 else
                     sr.transform.rotation = Quaternion.identity;
@@ -103,11 +104,36 @@ namespace OctopusSurvivors
                 _bossPos = pos;
             }
 
-            if (ElementEffectVisual.Supports(kind) || kind == ActorKind.Enemy || kind == ActorKind.Boss)
+            if (!HdSpellVisual.Supports(kind) && (ElementEffectVisual.Supports(kind) || kind == ActorKind.Enemy || kind == ActorKind.Boss))
             {
                 var effect = sr.GetComponent<ElementEffectVisual>() ?? sr.gameObject.AddComponent<ElementEffectVisual>();
                 effect.Configure(kind, size, extra, age, duration);
                 if (ElementEffectVisual.Supports(kind)) sr.enabled = false;
+            }
+
+            if (!_target.ContainsKey(id)) sr.transform.position = pos;
+            if (kind == ActorKind.Enemy && duration >= 1000)
+            {
+                var giant = sr.GetComponent<GiantMonsterVisual>() ?? sr.gameObject.AddComponent<GiantMonsterVisual>();
+                giant.Configure(duration, extra);
+                sr.enabled = false;
+            }
+            if (kind == ActorKind.Enemy || kind == ActorKind.Boss)
+            {
+                var impact = sr.GetComponent<ElementHitVisual>() ?? sr.gameObject.AddComponent<ElementHitVisual>();
+                impact.Configure(extra, duration < 1000 ? (ElementId)Mathf.RoundToInt(duration) : ElementId.None);
+            }
+            if (HdSpellVisual.Supports(kind))
+            {
+                var hd = sr.GetComponent<HdSpellVisual>() ?? sr.gameObject.AddComponent<HdSpellVisual>();
+                hd.Configure(kind, age, duration);
+                sr.enabled = false;
+            }
+            if (WaterVfx.Supports(kind))
+            {
+                var water = sr.GetComponent<WaterVfx>() ?? sr.gameObject.AddComponent<WaterVfx>();
+                water.Configure(kind);
+                sr.enabled = false;
             }
 
             UpdateHpBar(sr, kind == ActorKind.Enemy || kind == ActorKind.Boss, hp, kind == ActorKind.Boss);
@@ -184,6 +210,7 @@ namespace OctopusSurvivors
         {
             switch (kind)
             {
+                case ActorKind.GiantSpike: return GiantMonsterVisual.Spike;
                 case ActorKind.PickupFire: return RuntimeArt.ElementIcon(ElementId.Fire);
                 case ActorKind.PickupWater: return RuntimeArt.ElementIcon(ElementId.Water);
                 case ActorKind.PickupGrass: return RuntimeArt.ElementIcon(ElementId.Grass);

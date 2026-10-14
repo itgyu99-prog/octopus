@@ -41,12 +41,18 @@
     "monsters": {
       "title": "몬스터",
       "purpose": "일반 적 생성·이동, 보스 패턴·처치",
-      "primary": [],
+      "primary": [
+        "Assets/Scripts/World/GiantMonsterDefinition.cs",
+        "Assets/Scripts/World/GiantMonsters.cs",
+        "Assets/Scripts/World/GiantMonsterVisual.cs"
+      ],
       "related": [
         "Assets/Scripts/Core/GameConfig.cs",
         "Assets/Scripts/Core/GameTypes.cs",
         "Assets/Scripts/World/WorldView.cs",
-        "Assets/Scripts/Core/RuntimeArt.cs"
+        "Assets/Scripts/Core/RuntimeArt.cs",
+        "Assets/Resources/Monsters/*",
+        "Assets/Editor/GiantMonsterSetup.cs"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
@@ -101,7 +107,8 @@
         "Assets/Scripts/Player/OctopusPlayer.cs",
         "Assets/Scripts/UI/CombinePanel.cs",
         "Assets/Resources/Art/Element_*.bytes",
-        "Assets/Resources/Art/Special_*.bytes"
+        "Assets/Resources/Art/Special_*.bytes",
+        "Assets/Resources/Vfx/*"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
@@ -224,7 +231,10 @@
       "purpose": "Unity 에디터 검사, 협동 검사, 빌드·배포 설정",
       "primary": [
         "Assets/Editor/*.cs",
-        "Assets/Scripts/Net/CoopSystemChecks.cs"
+        "Assets/Scripts/Net/CoopSystemChecks.cs",
+        "Assets/Editor/CombatVisualChecks.cs",
+        "Assets/Editor/GiantMonsterSetup.cs",
+        "Assets/Scripts/Net/GiantCombatChecks.cs"
       ],
       "related": [
         "ProjectSettings/ProjectVersion.txt",

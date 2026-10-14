@@ -6,10 +6,35 @@
 
 ## 주 담당 파일
 
-- 현재 독립 파일 없음. 아래 공통 파일의 진입 함수를 사용한다.
+- `Source/문어_유한맵/Assets/Scripts/World/GiantMonsterDefinition.cs`
+- `Source/문어_유한맵/Assets/Scripts/World/GiantMonsters.cs`
+- `Source/문어_유한맵/Assets/Scripts/World/GiantMonsterVisual.cs`
 
 ## 관련 파일
 
+- `Source/문어_유한맵/Assets/Editor/GiantMonsterSetup.cs`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant1.asset`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant1.asset.meta`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant1.prefab`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant1.prefab.meta`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant2.asset`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant2.asset.meta`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant2.prefab`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant2.prefab.meta`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant3.asset`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant3.asset.meta`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant3.prefab`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant3.prefab.meta`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant4.asset`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant4.asset.meta`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant4.prefab`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant4.prefab.meta`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant5.asset`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant5.asset.meta`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant5.prefab`
+- `Source/문어_유한맵/Assets/Resources/Monsters/Giant5.prefab.meta`
+- `Source/문어_유한맵/Assets/Resources/Monsters/GiantAtlas.png`
+- `Source/문어_유한맵/Assets/Resources/Monsters/GiantAtlas.png.meta`
 - `Source/문어_유한맵/Assets/Scripts/Core/GameConfig.cs`
 - `Source/문어_유한맵/Assets/Scripts/Core/GameTypes.cs`
 - `Source/문어_유한맵/Assets/Scripts/Core/RuntimeArt.cs`
@@ -17,19 +42,19 @@
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `TickEnemy` — 815행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `EnemyContact` — 890행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnWave` — 969행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnBoss` — 985행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ClearLiveBosses` — 369행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `OnBossDefeated` — 995행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `KillEnemy` — 1426행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickBossPattern` — 1523행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ChaseBoss` — 1539행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickChargeBoss` — 1549행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickBulletBoss` — 1613행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickAreaBoss` — 1634행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickBossBullet` — 1701행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickEnemy` — 823행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `EnemyContact` — 900행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnWave` — 980행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnBoss` — 997행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ClearLiveBosses` — 373행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `OnBossDefeated` — 1007행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `KillEnemy` — 1445행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickBossPattern` — 1545행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ChaseBoss` — 1561행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickChargeBoss` — 1571행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickBulletBoss` — 1635행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickAreaBoss` — 1656행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickBossBullet` — 1723행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

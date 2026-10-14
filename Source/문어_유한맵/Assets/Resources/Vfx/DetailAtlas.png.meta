@@ -1,0 +1,2678 @@
+fileFormatVersion: 2
+guid: bab8162a9fe4eda49bdb9fa3f6705777
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8956941039855080798
+    second: DetailAtlas_0
+  - first:
+      213: -6063902130978978107
+    second: DetailAtlas_1
+  - first:
+      213: -2300279624072581294
+    second: DetailAtlas_2
+  - first:
+      213: -7667329136658558529
+    second: DetailAtlas_3
+  - first:
+      213: -2301733425396883541
+    second: DetailAtlas_4
+  - first:
+      213: -7064691885182747466
+    second: DetailAtlas_5
+  - first:
+      213: -5656172344590208004
+    second: DetailAtlas_6
+  - first:
+      213: 4664455332671603148
+    second: DetailAtlas_7
+  - first:
+      213: 761711436602485449
+    second: DetailAtlas_8
+  - first:
+      213: -7594491081560030846
+    second: DetailAtlas_9
+  - first:
+      213: -622670758335758542
+    second: DetailAtlas_10
+  - first:
+      213: -6791938358518830950
+    second: DetailAtlas_11
+  - first:
+      213: -8864368301408144250
+    second: DetailAtlas_12
+  - first:
+      213: 874566517334169588
+    second: DetailAtlas_13
+  - first:
+      213: -2408308497126586416
+    second: DetailAtlas_14
+  - first:
+      213: -1501866863643696096
+    second: DetailAtlas_15
+  - first:
+      213: 9130271369546831928
+    second: DetailAtlas_16
+  - first:
+      213: -5270826569219259510
+    second: DetailAtlas_17
+  - first:
+      213: 7631774047823824222
+    second: DetailAtlas_18
+  - first:
+      213: 3814357500522157547
+    second: DetailAtlas_19
+  - first:
+      213: -1870196406736594709
+    second: DetailAtlas_20
+  - first:
+      213: 7386030276933859201
+    second: DetailAtlas_21
+  - first:
+      213: 7575037082045443376
+    second: DetailAtlas_22
+  - first:
+      213: -6037978768208565279
+    second: DetailAtlas_23
+  - first:
+      213: -7355514088405572865
+    second: DetailAtlas_24
+  - first:
+      213: -8796167619572966973
+    second: DetailAtlas_25
+  - first:
+      213: 7871965570960417532
+    second: DetailAtlas_26
+  - first:
+      213: -7599970944921346061
+    second: DetailAtlas_27
+  - first:
+      213: -9110375045501648235
+    second: DetailAtlas_28
+  - first:
+      213: -7764505928890788045
+    second: DetailAtlas_29
+  - first:
+      213: -7327447895092186956
+    second: DetailAtlas_30
+  - first:
+      213: -193172826216823353
+    second: DetailAtlas_31
+  - first:
+      213: -2576151216432726917
+    second: DetailAtlas_32
+  - first:
+      213: 5514531679547948733
+    second: DetailAtlas_33
+  - first:
+      213: 6066437962046284636
+    second: DetailAtlas_34
+  - first:
+      213: -8735176201492754471
+    second: DetailAtlas_35
+  - first:
+      213: 7184230438011922725
+    second: DetailAtlas_36
+  - first:
+      213: -6276689240829108747
+    second: DetailAtlas_37
+  - first:
+      213: -1618847639258452785
+    second: DetailAtlas_38
+  - first:
+      213: -3666850772461155796
+    second: DetailAtlas_39
+  - first:
+      213: 8210616432529739315
+    second: DetailAtlas_40
+  - first:
+      213: 100279485502565091
+    second: DetailAtlas_41
+  - first:
+      213: -4053279687670007954
+    second: DetailAtlas_42
+  - first:
+      213: 3098304126930465253
+    second: DetailAtlas_43
+  - first:
+      213: 4930327357916921799
+    second: DetailAtlas_44
+  - first:
+      213: -2427496327209512655
+    second: DetailAtlas_45
+  - first:
+      213: 415329376073006284
+    second: DetailAtlas_46
+  - first:
+      213: 8683682867707969774
+    second: DetailAtlas_47
+  - first:
+      213: -818049543960987161
+    second: DetailAtlas_48
+  - first:
+      213: 156434762979686872
+    second: DetailAtlas_49
+  - first:
+      213: 4589135306333180848
+    second: DetailAtlas_50
+  - first:
+      213: -972622240913618738
+    second: DetailAtlas_51
+  - first:
+      213: 5958081818271376233
+    second: DetailAtlas_52
+  - first:
+      213: -3761168373439690396
+    second: DetailAtlas_53
+  - first:
+      213: -3142790356053935205
+    second: DetailAtlas_54
+  - first:
+      213: 2632062235851497994
+    second: DetailAtlas_55
+  - first:
+      213: -2625652383577663939
+    second: DetailAtlas_56
+  - first:
+      213: -3206755164315991159
+    second: DetailAtlas_57
+  - first:
+      213: 8485509263861193369
+    second: DetailAtlas_58
+  - first:
+      213: 6418809860397881422
+    second: DetailAtlas_59
+  - first:
+      213: 8778277482881144229
+    second: DetailAtlas_60
+  - first:
+      213: -8714573349168405817
+    second: DetailAtlas_61
+  - first:
+      213: -4770559094573895325
+    second: DetailAtlas_62
+  - first:
+      213: 5663377260000631965
+    second: DetailAtlas_63
+  - first:
+      213: -7205741067039248538
+    second: DetailAtlas_64
+  - first:
+      213: -1829508041749755214
+    second: DetailAtlas_65
+  - first:
+      213: -155287097372141679
+    second: DetailAtlas_66
+  - first:
+      213: 1683214296891207467
+    second: DetailAtlas_67
+  - first:
+      213: 4803760701424756972
+    second: DetailAtlas_68
+  - first:
+      213: 1066171793318724291
+    second: DetailAtlas_69
+  - first:
+      213: -1974788099258256333
+    second: DetailAtlas_70
+  - first:
+      213: -1734604137497646564
+    second: DetailAtlas_71
+  - first:
+      213: 7429396850375403778
+    second: DetailAtlas_72
+  - first:
+      213: 6298890840834161616
+    second: DetailAtlas_73
+  - first:
+      213: -7448007746779389513
+    second: DetailAtlas_74
+  - first:
+      213: 6606299639764783750
+    second: DetailAtlas_75
+  - first:
+      213: 5930323336192795608
+    second: DetailAtlas_76
+  - first:
+      213: 3552280672737439760
+    second: DetailAtlas_77
+  - first:
+      213: 8231769586281794415
+    second: DetailAtlas_78
+  - first:
+      213: -5587980047583249030
+    second: DetailAtlas_79
+  - first:
+      213: 6041180479017217566
+    second: DetailAtlas_80
+  - first:
+      213: 1293881200540727706
+    second: DetailAtlas_81
+  - first:
+      213: 1218311467701796091
+    second: DetailAtlas_82
+  - first:
+      213: -7017985963666226856
+    second: DetailAtlas_83
+  - first:
+      213: 8355193094944111361
+    second: DetailAtlas_84
+  - first:
+      213: -6430148571726916010
+    second: DetailAtlas_85
+  - first:
+      213: -4151284683443573816
+    second: DetailAtlas_86
+  - first:
+      213: -641291670256961422
+    second: DetailAtlas_87
+  - first:
+      213: -8039336127929534766
+    second: DetailAtlas_88
+  - first:
+      213: 7820500593880437977
+    second: DetailAtlas_89
+  - first:
+      213: -8135622141742466609
+    second: DetailAtlas_90
+  - first:
+      213: -6659530772219828220
+    second: DetailAtlas_91
+  - first:
+      213: -4782129623431609433
+    second: DetailAtlas_92
+  - first:
+      213: -1672757547390215819
+    second: DetailAtlas_93
+  - first:
+      213: 6643181016423275443
+    second: DetailAtlas_94
+  - first:
+      213: 2038772495668460649
+    second: DetailAtlas_95
+  - first:
+      213: 4386992795057820812
+    second: DetailAtlas_96
+  - first:
+      213: 5864339782151196581
+    second: DetailAtlas_97
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DetailAtlas_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 859
+        width: 307
+        height: 387
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e551eaa7b627d4c70800000000000000
+      internalID: 8956941039855080798
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1150
+        width: 33
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c6834ac321b8dba0800000000000000
+      internalID: -6063902130978978107
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_2
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 1146
+        width: 25
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25fa51b8ed3c310e0800000000000000
+      internalID: -2300279624072581294
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_3
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 1203
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb1d67106cc289590800000000000000
+      internalID: -7667329136658558529
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_4
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 1126
+        width: 128
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: baf539b05a99e00e0800000000000000
+      internalID: -2301733425396883541
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_5
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 1209
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bcf818292c25fd90800000000000000
+      internalID: -7064691885182747466
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_6
+      rect:
+        serializedVersion: 2
+        x: 313
+        y: 858
+        width: 349
+        height: 396
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf3ff44683d3181b0800000000000000
+      internalID: -5656172344590208004
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_7
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 1213
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc1419669697bb040800000000000000
+      internalID: 4664455332671603148
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_8
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 1181
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ca2b001484229a00800000000000000
+      internalID: 761711436602485449
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_9
+      rect:
+        serializedVersion: 2
+        x: 645
+        y: 1154
+        width: 31
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2810eb14992fa9690800000000000000
+      internalID: -7594491081560030846
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_10
+      rect:
+        serializedVersion: 2
+        x: 661
+        y: 858
+        width: 272
+        height: 376
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23fbf5d8e34db57f0800000000000000
+      internalID: -622670758335758542
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_11
+      rect:
+        serializedVersion: 2
+        x: 667
+        y: 1181
+        width: 17
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a98a2245c003eb1a0800000000000000
+      internalID: -6791938358518830950
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_12
+      rect:
+        serializedVersion: 2
+        x: 673
+        y: 1205
+        width: 19
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 684b55cceff6bf480800000000000000
+      internalID: -8864368301408144250
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_13
+      rect:
+        serializedVersion: 2
+        x: 717
+        y: 1197
+        width: 22
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f757262d95132c00800000000000000
+      internalID: 874566517334169588
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_14
+      rect:
+        serializedVersion: 2
+        x: 826
+        y: 1215
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d7073f7e28f39ed0800000000000000
+      internalID: -2408308497126586416
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_15
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 1175
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02466947b0c482be0800000000000000
+      internalID: -1501866863643696096
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_16
+      rect:
+        serializedVersion: 2
+        x: 924
+        y: 1183
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83812c4bf6d35be70800000000000000
+      internalID: 9130271369546831928
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_17
+      rect:
+        serializedVersion: 2
+        x: 928
+        y: 859
+        width: 324
+        height: 308
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a83cefc49234ad6b0800000000000000
+      internalID: -5270826569219259510
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_18
+      rect:
+        serializedVersion: 2
+        x: 930
+        y: 1197
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e558596cf0289e960800000000000000
+      internalID: 7631774047823824222
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_19
+      rect:
+        serializedVersion: 2
+        x: 932
+        y: 1169
+        width: 40
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be558f8ffe15fe430800000000000000
+      internalID: 3814357500522157547
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_20
+      rect:
+        serializedVersion: 2
+        x: 938
+        y: 1183
+        width: 60
+        height: 71
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be8d04cd64abb06e0800000000000000
+      internalID: -1870196406736594709
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_21
+      rect:
+        serializedVersion: 2
+        x: 938
+        y: 1187
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1873cec6763708660800000000000000
+      internalID: 7386030276933859201
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_22
+      rect:
+        serializedVersion: 2
+        x: 940
+        y: 1120
+        width: 28
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03deab38710ff1960800000000000000
+      internalID: 7575037082045443376
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_23
+      rect:
+        serializedVersion: 2
+        x: 989
+        y: 1213
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ebe3970d4ac43ca0800000000000000
+      internalID: -6037978768208565279
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_24
+      rect:
+        serializedVersion: 2
+        x: 993
+        y: 1185
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff2643468e6fbe990800000000000000
+      internalID: -7355514088405572865
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_25
+      rect:
+        serializedVersion: 2
+        x: 997
+        y: 1177
+        width: 61
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c95f82772cbde580800000000000000
+      internalID: -8796167619572966973
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_26
+      rect:
+        serializedVersion: 2
+        x: 1083
+        y: 1162
+        width: 45
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf26335baf6de3d60800000000000000
+      internalID: 7871965570960417532
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_27
+      rect:
+        serializedVersion: 2
+        x: 1101
+        y: 1165
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ff5ca421ba778690800000000000000
+      internalID: -7599970944921346061
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_28
+      rect:
+        serializedVersion: 2
+        x: 1109
+        y: 1180
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5928a4a3a22719180800000000000000
+      internalID: -9110375045501648235
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_29
+      rect:
+        serializedVersion: 2
+        x: 1131
+        y: 1173
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 337dc0ceefeee3490800000000000000
+      internalID: -7764505928890788045
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_30
+      rect:
+        serializedVersion: 2
+        x: 1145
+        y: 1171
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b0b8de36fcaf4a90800000000000000
+      internalID: -7327447895092186956
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_31
+      rect:
+        serializedVersion: 2
+        x: 1149
+        y: 1204
+        width: 24
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c586198656b15df0800000000000000
+      internalID: -193172826216823353
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_32
+      rect:
+        serializedVersion: 2
+        x: 1150
+        y: 1183
+        width: 41
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7c36d02e1caf3cd0800000000000000
+      internalID: -2576151216432726917
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_33
+      rect:
+        serializedVersion: 2
+        x: 1151
+        y: 1160
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbef716685d878c40800000000000000
+      internalID: 5514531679547948733
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_34
+      rect:
+        serializedVersion: 2
+        x: 1165
+        y: 1162
+        width: 50
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c53a6b36f21503450800000000000000
+      internalID: 6066437962046284636
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_35
+      rect:
+        serializedVersion: 2
+        x: 1212
+        y: 1169
+        width: 29
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9df0493968b66c680800000000000000
+      internalID: -8735176201492754471
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_36
+      rect:
+        serializedVersion: 2
+        x: 1214
+        y: 1189
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 529ef3a058383b360800000000000000
+      internalID: 7184230438011922725
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_37
+      rect:
+        serializedVersion: 2
+        x: 1214
+        y: 1140
+        width: 25
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fd5dda0468b4e8a0800000000000000
+      internalID: -6276689240829108747
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_38
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 1122
+        width: 21
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fcc258c26a2b889e0800000000000000
+      internalID: -1618847639258452785
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_39
+      rect:
+        serializedVersion: 2
+        x: 930
+        y: 1138
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2a061776aabc1dc0800000000000000
+      internalID: -3666850772461155796
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_40
+      rect:
+        serializedVersion: 2
+        x: 1021
+        y: 1137
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33e8be7c428f1f170800000000000000
+      internalID: 8210616432529739315
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_41
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1094
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3eaa3a729a3446100800000000000000
+      internalID: 100279485502565091
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_42
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 1102
+        width: 9
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e677f19699bdfb7c0800000000000000
+      internalID: -4053279687670007954
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_43
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 1110
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e131db10336ffa20800000000000000
+      internalID: 3098304126930465253
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_44
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 1104
+        width: 22
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cf370b2c9a0c6440800000000000000
+      internalID: 4930327357916921799
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_45
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 1092
+        width: 17
+        height: 39
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1319c1ba3fccf4ed0800000000000000
+      internalID: -2427496327209512655
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_46
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 1116
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cccbd95fddb83c500800000000000000
+      internalID: 415329376073006284
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_47
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 1108
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee001ef5f83a28870800000000000000
+      internalID: 8683682867707969774
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_48
+      rect:
+        serializedVersion: 2
+        x: 946
+        y: 1122
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e9f8832644b5a4f0800000000000000
+      internalID: -818049543960987161
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_49
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 1103
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d93ded8694cb2200800000000000000
+      internalID: 156434762979686872
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_50
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 1102
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b351303f32efaf30800000000000000
+      internalID: 4589135306333180848
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_51
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 1098
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec803bd993d8082f0800000000000000
+      internalID: -972622240913618738
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_52
+      rect:
+        serializedVersion: 2
+        x: 679
+        y: 1102
+        width: 13
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96367c0b8db5fa250800000000000000
+      internalID: 5958081818271376233
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_53
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 1094
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46981b8ba45adcbc0800000000000000
+      internalID: -3761168373439690396
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_54
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 1082
+        width: 26
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9bb1e782d09264d0800000000000000
+      internalID: -3142790356053935205
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_55
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 1082
+        width: 22
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0226a288a6f68420800000000000000
+      internalID: 2632062235851497994
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_56
+      rect:
+        serializedVersion: 2
+        x: 914
+        y: 1064
+        width: 22
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d361235811fcf8bd0800000000000000
+      internalID: -2625652383577663939
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_57
+      rect:
+        serializedVersion: 2
+        x: 930
+        y: 1078
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 983cb4d0b215f73d0800000000000000
+      internalID: -3206755164315991159
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_58
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 1059
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99a9bb2a7b592c570800000000000000
+      internalID: 8485509263861193369
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_59
+      rect:
+        serializedVersion: 2
+        x: 309
+        y: 1030
+        width: 22
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e485ac94f81341950800000000000000
+      internalID: 6418809860397881422
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_60
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 1020
+        width: 11
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a5d0f28cd4b2d970800000000000000
+      internalID: 8778277482881144229
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_61
+      rect:
+        serializedVersion: 2
+        x: 362
+        y: 1012
+        width: 19
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c22bb1f5bd9f0780800000000000000
+      internalID: -8714573349168405817
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_62
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 1016
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 361f9eb67c19bcdb0800000000000000
+      internalID: -4770559094573895325
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_63
+      rect:
+        serializedVersion: 2
+        x: 916
+        y: 1017
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9cdc53bc9b589e40800000000000000
+      internalID: 5663377260000631965
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_64
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 1000
+        width: 9
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66f6eab5da0100c90800000000000000
+      internalID: -7205741067039248538
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_65
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 1001
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ba09c111284c96e0800000000000000
+      internalID: -1829508041749755214
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_66
+      rect:
+        serializedVersion: 2
+        x: 317
+        y: 1004
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1979eea253f48ddf0800000000000000
+      internalID: -155287097372141679
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_67
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 992
+        width: 17
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2f2f072c7afb5710800000000000000
+      internalID: 1683214296891207467
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_68
+      rect:
+        serializedVersion: 2
+        x: 954
+        y: 998
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce8676218e26aa240800000000000000
+      internalID: 4803760701424756972
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_69
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 945
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c2cd42e89dcbce00800000000000000
+      internalID: 1066171793318724291
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_70
+      rect:
+        serializedVersion: 2
+        x: 303
+        y: 946
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 334fa05cfa42894e0800000000000000
+      internalID: -1974788099258256333
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_71
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 934
+        width: 20
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c1aa78e2ab27de7e0800000000000000
+      internalID: -1734604137497646564
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_72
+      rect:
+        serializedVersion: 2
+        x: 267
+        y: 927
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2092802a2158a1760800000000000000
+      internalID: 7429396850375403778
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_73
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 931
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0dbb1e6c8d72a6750800000000000000
+      internalID: 6298890840834161616
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_74
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 903
+        width: 11
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b16bd06a6c53a890800000000000000
+      internalID: -7448007746779389513
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_75
+      rect:
+        serializedVersion: 2
+        x: 633
+        y: 909
+        width: 9
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68298fb458a4eab50800000000000000
+      internalID: 6606299639764783750
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_76
+      rect:
+        serializedVersion: 2
+        x: 926
+        y: 933
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d32bf077adbc4250800000000000000
+      internalID: 5930323336192795608
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_77
+      rect:
+        serializedVersion: 2
+        x: 956
+        y: 923
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0103009737c3c4130800000000000000
+      internalID: 3552280672737439760
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_78
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 887
+        width: 25
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6bc03f23de1d3270800000000000000
+      internalID: 8231769586281794415
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_79
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 907
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7d74dbc0c18372b0800000000000000
+      internalID: -5587980047583249030
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_80
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 907
+        width: 10
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1e68db53a596d350800000000000000
+      internalID: 6041180479017217566
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_81
+      rect:
+        serializedVersion: 2
+        x: 932
+        y: 915
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9939cbb81ac4f110800000000000000
+      internalID: 1293881200540727706
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_82
+      rect:
+        serializedVersion: 2
+        x: 303
+        y: 899
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfc762233df48e010800000000000000
+      internalID: 1218311467701796091
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_83
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 883
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8514ffce2fa1b9e90800000000000000
+      internalID: -7017985963666226856
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_84
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 890
+        width: 9
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10bb0f52adb93f370800000000000000
+      internalID: 8355193094944111361
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_85
+      rect:
+        serializedVersion: 2
+        x: 557
+        y: 871
+        width: 27
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6565b3141f583c6a0800000000000000
+      internalID: -6430148571726916010
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_86
+      rect:
+        serializedVersion: 2
+        x: 938
+        y: 899
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8cb63d9239ca366c0800000000000000
+      internalID: -4151284683443573816
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_87
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 873
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 278bae4af9ca917f0800000000000000
+      internalID: -641291670256961422
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_88
+      rect:
+        serializedVersion: 2
+        x: 727
+        y: 861
+        width: 12
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d6bbc8c26a8e6090800000000000000
+      internalID: -8039336127929534766
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_89
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1254
+        height: 867
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d499f7fadff78c60800000000000000
+      internalID: 7820500593880437977
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_90
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 853
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc933a634c6781f80800000000000000
+      internalID: -8135622141742466609
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_91
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 853
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 408ed0fdb089493a0800000000000000
+      internalID: -6659530772219828220
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_92
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 853
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a38c7db17672adb0800000000000000
+      internalID: -4782129623431609433
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_93
+      rect:
+        serializedVersion: 2
+        x: 504
+        y: 859
+        width: 14
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 579d3709fdb29c8e0800000000000000
+      internalID: -1672757547390215819
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_94
+      rect:
+        serializedVersion: 2
+        x: 547
+        y: 843
+        width: 19
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3bb1786ffe1513c50800000000000000
+      internalID: 6643181016423275443
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_95
+      rect:
+        serializedVersion: 2
+        x: 591
+        y: 858
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96cb72e68cc2b4c10800000000000000
+      internalID: 2038772495668460649
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_96
+      rect:
+        serializedVersion: 2
+        x: 1238
+        y: 325
+        width: 11
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c849e9d24bab1ec30800000000000000
+      internalID: 4386992795057820812
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DetailAtlas_97
+      rect:
+        serializedVersion: 2
+        x: 1240
+        y: 290
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5af405516f1526150800000000000000
+      internalID: 5864339782151196581
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      DetailAtlas_0: 8956941039855080798
+      DetailAtlas_1: -6063902130978978107
+      DetailAtlas_10: -622670758335758542
+      DetailAtlas_11: -6791938358518830950
+      DetailAtlas_12: -8864368301408144250
+      DetailAtlas_13: 874566517334169588
+      DetailAtlas_14: -2408308497126586416
+      DetailAtlas_15: -1501866863643696096
+      DetailAtlas_16: 9130271369546831928
+      DetailAtlas_17: -5270826569219259510
+      DetailAtlas_18: 7631774047823824222
+      DetailAtlas_19: 3814357500522157547
+      DetailAtlas_2: -2300279624072581294
+      DetailAtlas_20: -1870196406736594709
+      DetailAtlas_21: 7386030276933859201
+      DetailAtlas_22: 7575037082045443376
+      DetailAtlas_23: -6037978768208565279
+      DetailAtlas_24: -7355514088405572865
+      DetailAtlas_25: -8796167619572966973
+      DetailAtlas_26: 7871965570960417532
+      DetailAtlas_27: -7599970944921346061
+      DetailAtlas_28: -9110375045501648235
+      DetailAtlas_29: -7764505928890788045
+      DetailAtlas_3: -7667329136658558529
+      DetailAtlas_30: -7327447895092186956
+      DetailAtlas_31: -193172826216823353
+      DetailAtlas_32: -2576151216432726917
+      DetailAtlas_33: 5514531679547948733
+      DetailAtlas_34: 6066437962046284636
+      DetailAtlas_35: -8735176201492754471
+      DetailAtlas_36: 7184230438011922725
+      DetailAtlas_37: -6276689240829108747
+      DetailAtlas_38: -1618847639258452785
+      DetailAtlas_39: -3666850772461155796
+      DetailAtlas_4: -2301733425396883541
+      DetailAtlas_40: 8210616432529739315
+      DetailAtlas_41: 100279485502565091
+      DetailAtlas_42: -4053279687670007954
+      DetailAtlas_43: 3098304126930465253
+      DetailAtlas_44: 4930327357916921799
+      DetailAtlas_45: -2427496327209512655
+      DetailAtlas_46: 415329376073006284
+      DetailAtlas_47: 8683682867707969774
+      DetailAtlas_48: -818049543960987161
+      DetailAtlas_49: 156434762979686872
+      DetailAtlas_5: -7064691885182747466
+      DetailAtlas_50: 4589135306333180848
+      DetailAtlas_51: -972622240913618738
+      DetailAtlas_52: 5958081818271376233
+      DetailAtlas_53: -3761168373439690396
+      DetailAtlas_54: -3142790356053935205
+      DetailAtlas_55: 2632062235851497994
+      DetailAtlas_56: -2625652383577663939
+      DetailAtlas_57: -3206755164315991159
+      DetailAtlas_58: 8485509263861193369
+      DetailAtlas_59: 6418809860397881422
+      DetailAtlas_6: -5656172344590208004
+      DetailAtlas_60: 8778277482881144229
+      DetailAtlas_61: -8714573349168405817
+      DetailAtlas_62: -4770559094573895325
+      DetailAtlas_63: 5663377260000631965
+      DetailAtlas_64: -7205741067039248538
+      DetailAtlas_65: -1829508041749755214
+      DetailAtlas_66: -155287097372141679
+      DetailAtlas_67: 1683214296891207467
+      DetailAtlas_68: 4803760701424756972
+      DetailAtlas_69: 1066171793318724291
+      DetailAtlas_7: 4664455332671603148
+      DetailAtlas_70: -1974788099258256333
+      DetailAtlas_71: -1734604137497646564
+      DetailAtlas_72: 7429396850375403778
+      DetailAtlas_73: 6298890840834161616
+      DetailAtlas_74: -7448007746779389513
+      DetailAtlas_75: 6606299639764783750
+      DetailAtlas_76: 5930323336192795608
+      DetailAtlas_77: 3552280672737439760
+      DetailAtlas_78: 8231769586281794415
+      DetailAtlas_79: -5587980047583249030
+      DetailAtlas_8: 761711436602485449
+      DetailAtlas_80: 6041180479017217566
+      DetailAtlas_81: 1293881200540727706
+      DetailAtlas_82: 1218311467701796091
+      DetailAtlas_83: -7017985963666226856
+      DetailAtlas_84: 8355193094944111361
+      DetailAtlas_85: -6430148571726916010
+      DetailAtlas_86: -4151284683443573816
+      DetailAtlas_87: -641291670256961422
+      DetailAtlas_88: -8039336127929534766
+      DetailAtlas_89: 7820500593880437977
+      DetailAtlas_9: -7594491081560030846
+      DetailAtlas_90: -8135622141742466609
+      DetailAtlas_91: -6659530772219828220
+      DetailAtlas_92: -4782129623431609433
+      DetailAtlas_93: -1672757547390215819
+      DetailAtlas_94: 6643181016423275443
+      DetailAtlas_95: 2038772495668460649
+      DetailAtlas_96: 4386992795057820812
+      DetailAtlas_97: 5864339782151196581
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

@@ -10,6 +10,10 @@ namespace OctopusSurvivors
         public ushort Id;
         public ActorKind Kind;
         public ElementId Element;
+        public GiantMonsterDefinition Giant;
+        public GiantState GiantState;
+        public float CounterTime, ChargeTravel;
+        public int HitPlayers;
         public Vector2 Pos;
         public Vector2 Vel;
         public float Size;
@@ -632,6 +636,10 @@ namespace OctopusSurvivors
                         TickPiercingMeteor(a, dt);
                         break;
 
+                    case ActorKind.GiantSpike:
+                        TickGiantSpike(a, dt);
+                        break;
+
                     case ActorKind.BossBullet:
                         TickBossBullet(a, dt);
                         break;
@@ -723,7 +731,7 @@ namespace OctopusSurvivors
                 if (a.Kind == ActorKind.Droplet)
                 {
                     DamageCircle(a.Pos, 1.25f, a.Damage * 0.75f, StatusMask.Slow, 1.3f, 0f);
-                    SpawnTransient(ActorKind.Explosion, a.Pos, 1.6f, 0.2f);
+                    SpawnTransient(ActorKind.WaterImpact, a.Pos, 1.6f, 0.2f);
                     a.Dead = true;
                 }
                 else if (a.Kind == ActorKind.AutoBolt)
@@ -756,7 +764,7 @@ namespace OctopusSurvivors
                 if (a.Kind == ActorKind.Droplet)
                 {
                     DamageCircle(a.Pos, 1.1f, a.Damage * 0.5f, StatusMask.Slow, 0.8f, 0f);
-                    SpawnTransient(ActorKind.Explosion, a.Pos, 1.3f, 0.18f);
+                    SpawnTransient(ActorKind.WaterImpact, a.Pos, 1.3f, 0.18f);
                 }
 
                 a.Dead = true;
@@ -774,7 +782,7 @@ namespace OctopusSurvivors
             {
                 var enemy = _actors[i];
                 if (enemy.Dead || (enemy.Kind != ActorKind.Enemy && enemy.Kind != ActorKind.Boss)) continue;
-                float radius = projectile.Size + (enemy.Kind == ActorKind.Boss ? enemy.Size * .5f : GameConfig.EnemyRadius);
+                float radius = projectile.Size + (enemy.Kind == ActorKind.Boss ? enemy.Size * .5f : enemy.Giant != null ? enemy.Size * .4f : GameConfig.EnemyRadius);
                 float t = lengthSquared > .00001f ? Mathf.Clamp01(Vector2.Dot(enemy.Pos - previous, travel) / lengthSquared) : 0f;
                 if ((enemy.Pos - (previous + travel * t)).sqrMagnitude > radius * radius || t >= nearest) continue;
                 nearest = t; target = enemy; hitTime = t;
@@ -817,7 +825,7 @@ namespace OctopusSurvivors
             if (enemy.BurnTime > 0f)
             {
                 enemy.BurnTime -= dt;
-                enemy.Hp -= enemy.BurnDps * dt;
+                enemy.Hp -= enemy.BurnDps * dt * GiantDefenseFactor(enemy);
                 if (enemy.BurnTime <= 0f)
                     enemy.BlackFlame = false;
             }
@@ -827,7 +835,7 @@ namespace OctopusSurvivors
             if (enemy.SpicyTime > 0f)
             {
                 enemy.SpicyTime -= dt;
-                enemy.Hp -= enemy.SpicyDps * dt;
+                enemy.Hp -= enemy.SpicyDps * dt * GiantDefenseFactor(enemy);
                 enemy.SpicyTurn -= dt;
                 if (enemy.SpicyTurn <= 0f)
                 {
@@ -852,13 +860,15 @@ namespace OctopusSurvivors
             }
 
             float speed = GameConfig.EnemySpeed(Elapsed.Value);
-            if (enemy.Kind == ActorKind.Enemy)
+            if (enemy.Kind == ActorKind.Enemy && enemy.Giant == null)
                 speed *= enemy.Element == ElementId.Electric ? 1.5f : enemy.Element == ElementId.Grass ? .72f : enemy.Element == ElementId.Fire ? 1.15f : .9f;
             if (enemy.Kind == ActorKind.Boss) speed *= 0.65f;
             if (enemy.SlowTime > 0f) speed *= 0.45f;
             if (enemy.StunTime > 0f || enemy.RootTime > 0f) speed = 0f;
             enemy.RootTime = Mathf.Max(0f, enemy.RootTime - dt);
             enemy.ShockTime = Mathf.Max(0f, enemy.ShockTime - dt);
+
+            if (enemy.Giant != null) { TickGiant(enemy, dt, speed); return; }
 
             if (enemy.Kind == ActorKind.Boss)
             {
@@ -897,6 +907,7 @@ namespace OctopusSurvivors
                 var e = _actors[i];
                 if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
                     continue;
+                if (e.Giant != null) continue;
                 if (e.SpicyTime > 0f || e.StunTime > 0f)
                     continue;
                 float reach = GameConfig.PlayerRadius + (e.Kind == ActorKind.Boss ? e.Size * 0.5f : GameConfig.EnemyRadius);
@@ -979,6 +990,7 @@ namespace OctopusSurvivors
                 e.Element = GameplayRules.BasicElements[Random.Range(0, GameplayRules.BasicElements.Length)];
                 e.Size = e.Element == ElementId.Grass ? 1.05f : e.Element == ElementId.Electric ? .65f : .8f;
                 e.Hp = e.MaxHp = GameConfig.EnemyHp(Elapsed.Value) * (e.Element == ElementId.Grass ? 1.6f : e.Element == ElementId.Electric ? .7f : 1f);
+                TryMakeGiant(e);
             }
         }
 
@@ -1159,7 +1171,7 @@ namespace OctopusSurvivors
                 var e = _actors[i];
                 if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
                     continue;
-                if (DistToSegment(e.Pos, a, b) > width + GameConfig.EnemyRadius)
+                if (DistToSegment(e.Pos, a, b) > width + (e.Giant != null ? e.Size * .4f : GameConfig.EnemyRadius))
                     continue;
                 var mask = status;
                 if ((status & StatusMask.Stun) != 0 && Random.value > stunChance)
@@ -1240,7 +1252,7 @@ namespace OctopusSurvivors
                     continue;
                 if (alreadyHit != null && alreadyHit.Contains(e.Id))
                     continue;
-                float reach = width + (e.Kind == ActorKind.Boss ? e.Size * 0.35f : GameConfig.EnemyRadius);
+                float reach = width + (e.Kind == ActorKind.Boss || e.Giant != null ? e.Size * 0.35f : GameConfig.EnemyRadius);
                 float reach2 = reach * reach;
                 bool touched = false;
                 for (int p = 0; p < points.Count; p++)
@@ -1382,6 +1394,13 @@ namespace OctopusSurvivors
             if (SpecialPassive.Value)
                 damage *= GameConfig.SpecialPassiveMul;
 
+            if (enemy.Giant != null && enemy.Giant.attackPattern == GiantPattern.Urchin && enemy.GiantState == GiantState.Attack)
+            {
+                damage *= enemy.Giant.defenseDamageMultiplier;
+                if (damage > 0 && enemy.CounterTime <= 0 && enemy.StunTime <= 0)
+                { enemy.CounterTime = enemy.Giant.counterCooldown; GiantSpikes(enemy, true); }
+            }
+
             if ((status & StatusMask.Execute) != 0 && enemy.Kind != ActorKind.Boss)
                 enemy.Hp = 0f;
             else
@@ -1396,7 +1415,7 @@ namespace OctopusSurvivors
             if ((status & StatusMask.Slow) != 0)
                 enemy.SlowTime = Mathf.Max(enemy.SlowTime, statusTime);
             if ((status & StatusMask.Stun) != 0 && enemy.Kind != ActorKind.Boss)
-                enemy.StunTime = Mathf.Max(enemy.StunTime, statusTime);
+                enemy.StunTime = Mathf.Max(enemy.StunTime, statusTime * (enemy.Giant != null ? .5f : 1f));
             if ((status & StatusMask.Spicy) != 0 && enemy.Kind != ActorKind.Boss)
             {
                 enemy.SpicyTime = Mathf.Max(enemy.SpicyTime, statusTime);
@@ -1411,7 +1430,7 @@ namespace OctopusSurvivors
             if (away.sqrMagnitude < 0.04f)
                 away = Vector2.up;
             float kick = enemy.Kind == ActorKind.Boss ? GameConfig.BossKnockback : GameConfig.Knockback;
-            enemy.Knockback = away.normalized * kick;
+            enemy.Knockback = away.normalized * kick * (enemy.Giant != null ? enemy.Giant.knockbackMultiplier : 1f);
             enemy.HitFlash = GameConfig.HitFlashSeconds;
 
             if (enemy.Hp <= 0f)
@@ -1428,6 +1447,7 @@ namespace OctopusSurvivors
             if (enemy.Dead)
                 return;
             enemy.Dead = true;
+            enemy.GiantState = GiantState.Dead;
 
             bool boss = enemy.Kind == ActorKind.Boss;
             if (boss)
@@ -1457,7 +1477,7 @@ namespace OctopusSurvivors
         void StartArtifactStage(int stage)
         {
             ClearLiveBosses();
-            ClearFieldForNextStage();
+            ClearFieldForNextStagePreservingGiants(stage % GameConfig.BossEvery == 0);
             _actors.RemoveAll(actor => actor.Dead);
             for (int i = 0; i < OctopusPlayer.All.Count; i++)
             {
@@ -1483,12 +1503,14 @@ namespace OctopusSurvivors
                 SpawnBoss(Stage.Value);
         }
 
-        void ClearFieldForNextStage()
+        void ClearFieldForNextStage() => ClearFieldForNextStagePreservingGiants(false);
+
+        void ClearFieldForNextStagePreservingGiants(bool preserveGiants)
         {
             for (int i = 0; i < _actors.Count; i++)
             {
                 var actor = _actors[i];
-                if (actor.Dead)
+                if (actor.Dead || (preserveGiants && actor.Giant != null))
                     continue;
                 actor.Dead = true;
             }
@@ -1743,7 +1765,7 @@ namespace OctopusSurvivors
                 Vector2 to = target.Pos - spirit.Pos;
                 if (to.sqrMagnitude > 0.01f)
                     spirit.Pos += to.normalized * GameConfig.EnemySpeed(Elapsed.Value) * dt;
-                float reach = spirit.Size + (target.Kind == ActorKind.Boss ? target.Size * 0.5f : GameConfig.EnemyRadius);
+                float reach = spirit.Size + (target.Kind == ActorKind.Boss || target.Giant != null ? target.Size * 0.5f : GameConfig.EnemyRadius);
                 if ((target.Pos - spirit.Pos).sqrMagnitude <= reach * reach && spirit.ContactCooldown <= 0f)
                 {
                     ApplyDamage(target, spirit.Damage, StatusMask.Stun | StatusMask.Knockback, 1.6f, 0f);
@@ -2171,11 +2193,12 @@ namespace OctopusSurvivors
         }
 
         // Enemy snapshots use the otherwise unused duration channel for their visual element.
-        static float VisualDuration(SimActor a) => a.Kind == ActorKind.Enemy ? (float)a.Element : a.Duration;
+        static float VisualDuration(SimActor a) => a.Kind == ActorKind.Enemy
+            ? (a.Giant != null ? 1000 + a.Giant.id * 100 + (int)a.GiantState * 10 + Mathf.Repeat(Mathf.Atan2(a.SkillPoint.y,a.SkillPoint.x)*Mathf.Rad2Deg,360f)/360f : (float)a.Element) : a.Duration;
 
         static byte PackFlags(SimActor a)
         {
-            if ((a.Kind == ActorKind.Shockwave || a.Kind == ActorKind.MeleeSlash || a.Kind == ActorKind.BossLane || ElementEffectVisual.IsDirectional(a.Kind)) && a.Vel.sqrMagnitude > 0.0001f)
+            if ((a.Kind == ActorKind.GiantSpike || a.Kind == ActorKind.Shockwave || a.Kind == ActorKind.MeleeSlash || a.Kind == ActorKind.BossLane || ElementEffectVisual.IsDirectional(a.Kind)) && a.Vel.sqrMagnitude > 0.0001f)
             {
                 float deg = Mathf.Atan2(a.Vel.y, a.Vel.x) * Mathf.Rad2Deg;
                 if (deg < 0f) deg += 360f;
