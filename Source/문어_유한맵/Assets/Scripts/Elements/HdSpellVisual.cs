@@ -7,6 +7,7 @@ namespace OctopusSurvivors
     {
         static readonly Dictionary<string,Sprite[]> sheets=new Dictionary<string,Sprite[]>();
         SpriteRenderer image,echo;
+        LineRenderer footprint;
         ActorKind kind;
         float age,duration,offset;
         Vector3 previous;
@@ -81,6 +82,25 @@ namespace OctopusSurvivors
             {
                 image=Layer("Textured skill",12);echo=Layer("Textured afterglow",11);
                 offset=Mathf.Repeat(transform.position.x*1.37f+transform.position.y*.73f,1);
+                if (kind == ActorKind.FruitTree || kind == ActorKind.FlameAura)
+                {
+                    var go = new GameObject("Attack footprint"); go.transform.SetParent(transform, false);
+                    footprint = go.AddComponent<LineRenderer>();
+                    footprint.useWorldSpace = false;
+                    footprint.sharedMaterial = image.sharedMaterial;
+                    footprint.sortingOrder = 3;
+                    footprint.widthMultiplier = .025f;
+                    bool tree = kind == ActorKind.FruitTree;
+                    footprint.startColor = footprint.endColor = tree ? new Color(.5f, 1f, .3f, .25f) : new Color(1f, .5f, .15f, .3f);
+                    footprint.loop = true;
+                    footprint.positionCount = tree ? 65 : 26;
+                    for (int i = 0; i < footprint.positionCount; i++)
+                    {
+                        if (!tree && i == 0) { footprint.SetPosition(i, Vector3.zero); continue; }
+                        float angle = (tree ? i * 360f / 65 : -30f + (i - 1) * 60f / 24) * Mathf.Deg2Rad;
+                        footprint.SetPosition(i, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0));
+                    }
+                }
             }
             if(serverAge>0)age=serverAge;
             if(!initialized)
@@ -100,17 +120,20 @@ namespace OctopusSurvivors
             if(image==null || !Mapping(kind,out string name,out int rows,out int row))return;
             age+=Time.deltaTime;
             int frame=(int)((age+offset)*14)%4;
+            bool tree = kind == ActorKind.FruitTree;
+            if (tree) frame = 0; // Stable trunk/canopy; only the falling fruit animates.
             bool shortEffect=duration>0 && duration<.65f;
             if(shortEffect || kind==ActorKind.Fruit || kind==ActorKind.Seed)frame=Mathf.Min(3,(int)(age/Mathf.Max(.01f,duration)*4));
             image.sprite=Frame(name,rows,row*4+frame);
             echo.sprite=Frame(name,rows,row*4+(frame+3)%4);
             Vector3 delta=transform.position-previous;previous=transform.position;
             bool directional=ElementEffectVisual.IsDirectional(kind);
-            if(!directional && delta.sqrMagnitude>.00001f)
+            if(!directional && !tree && delta.sqrMagnitude>.00001f)
                 image.transform.rotation=echo.transform.rotation=Quaternion.Euler(0,0,Mathf.Atan2(delta.y,delta.x)*Mathf.Rad2Deg);
             float scale=2f,alpha=.85f;
             Vector3 center=Vector3.zero;
-            if(kind==ActorKind.Fruit)center=Vector3.up*Mathf.Max(0,1-age/.6f)*3;
+            if(kind==ActorKind.Fruit)center=Vector3.up*Mathf.Max(0,1-age/Mathf.Max(.01f,duration))*3;
+            if(tree)image.transform.localRotation=echo.transform.localRotation=Quaternion.identity;
             if(kind==ActorKind.FlameAura){scale=1.05f;center=Vector3.right*.48f;}
             if(kind==ActorKind.ChainArc){scale=2;alpha=1;}
             if(kind==ActorKind.RadialCurrent){scale=2*Mathf.Clamp01(age/Mathf.Max(.01f,duration));alpha=.85f;}
@@ -127,6 +150,7 @@ namespace OctopusSurvivors
             echo.transform.localPosition=center-Vector3.right*.06f;
             echo.transform.localScale=Vector3.one*scale*1.05f;
             echo.color=new Color(1,1,1,alpha*.15f*fade);
+            echo.enabled = !tree;
         }
     }
     public sealed class ElementHitVisual : MonoBehaviour

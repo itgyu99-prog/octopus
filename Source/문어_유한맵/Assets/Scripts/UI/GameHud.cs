@@ -38,6 +38,10 @@ namespace OctopusSurvivors
         RectTransform _radarBoss;
 
         GameObject _cardRoot;
+        GameObject _exitRoot;
+        Text _exitMessage;
+        int _backFrame = -1;
+        public bool ExitConfirmationOpen => _exitRoot != null && _exitRoot.activeInHierarchy;
         Text _cardHeader;
         readonly Image[] _cards = new Image[CardCount];
         readonly Text[] _cardTitles = new Text[CardCount];
@@ -51,7 +55,11 @@ namespace OctopusSurvivors
         public static void Hide()
         {
             if (Instance != null)
+            {
+                Instance._exitRoot?.SetActive(false);
+                Instance.combineRoot?.SetActive(false);
                 Instance._root.SetActive(false);
+            }
         }
 
         static GameHud Ensure()
@@ -112,7 +120,7 @@ namespace OctopusSurvivors
             krt.anchorMin = krt.anchorMax = new Vector2(0f, 0f);
             krt.pivot = new Vector2(0f, 0f);
             krt.anchoredPosition = new Vector2(40f, 24f);
-            _keys.text = "이동 방향키   근접 Left Ctrl   획득 E   합성창 F   변신 Space   능력 선택 1 2 3   로비 Esc";
+            _keys.text = "이동 방향키   근접 Left Ctrl   획득 E   합성창 F   변신 Space   능력 선택 1 2 3   닫기/나가기 Esc";
 
             _over = UiUtil.Label(_root.transform, Vector2.zero, new Vector2(520, 120), 40, new Color(1f, 0.45f, 0.4f), TextAnchor.MiddleCenter);
             var ort = _over.rectTransform;
@@ -124,7 +132,45 @@ namespace OctopusSurvivors
             BuildCards();
             BuildCombine();
             BuildRadar();
+            BuildExitConfirmation();
             _root.SetActive(false);
+        }
+
+        void BuildExitConfirmation()
+        {
+            _exitRoot = UiUtil.Panel(_root.transform, Vector2.zero, Vector2.zero, new Color(0, 0, 0, .6f)).gameObject;
+            _exitRoot.name = "ExitConfirmation";
+            var overlay = _exitRoot.GetComponent<RectTransform>();
+            overlay.anchorMin = Vector2.zero; overlay.anchorMax = Vector2.one;
+            overlay.offsetMin = overlay.offsetMax = Vector2.zero;
+            var panel = UiUtil.Panel(_exitRoot.transform, Vector2.zero, new Vector2(640, 260), new Color(.06f, .1f, .16f, 1));
+            _exitMessage = UiUtil.Label(panel.transform, new Vector2(30, -25), new Vector2(580, 125), 25, Color.white, TextAnchor.MiddleCenter);
+            var cancel = UiUtil.Button(panel.transform, new Vector2(-145, -75), new Vector2(240, 55), "취소 (Esc)");
+            var leave = UiUtil.Button(panel.transform, new Vector2(145, -75), new Vector2(240, 55), "로비로 나가기");
+            // Explicit click confirmation; no inherited keyboard selection can submit Leave.
+            var navigation = new Navigation { mode = Navigation.Mode.None };
+            cancel.navigation = leave.navigation = navigation;
+            cancel.onClick.AddListener(() => _exitRoot.SetActive(false));
+            leave.onClick.AddListener(() => { _exitRoot.SetActive(false); GameBootstrap.LeaveToLobby(); });
+            _exitRoot.SetActive(false);
+        }
+
+        public void HandleBack()
+        {
+            if (_backFrame == Time.frameCount) return;
+            _backFrame = Time.frameCount;
+            if (DevMenu.CloseIfOpen()) return;
+            if (CloseCombineIfOpen()) return;
+            if (ExitConfirmationOpen) { _exitRoot.SetActive(false); return; }
+            var session = GameSession.Instance;
+            if (session == null || !session.IsPlaying) return;
+            if (!session.GameOver.Value && session.StageFlow.Value != (byte)StageState.Combat) return;
+            _exitMessage.text = session.IsServer
+                ? "로비로 나갈까요?\n방장이 나가면 함께 플레이 중인 친구의 연결도 종료됩니다."
+                : "로비로 나갈까요?\n나는 게임에서 나가고 방장은 계속 플레이합니다.";
+            UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);
+            _exitRoot.SetActive(true);
+            _exitRoot.transform.SetAsLastSibling();
         }
 
         static Image HudIcon(Transform parent, Vector2 position, float size, Vector2? anchor = null)
@@ -351,7 +397,7 @@ namespace OctopusSurvivors
 
             bool over = session != null && session.GameOver.Value;
             if (over)
-                _over.text = "게임 오버\nEsc 로비";
+                _over.text = "게임 오버\nEsc 나가기 확인";
             else if (p.Downed.Value)
             {
                 int pct = Mathf.RoundToInt(p.ReviveProgress.Value * 100f);

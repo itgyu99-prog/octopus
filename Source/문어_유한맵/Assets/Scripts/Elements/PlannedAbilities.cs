@@ -15,7 +15,10 @@ namespace OctopusSurvivors
             switch (id)
             {
                 case ElementId.Fire:
-                    Effect(ActorKind.FlameAura, p.Pos, DensestFireDirection(p.Pos, dir, 4.3f + UpgradeTuning.Data.fireRangePerLevel * (l - 1)), 4.3f + UpgradeTuning.Data.fireRangePerLevel * (l - 1), 1.25f, 70f * upgradeMul, p, l);
+                    float reach = (4.3f + UpgradeTuning.Data.fireRangePerLevel * (l - 1)) * UpgradeTuning.Data.fireSizeMultiplier;
+                    var fire = Effect(ActorKind.FlameAura, p.Pos, DensestFireDirection(p.Pos, dir, reach), reach, 1.25f, 70f * upgradeMul, p, l);
+                    fire.SkillPoint = fire.Vel;
+                    fire.Pulse = UpgradeTuning.Data.fireRetargetInterval;
                     break;
                 case ElementId.Water:
                     var water = Effect(ActorKind.WaterEmitter, p.Pos, p.NextWaterDirection(dir), .1f, l * UpgradeTuning.Data.repeatInterval, 27f * upgradeMul, p, l);
@@ -88,9 +91,10 @@ namespace OctopusSurvivors
                                 t.range * UpgradeTuning.Data.masterSizeMultiplier, t.duration, damage, p, l);
                     break;
                 case ComboId.Tree:
+                    float fruitDamage = damage * (rank == 5 ? UpgradeTuning.Data.masterFruitDamageMultiplier : UpgradeTuning.Data.treeFruitDamageMultiplier);
                     for (int i = 0; i <= rank; i++)
                         Effect(ActorKind.FruitTree, GameConfig.ClampToMap(p.Pos + (i == 0 ? Vector2.zero :
-                            AbilityRunner.Rotate(dir, i * 137.5f) * 2f), .5f), Vector2.zero, t.range, t.duration, damage, p, l);
+                            AbilityRunner.Rotate(dir, i * 137.5f) * 2f), .5f), Vector2.zero, t.range, t.duration, fruitDamage, p, l);
                     break;
                 case ComboId.Soda:
                     for (int i = 0; i < 5 + rank + (rank == 5 ? 1 : 0); i++)
@@ -150,7 +154,15 @@ namespace OctopusSurvivors
                     break;
                 case ActorKind.FlameAura:
                     a.Pos = a.Owner.Pos;
-                    DamageCone(a.Pos, a.Vel, a.Size, 60f, a.Damage * dt, StatusMask.Burn, 1.2f, 8f * (1f + UpgradeTuning.Data.attributeDamagePerLevel * a.Owner.UpAttrRank.Value));
+                    if (a.Pulse <= 0f)
+                    {
+                        a.Pulse = Mathf.Max(.05f, UpgradeTuning.Data.fireRetargetInterval);
+                        a.SkillPoint = TrackedFireDirection(a);
+                        a.HitTargets.Clear();
+                    }
+                    a.Vel = TurnFireDirection(a.Vel, a.SkillPoint, dt);
+                    DamageCone(a.Pos, a.Vel, a.Size, 60f, a.Damage * Mathf.Min(dt, Mathf.Max(0f, a.Life + dt)), StatusMask.Burn, 1.2f,
+                        8f * (1f + UpgradeTuning.Data.attributeDamagePerLevel * a.Owner.UpAttrRank.Value), a.HitTargets);
                     break;
                 case ActorKind.ThornEmitter:
                     a.Pos = a.Owner.Pos;
@@ -200,11 +212,14 @@ namespace OctopusSurvivors
                     StepEffectProjectile(a, dt, false);
                     break;
                 case ActorKind.FruitTree:
-                    if (a.Pulse <= 0f)
+                    float fruitInterval = Mathf.Max(.01f, a.EffectLevel == 6 ? UpgradeTuning.Data.masterFruitInterval : UpgradeTuning.Data.treeFruitInterval);
+                    // Indexed schedule keeps the same budget at 30/60/144 FPS and excludes a shot at expiry.
+                    while (a.Mark * fruitInterval < a.Duration - .0001f && a.Mark * fruitInterval < a.Age)
                     {
-                        a.Pulse = a.EffectLevel == 6 ? UpgradeTuning.Data.masterFruitInterval : UpgradeTuning.Data.treeFruitInterval;
-                        Vector2 landing = GameConfig.ClampToMap(a.Pos + Random.insideUnitCircle * Mathf.Max(0f, a.Size - .5f), .5f);
-                        Effect(ActorKind.Fruit, landing, Vector2.zero, .5f, .6f, a.Damage, a.Owner, a.EffectLevel);
+                        a.Mark++;
+                        Vector2 landing = TreeLandingPoint(a);
+                        Effect(ActorKind.Fruit, landing, Vector2.zero, UpgradeTuning.Data.treeFruitRadius,
+                            UpgradeTuning.Data.treeFruitFallSeconds, a.Damage, a.Owner, a.EffectLevel);
                     }
                     break;
                 case ActorKind.Fruit:
@@ -217,6 +232,67 @@ namespace OctopusSurvivors
             }
             if (a.Life <= 0f) a.Dead = true;
             return true;
+        }
+
+        readonly List<SimActor> fireEnemies = new List<SimActor>(GameConfig.MaxEnemies);
+        readonly List<int> fireDensity = new List<int>(GameConfig.MaxEnemies);
+        float fireCacheUntil = -1f;
+
+        void RefreshFireCache()
+        {
+            if (Time.time < fireCacheUntil) return;
+            fireCacheUntil = Time.time + Mathf.Max(.05f, UpgradeTuning.Data.fireRetargetInterval);
+            fireEnemies.Clear(); fireDensity.Clear();
+            foreach (var e in _actors)
+                if (!e.Dead && (e.Kind == ActorKind.Enemy || e.Kind == ActorKind.Boss)) fireEnemies.Add(e);
+            float radius2 = UpgradeTuning.Data.fireClusterRadius * UpgradeTuning.Data.fireClusterRadius;
+            foreach (var e in fireEnemies)
+            {
+                int count = 0;
+                foreach (var other in fireEnemies) if ((e.Pos - other.Pos).sqrMagnitude <= radius2) count++;
+                fireDensity.Add(count);
+            }
+        }
+
+        Vector2 TrackedFireDirection(SimActor flame)
+        {
+            RefreshFireCache();
+            float best = -1f;
+            Vector2 result = flame.Vel;
+            for (int i = 0; i < fireEnemies.Count; i++)
+            {
+                var e = fireEnemies[i];
+                Vector2 to = e.Pos - flame.Pos;
+                if (e.Dead || to.sqrMagnitude > flame.Size * flame.Size || to.sqrMagnitude < .0001f) continue;
+                float score = fireDensity[i] * (flame.HitTargets.Contains(e.Id) ? UpgradeTuning.Data.fireRecentTargetWeight : 1f);
+                if (score <= best) continue;
+                best = score; result = to.normalized;
+            }
+            return result;
+        }
+
+        static Vector2 TurnFireDirection(Vector2 current, Vector2 target, float dt)
+        {
+            if (target.sqrMagnitude < .0001f) return current;
+            float from = Mathf.Atan2(current.y, current.x) * Mathf.Rad2Deg;
+            float to = Mathf.Atan2(target.y, target.x) * Mathf.Rad2Deg;
+            float angle = Mathf.MoveTowardsAngle(from, to, UpgradeTuning.Data.fireTurnSpeed * dt) * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+        }
+
+        Vector2 TreeLandingPoint(SimActor tree)
+        {
+            // Reservoir sampling chooses a live target without allocating a list per fruit.
+            SimActor target = null;
+            int count = 0;
+            float radius = Mathf.Max(0f, tree.Size - UpgradeTuning.Data.treeFruitRadius);
+            foreach (var e in _actors)
+            {
+                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss) ||
+                    (e.Pos - tree.Pos).sqrMagnitude > radius * radius) continue;
+                if (Random.Range(0, ++count) == 0) target = e;
+            }
+            return target != null ? target.Pos : GameConfig.ClampToMap(tree.Pos + Random.insideUnitCircle * radius, .5f);
         }
 
         void CastChain(SimActor source)

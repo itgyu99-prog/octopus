@@ -102,3 +102,16 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 - 능력치·히든·합성 재료 소모를 반영한 Windows 패키지를 `문어지지마_2안_v0.1.0_Windows.zip`으로 만들었다. 크기 58,542,305바이트, 214개 파일. ZIP CRC 및 실행 필수 파일을 확인했다. Unity 6000.5.7f1 Windows 빌드와 기존 시스템 데이터 사전 검사가 통과했다.
 - SHA-256: `4768f1001789e71524754dfa8022844d7e0342f4b699f5cac7b8115fb99872c5`. 게임을 실제 실행하는 검사는 자동 승인 검토에서 거절되어 수행하지 않았다.
 - 히든 20%는 슬롯별 설정값이며 결과는 난수에 따른다. 정상 플레이 장기 밸런스, 네트워크 참가자 화면 및 에셋 실제 배치는 실행 테스트 전까지 미확인이다.
+
+## 2026-10-14 A~D 밸런스·Esc 검증
+
+- 사전 검증 기록 커밋: `bb6c008`. 승인 후 Esc 확인창, 나무 연사/조준/확대, 기본 불 확대/추적을 적용했다. Windows 빌드·ZIP은 생성하지 않았다.
+- Unity6000.5.7f1 배치 컴파일과 SystemDataChecks 통과(`Logs/balance-checks.log`). 배포 빌드 없이 에디터 Play Mode 로컬 NGO 호스트로 `BALANCE A-D CHECKS PASS` 확인(`Logs/balance-playmode.log`, 그래픽 재검사 `Logs/balance-visual-recheck.log`).
+- 재실행: Unity에 `-batchmode -projectPath <프로젝트절대경로> -executeMethod OctopusSurvivors.EditorTools.SystemDataChecks.RunBalancePlayMode -octopus-test-solo -octopus-balance-check -logFile <프로젝트>/Logs/balance-playmode.log`를 전달한다. 프로젝트가 열린 다른 Unity 인스턴스가 없어야 한다. Windows 실행 파일을 빌드하지 않는다.
+- 나무 마스터리0~5, 30/60/144FPS 및0.25초 지연 틱에서 나무 수·발사 수·착지 피해·적 위치 조준·나무 자체 무피해·빈 범위 낙하 검증. 기본315/시전, 만렙6336/시전(요소 피해 강화 제외), 기본 재시전13.5초 기준23.33/469.33 DPS. 기존 이상적 만렙6480보다2.22% 감소하나 조준 개선으로 실전 적중률은 증가할 수 있다.
+- 불6.45 경계 안/밖 피해, 강화5회 반경8.7, 180도/초 제한, 적 없는 경우 방향 유지, 새 군집 우선 및 단일 대상 유지, 기존25바이트 방향 인코딩 검증. 기본70DPS/1.25초 유지. 사거리1.5배로 면적2.25배이며 실제 피해2.25배를 보장하지 않는다.
+- Esc 개발 메뉴/합성창 순서, 같은 프레임 중복 소비, 능력선택·카운트다운 무시, 확인창 표시/취소·세션 초기화, 명시적 호스트 종료 검증. 실제 키보드 수동 조작과 두 PC 접속/참가자 이탈/LAN·Relay는 미검증이다.
+- 첫 그래픽 캡처의 준비 중 셰이더 표시는 동기 컴파일·렌더 준비 대기로 해결했다. 최종 화면에서 나무/열매/화염과 판정 경계 및 확인창을 확인했다. [나무·불](host-balance-tree-fire.png), [Esc 확인창](host-balance-exit-confirmation.png).
+- 그래픽 에디터 실행에는 UnityEditor.Search.SearchDatabase 시작 색인의 ArgumentOutOfRangeException이 별도로 기록되었다. 게임 검사 실패나 게임 스크립트 예외는 없고 A~D 검사는 완료됐지만, 에디터 전체 로그가 무오류라는 뜻은 아니다. 기존 캐시를 삭제하지 않았다.
+- HTML 비교 모델은 `tools/balance_simulator.html`. Node 실행으로 기본/만렙/쿨다운 피해 예산 및 표 출력의 NaN/Infinity 부재 확인. 적중률·대상 수는 명시적인 가정값이며 전체 전투 시간을 예측하지 않는다. 원본 Downloads 파일은 보존했다.
+- 수동 확인: F1+F 열린 상태에서 Esc 두 번으로 각 창만 닫기, 다음 Esc 확인창에서 취소/나가기 확인. 나무 각 강화 단계의 연속 낙하와 반경 표시, 이동하는 적 군집을 따라 회전하는 불 확인. 서로 같은 프로토콜4 빌드로 참가자 이탈 시 방장 유지, 방장 이탈 시 참가자 연결 종료를 확인할 것.

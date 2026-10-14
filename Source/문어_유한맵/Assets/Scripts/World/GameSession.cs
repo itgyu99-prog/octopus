@@ -1144,7 +1144,7 @@ namespace OctopusSurvivors
             return killed;
         }
 
-        public void DamageCone(Vector2 pos, Vector2 dir, float radius, float angle, float damage, StatusMask status, float statusTime, float burnDps)
+        public void DamageCone(Vector2 pos, Vector2 dir, float radius, float angle, float damage, StatusMask status, float statusTime, float burnDps, HashSet<ushort> hitTargets = null)
         {
             dir.Normalize();
             float half = angle * 0.5f;
@@ -1158,6 +1158,7 @@ namespace OctopusSurvivors
                     continue;
                 if (Vector2.Angle(dir, to) > half)
                     continue;
+                hitTargets?.Add(e.Id);
 
                 if ((status & StatusMask.Knockback) != 0 && e.Kind != ActorKind.Boss)
                     e.Knockback = to.normalized * 22f;
@@ -1478,6 +1479,7 @@ namespace OctopusSurvivors
 
         void StartArtifactStage(int stage)
         {
+            fireCacheUntil = -1f;
             ClearLiveBosses();
             ClearFieldForNextStagePreservingGiants(stage % GameConfig.BossEvery == 0);
             _actors.RemoveAll(actor => actor.Dead);

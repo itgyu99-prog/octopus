@@ -46,6 +46,11 @@ namespace OctopusSurvivors
             {
                 if(done) return;
                 if(Time.realtimeSinceStartup>deadline) throw new Exception("Integration timeout");
+                if (ready && host && run != null && Array.IndexOf(Environment.GetCommandLineArgs(), "-octopus-balance-check") >= 0)
+                {
+                    if (!run.MoveNext()) run = null;
+                    return; // Continue exit checks even after GameSession despawns.
+                }
                 if(!started)
                 {
                     if(Time.realtimeSinceStartup<2f) return;
@@ -120,7 +125,15 @@ namespace OctopusSurvivors
                     if(finishRequested&&guestMovementChecks==4){Check(sawGiantVisual,"giant visual snapshots received");Debug.Log("COOP CLIENT PASS");done=true;Application.Quit(0);}
                 }
             }
-            catch(Exception e){Debug.LogError("COOP CHECK FAILED: "+e);done=true;Application.Quit(2);}
+            catch(Exception e){Debug.LogError("COOP CHECK FAILED: "+e);done=true;FinishChecks(2);}
+        }
+        static void FinishChecks(int code)
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.Exit(code);
+#else
+            Application.Quit(code);
+#endif
         }
         void Send(string channel)
         {
@@ -162,6 +175,13 @@ namespace OctopusSurvivors
         }
         IEnumerator RunHost(GameSession s,OctopusPlayer p)
         {
+            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-octopus-balance-check") >= 0)
+            {
+                yield return null;
+                var balance = RunBalanceChecks(s, p);
+                while (balance.MoveNext()) yield return balance.Current;
+                done = true; FinishChecks(0); yield break;
+            }
             while(!solo&&!guestReady)yield return null;
             Check(s.PlayerCount.Value==(solo?1:2),"expected player count");
             Check(s.UnlockedComboSlots.Value==3,"three combo slots available from start");
@@ -384,10 +404,127 @@ namespace OctopusSurvivors
                 Check(Vector2.Distance(origin,bottle.Pos)>.1f&&Vector2.Angle(velocity,bottle.Vel)>.01f,"soda flies and changes direction");
             }
         }
+        IEnumerator RunBalanceChecks(GameSession s, OctopusPlayer p)
+        {
+            s.enabled = false; // Advance simulation explicitly; UI continues through real frames.
+            p.transform.position = Vector3.zero; p.NetPos.Value = Vector2.zero;
+            p.UpElemRank.Value = p.UpAttrRank.Value = 0;
+            p.Combo.Value = (byte)ComboId.Tree;
+            foreach (float step in new[] { 1f / 30, 1f / 60, 1f / 144, .25f })
+            for (int rank = 0; rank <= 5; rank++)
+            {
+                ResetField(s);
+                p.SkillLevels.Value = (ulong)rank << (((int)UpgradeId.TreeMastery - 10) * 3);
+                var target = Target(s, new Vector2(1, 0));
+                s.CastPlannedCombo(p, ComboId.Tree);
+                var trees = Actors(s).FindAll(a => a.Kind == ActorKind.FruitTree);
+                Check(trees.Count == rank + 1, "tree count at mastery " + rank);
+                foreach (var tree in trees)
+                    while (!tree.Dead) Call(s, "TickPlannedAbility", tree, step);
+                var fruits = Actors(s).FindAll(a => a.Kind == ActorKind.Fruit);
+                int expected = (rank == 5 ? 44 : 35) * (rank + 1);
+                Check(fruits.Count == expected, "fruit budget at mastery " + rank + " step " + step);
+                Check(fruits.TrueForAll(a => a.Pos == target.Pos), "fruit aims at live enemy, not empty ground");
+                Check(target.Hp == target.MaxHp, "tree itself causes no invisible area damage");
+                foreach (var fruit in fruits) Call(s, "TickPlannedAbility", fruit, fruit.Duration);
+                float damage = expected * (rank == 5 ? 24f : 9f);
+                Check(Mathf.Abs(target.MaxHp - target.Hp - damage) < .1f, "fruit landing damage budget " + damage);
+            }
+            ResetField(s); p.SkillLevels.Value = 0;
+            s.CastPlannedCombo(p, ComboId.Tree);
+            var emptyTree = Actors(s).Find(a => a.Kind == ActorKind.FruitTree);
+            Call(s, "TickPlannedAbility", emptyTree, .5f);
+            Check(Actors(s).FindAll(a => a.Kind == ActorKind.Fruit).TrueForAll(a =>
+                Vector2.Distance(a.Pos, emptyTree.Pos) + a.Size <= emptyTree.Size + .001f), "empty tree landings stay within visible footprint");
+
+            ResetField(s);
+            var inside = Target(s, new Vector2(6.44f, 0));
+            var outside = Target(s, new Vector2(6.46f, 0));
+            s.CastBasicAbility(p, ElementId.Fire, 1);
+            var flame = Actors(s).Find(a => a.Kind == ActorKind.FlameAura);
+            Call(s, "TickPlannedAbility", flame, .01f);
+            Check(Mathf.Abs(flame.Size - 6.45f) < .001f && inside.Hp < inside.MaxHp && outside.Hp == outside.MaxHp, "expanded fire boundary matches radius");
+            inside.Pos = new Vector2(-3, 0); outside.Pos = new Vector2(-3, .2f);
+            typeof(GameSession).GetField("fireCacheUntil", Hidden).SetValue(s, -1f);
+            Vector2 before = flame.Vel;
+            Call(s, "TickPlannedAbility", flame, .15f);
+            float turned = Vector2.Angle(before, flame.Vel);
+            Check(turned > 1 && turned <= 27.01f, "fire retargets but obeys 180 degrees per second");
+            inside.Dead = outside.Dead = true;
+            typeof(GameSession).GetField("fireCacheUntil", Hidden).SetValue(s, -1f);
+            flame.Pulse = 0; before = flame.Vel;
+            Call(s, "TickPlannedAbility", flame, .15f);
+            Check(Vector2.Angle(before, flame.Vel) < .01f, "fire without enemies keeps its current direction");
+            var recent = Target(s, new Vector2(3, 0));
+            var fresh = Target(s, new Vector2(0, 3));
+            flame.HitTargets.Clear(); flame.HitTargets.Add(recent.Id);
+            typeof(GameSession).GetField("fireCacheUntil", Hidden).SetValue(s, -1f);
+            var aim = (Vector2)Call(s, "TrackedFireDirection", flame);
+            Check(Vector2.Angle(aim, Vector2.up) < .01f, "fire prefers an unhit cluster");
+            fresh.Dead = true;
+            aim = (Vector2)Call(s, "TrackedFireDirection", flame);
+            Check(Vector2.Angle(aim, Vector2.right) < .01f, "fire still attacks the only remaining target");
+            flame.Vel = Vector2.up;
+            byte packed = (byte)typeof(GameSession).GetMethod("PackFlags", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { flame });
+            Check(GameConfig.ActorBytes == 25 && Mathf.Abs(packed / 255f * 360 - 90) < 1, "existing 25-byte actor record carries steering angle");
+            ResetField(s); s.CastBasicAbility(p, ElementId.Fire, 6);
+            Check(Mathf.Abs(Actors(s).Find(a => a.Kind == ActorKind.FlameAura).Size - 8.7f) < .001f, "fire range upgrade remains effective at maximum rank");
+
+            ResetField(s);
+            Target(s, new Vector2(3, 1)); Target(s, new Vector2(4, 0)); Target(s, new Vector2(2, -1));
+            s.CastPlannedCombo(p, ComboId.Tree); s.CastBasicAbility(p, ElementId.Fire, 1);
+            var previewTree = Actors(s).Find(a => a.Kind == ActorKind.FruitTree);
+            Call(s, "TickPlannedAbility", previewTree, .31f);
+            float warmUntil = Time.realtimeSinceStartup + .8f;
+            while (Time.realtimeSinceStartup < warmUntil)
+            {
+                foreach (var actor in Actors(s)) if (actor.Kind == ActorKind.FlameAura || actor.Kind == ActorKind.Fruit) actor.Age = .15f;
+                Call(s, "RenderLocal");
+                yield return null;
+            }
+            Capture("balance-tree-fire");
+
+            ResetField(s);
+            GameHud.Show(); var hud = GameHud.Instance;
+            var dev = UnityEngine.Object.FindFirstObjectByType<DevMenu>();
+            hud.ToggleCombine(); Call(dev, "Toggle");
+            hud.HandleBack();
+            var combine = (GameObject)typeof(GameHud).GetField("combineRoot", Hidden).GetValue(hud);
+            Check(combine.activeSelf && !hud.ExitConfirmationOpen, "Esc closes developer menu before combine");
+            hud.HandleBack();
+            Check(combine.activeSelf, "same-frame Esc is consumed once");
+            yield return null;
+            hud.HandleBack(); Check(!combine.activeSelf && !hud.ExitConfirmationOpen, "Esc closes combine without leaving");
+            yield return null;
+            s.StageFlow.Value = (byte)StageState.Choosing;
+            hud.HandleBack(); Check(!hud.ExitConfirmationOpen, "mandatory choice ignores Esc");
+            yield return null;
+            s.StageFlow.Value = (byte)StageState.Countdown;
+            hud.HandleBack(); Check(!hud.ExitConfirmationOpen, "countdown ignores Esc");
+            yield return null;
+            s.StageFlow.Value = (byte)StageState.Combat;
+            hud.HandleBack(); Check(hud.ExitConfirmationOpen && NetworkManager.Singleton.IsListening, "Esc opens confirmation without shutdown");
+            yield return null;
+            Capture("balance-exit-confirmation");
+            hud.HandleBack(); Check(!hud.ExitConfirmationOpen && NetworkManager.Singleton.IsListening, "Esc cancels exit confirmation");
+            yield return null;
+            hud.HandleBack(); GameHud.Hide(); GameHud.Show();
+            Check(!hud.ExitConfirmationOpen, "exit confirmation does not leak into next session");
+            GameBootstrap.LeaveToLobby();
+            float until = Time.realtimeSinceStartup + 3;
+            while (NetworkManager.Singleton.IsListening && Time.realtimeSinceStartup < until) yield return null;
+            Check(!NetworkManager.Singleton.IsListening, "explicit host exit shuts down network");
+            Debug.Log("BALANCE A-D CHECKS PASS");
+        }
+
         void Capture(string name)
         {
             if(SystemInfo.graphicsDeviceType==UnityEngine.Rendering.GraphicsDeviceType.Null) return;
             string directory=Application.dataPath+"/../Screenshots";
+#if UNITY_EDITOR
+            if (name.StartsWith("balance-", StringComparison.Ordinal))
+                directory = System.IO.Path.GetFullPath(Application.dataPath + "/../../../docs/검증");
+#endif
             System.IO.Directory.CreateDirectory(directory);
             var camera=Camera.main;
             if(camera==null) throw new Exception("Capture camera missing");

@@ -58,7 +58,7 @@ namespace OctopusSurvivors
                 _nm.NetworkConfig = new NetworkConfig();
 
             var config = _nm.NetworkConfig;
-            config.ProtocolVersion = 3; // This edition has a different replicated player/session schema.
+            config.ProtocolVersion = 4; // Match flame tracking, fruit balance and visuals; actor records remain 25 bytes.
             config.EnableSceneManagement = false;
             config.ForceSamePrefabs = false;
             config.TickRate = 30;

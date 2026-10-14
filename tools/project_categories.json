@@ -110,7 +110,8 @@
         "Assets/Resources/Art/Special_*.bytes",
         "Assets/Resources/Vfx/*",
         "Assets/Scripts/Core/UpgradeTuning.cs",
-        "Assets/Resources/UpgradeTuning.asset"
+        "Assets/Resources/UpgradeTuning.asset",
+        "../../tools/balance_simulator.html"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
@@ -128,7 +129,10 @@
         "Assets/Scripts/Elements/PlannedAbilities.cs": [
           "CastBasicAbility",
           "CastPlannedCombo",
-          "TickPlannedAbility"
+          "TickPlannedAbility",
+          "TrackedFireDirection",
+          "TreeLandingPoint",
+          "TurnFireDirection"
         ]
       }
     },
@@ -180,6 +184,10 @@
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
           "ApplyPhaseUi"
+        ],
+        "Assets/Scripts/UI/GameHud.cs": [
+          "HandleBack",
+          "BuildExitConfirmation"
         ]
       }
     },
@@ -244,7 +252,10 @@
         "ProjectSettings/ProjectVersion.txt",
         "ProjectSettings/EditorBuildSettings.asset",
         "Packages/manifest.json",
-        "../../.gitignore"
+        "../../.gitignore",
+        "../../tools/balance_simulator.html",
+        "../../docs/검증/host-balance-tree-fire.png",
+        "../../docs/검증/host-balance-exit-confirmation.png"
       ]
     }
   },

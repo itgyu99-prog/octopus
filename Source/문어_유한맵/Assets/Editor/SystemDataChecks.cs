@@ -6,6 +6,15 @@ namespace OctopusSurvivors.EditorTools
 {
     public static class SystemDataChecks
     {
+        // Batch editor play-mode validation, without building a Windows player.
+        public static void RunBalancePlayMode()
+        {
+            ShaderUtil.allowAsyncCompilation = false;
+            Run();
+            UnityEditor.SceneManagement.EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity");
+            EditorApplication.EnterPlaymode();
+        }
+
         [MenuItem("문어/2안 시스템 데이터 검증")]
         public static void Run()
         {

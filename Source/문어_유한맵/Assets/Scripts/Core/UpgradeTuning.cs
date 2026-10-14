@@ -9,8 +9,15 @@ namespace OctopusSurvivors
         [Min(0)] public float attributeDamagePerLevel = .22f, elementDamagePerLevel = .3f;
         [Min(.01f)] public float repeatInterval = .22f;
         [Min(0)] public float fireRangePerLevel = .3f;
+        [Min(.1f)] public float fireSizeMultiplier = 1.5f;
+        [Min(.05f)] public float fireRetargetInterval = .15f;
+        [Min(1)] public float fireTurnSpeed = 180f;
+        [Min(.1f)] public float fireClusterRadius = 3f;
+        [Range(0, 1)] public float fireRecentTargetWeight = .35f;
         [Min(0)] public float durationPerLevel = .4f, fogRangePerLevel = .3f;
-        [Min(.01f)] public float treeFruitInterval = .5f, masterFruitInterval = .15f;
+        [Min(.01f)] public float treeFruitInterval = .1f, masterFruitInterval = .08f;
+        [Min(0)] public float treeFruitDamageMultiplier = .2f, masterFruitDamageMultiplier = .53333336f;
+        [Min(.1f)] public float treeFruitRadius = .5f, treeFruitFallSeconds = .6f;
         [Range(.1f, .15f)] public float chainInterval = .12f;
         [Min(.1f)] public float thornDuration = 3f, thornTick = .4f;
         [Min(0)] public float thornDamageMultiplier = .4f, splitDamageMultiplier = .4f;

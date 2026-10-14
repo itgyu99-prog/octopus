@@ -126,7 +126,7 @@ namespace OctopusSurvivors
                     ToggleReady();
                 if (keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame)
                     RequestStart();
-                if (keyboard.escapeKey.wasPressedThisFrame)
+                if (keyboard.escapeKey.wasPressedThisFrame && (GameSession.Instance == null || !GameSession.Instance.IsPlaying))
                     GameBootstrap.LeaveToLobby();
             }
 

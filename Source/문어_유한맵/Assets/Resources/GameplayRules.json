@@ -14,7 +14,7 @@
   "abilities": [
     {"combo":1,"damage":14,"range":3.8,"duration":4,"cooldown":10},
     {"combo":2,"damage":12,"range":0.28,"duration":1.2,"cooldown":10},
-    {"combo":4,"damage":45,"range":4,"duration":3.5,"cooldown":10},
+    {"combo":4,"damage":45,"range":6,"duration":3.5,"cooldown":10},
     {"combo":11,"damage":25,"range":1.2,"duration":4,"cooldown":10},
     {"combo":12,"damage":12,"range":0.28,"duration":1.2,"cooldown":10},
     {"combo":13,"damage":25,"range":4.5,"duration":3,"cooldown":10}

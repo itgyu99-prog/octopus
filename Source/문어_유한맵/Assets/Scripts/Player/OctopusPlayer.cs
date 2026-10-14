@@ -219,6 +219,18 @@ namespace OctopusSurvivors
         {
             if (IsOwner && IsSpawned && _input != null)
             {
+                var session = GameSession.Instance;
+                if (_input.BackPressed && session != null && session.IsPlaying)
+                {
+                    MoveInput.Value = Vector2.zero;
+                    GameHud.Instance?.HandleBack();
+                    return; // Back consumes this frame before any other local action.
+                }
+                if (GameHud.Instance != null && GameHud.Instance.ExitConfirmationOpen)
+                {
+                    MoveInput.Value = Vector2.zero;
+                    return;
+                }
                 MoveInput.Value = LanLobby.IsVisible ? Vector2.zero : _input.Move;
 
                 if (_input.DashPressed && !LanLobby.IsVisible)
@@ -233,9 +245,6 @@ namespace OctopusSurvivors
                     PressServerRpc(4);
                 if (_input.UltimatePressed)
                     PressServerRpc(5);
-                if (_input.BackPressed)
-                    GameBootstrap.LeaveToLobby();
-
                 int pick = _input.PickPressed();
                 if (pick >= 0)
                     ChooseUpgrade(pick);

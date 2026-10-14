@@ -160,9 +160,17 @@ namespace OctopusSurvivors
 
         void Toggle()
         {
+            if (GameHud.Instance != null && GameHud.Instance.ExitConfirmationOpen) return;
             if (_panel == null)
                 return;
             _panel.SetActive(!_panel.activeSelf);
+        }
+
+        public static bool CloseIfOpen()
+        {
+            if (_instance == null || _instance._panel == null || !_instance._panel.activeInHierarchy) return false;
+            _instance._panel.SetActive(false);
+            return true;
         }
 
         void RequestStage(int stage)

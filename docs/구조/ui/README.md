@@ -21,6 +21,11 @@
 
 - `ApplyPhaseUi` — 181행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
+## `Assets/Scripts/UI/GameHud.cs` 진입 함수
+
+- `HandleBack` — 158행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `BuildExitConfirmation` — 139행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
 ## 범위 검색
 
 ```powershell

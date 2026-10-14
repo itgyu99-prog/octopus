@@ -34,8 +34,15 @@ namespace OctopusSurvivors
         }
         public void ToggleCombine()
         {
+            if (ExitConfirmationOpen) return;
             var session=GameSession.Instance;
             if(combineRoot!=null && session!=null && session.CombatActive) combineRoot.SetActive(!combineRoot.activeSelf);
+        }
+        bool CloseCombineIfOpen()
+        {
+            if (combineRoot == null || !combineRoot.activeInHierarchy) return false;
+            combineRoot.SetActive(false);
+            return true;
         }
         void UpdateCombine(OctopusPlayer player, GameSession session)
         {
