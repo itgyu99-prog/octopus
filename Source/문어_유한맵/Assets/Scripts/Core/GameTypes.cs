@@ -54,7 +54,11 @@ namespace OctopusSurvivors
         ElementRank = 6,
         AttributeCooldown = 7,
         ElementCooldown = 8,
-        ExtraDash = 9
+        ExtraDash = 9,
+        GrassTargets = 10, WaterRepeats = 11, ElectricRepeats = 12, FireRange = 13,
+        LingeringThorns = 14, ThornBurst = 15, WaterSplit = 16, WaterBalloon = 17,
+        FireTornado = 18, Fireworks = 19, SkyLightning = 20, Paralysis = 21,
+        SodaMastery = 22, ChiliMastery = 23, TreeMastery = 24, LemonMastery = 25, FogMastery = 26, BlueFlameMastery = 27
     }
 
     public enum ActorKind : byte
@@ -113,6 +117,8 @@ namespace OctopusSurvivors
         SodaWave = 71, LemonShot = 72, FruitTree = 73, Fruit = 74,
         ChainEmitter = 75, ChainArc = 76, FlameAura = 77, ThornEmitter = 78, CurrentEmitter = 79,
         Mist = 80, WaterEmitter = 81, RadialCurrent = 82, WaterImpact = 83, GiantSpike = 84,
+        ThornPatch = 85, ThornShot = 86, Balloon = 87, Tornado = 88, Firework = 89,
+        LightningWarning = 90, ComboRepeater = 91, ChiliField = 92, LemonWheel = 93,
         PiercingMeteor = 70
     }
 

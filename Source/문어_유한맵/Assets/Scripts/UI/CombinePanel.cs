@@ -41,13 +41,13 @@ namespace OctopusSurvivors
         {
             if(combineRoot==null || !combineRoot.activeSelf) return;
             if(session==null || !session.CombatActive || player.Downed.Value) { combineRoot.SetActive(false); return; }
-            combineTitle.text=$"요소 합성  {player.ComboCount}/3칸 사용 중\n보유 속성으로 합성 · 속성은 유지됩니다";
+            combineTitle.text=$"요소 합성  {player.ComboCount}/3칸 사용 중\n보유 속성으로 합성 · 재료 속성 2개는 소모됩니다";
             for(int i=0;i<6;i++)
             {
                 byte a=firstSlots[i],b=secondSlots[i];
                 bool valid=ElementRules.TryCombo(player.SlotElement(a),player.SlotElement(b),out var combo);
                 recipeButtons[i].GetComponentInChildren<Text>().text=valid
-                    ? $"{ElementRules.Name(player.SlotElement(a))} + {ElementRules.Name(player.SlotElement(b))} → {ElementRules.Name(combo)} (속성 유지)"
+                    ? $"{ElementRules.Name(player.SlotElement(a))} + {ElementRules.Name(player.SlotElement(b))} → {ElementRules.Name(combo)} (재료 소모)"
                     : $"속성 {a+1} + {b+1} : 서로 다른 속성 2개 필요";
                 recipeButtons[i].interactable=player.CanCombine(a,b,out _);
             }

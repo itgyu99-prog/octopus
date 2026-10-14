@@ -13,6 +13,7 @@
 - `Source/문어_유한맵/Assets/Scripts/Elements/HdSpellVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/PlannedAbilities.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/SpecialAbilities.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/UpgradeAbilities.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/WaterVfx.cs`
 
 ## 관련 파일
@@ -27,6 +28,7 @@
 - `Source/문어_유한맵/Assets/Resources/Art/Special_Meteorite.bytes`
 - `Source/문어_유한맵/Assets/Resources/Art/Special_Spirit.bytes`
 - `Source/문어_유한맵/Assets/Resources/GameplayRules.json`
+- `Source/문어_유한맵/Assets/Resources/UpgradeTuning.asset`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ComboAtlas.png`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ComboAtlas.png.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/DetailAtlas.png`
@@ -38,28 +40,29 @@
 - `Source/문어_유한맵/Assets/Resources/Vfx/WaterAtlas.png`
 - `Source/문어_유한맵/Assets/Resources/Vfx/WaterAtlas.png.meta`
 - `Source/문어_유한맵/Assets/Scripts/Core/GameplayRules.cs`
+- `Source/문어_유한맵/Assets/Scripts/Core/UpgradeTuning.cs`
 - `Source/문어_유한맵/Assets/Scripts/Player/OctopusPlayer.cs`
 - `Source/문어_유한맵/Assets/Scripts/UI/CombinePanel.cs`
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `SpawnAllySpirit` — 1802행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnPiercingMeteor` — 1811행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CastBlackFlame` — 1832행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `InfectFlame` — 1867행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnAllySpirit` — 1804행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnPiercingMeteor` — 1813행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CastBlackFlame` — 1834행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `InfectFlame` — 1869행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Player/OctopusPlayer.cs` 진입 함수
 
-- `GrantElement` — 498행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickAttributeCycle` — 368행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CanCombine` — 509행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ServerCombine` — 526행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `GrantElement` — 501행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickAttributeCycle` — 371행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CanCombine` — 512행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ServerCombine` — 529행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/PlannedAbilities.cs` 진입 함수
 
 - `CastBasicAbility` — 9행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CastPlannedCombo` — 56행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickPlannedAbility` — 107행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CastPlannedCombo` — 57행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickPlannedAbility` — 137행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

@@ -87,7 +87,9 @@ namespace OctopusSurvivors
         Vector2 _dashDirection;
         public int MaxDashCharges => 1 + ExtraDash.Value;
         PlayerInputReader _input;
-        UpgradeId[] _offerPool;
+        public readonly NetworkVariable<ulong> SkillLevels = new NetworkVariable<ulong>(0);
+        public bool HasUpgrade(UpgradeId id) => UpgradeCount(id) > 0;
+        public int ComboUpgradeLevel(ComboId id) => UpgradeCount(Upgrades.ForCombo(id));
         Transform _body;
         SpriteRenderer _bodySr;
         SpriteRenderer _ringSr;
@@ -102,6 +104,7 @@ namespace OctopusSurvivors
 
             if (IsServer)
             {
+                SkillLevels.Value = 0;
                 bool hostPlayer = OwnerClientId == NetworkManager.ServerClientId;
                 Palette.Value = (byte)(hostPlayer ? 0 : 1);
                 Vector2 spawn = hostPlayer ? new Vector2(-2.2f, 0f) : new Vector2(2.2f, 0f);
@@ -351,7 +354,7 @@ namespace OctopusSurvivors
             PendingPicks.Value = 2;
             StageChoiceComplete.Value = false;
             RollOffers();
-            if (Offer0.Value == 0) { PendingPicks.Value = 0; StageChoiceComplete.Value = true; }
+            if (Offer0.Value == 0 && Offer1.Value == 0 && Offer2.Value == 0) { PendingPicks.Value = 0; StageChoiceComplete.Value = true; }
         }
 
         void CancelCasts()
@@ -530,6 +533,10 @@ namespace OctopusSurvivors
             if (index == 0) Combo.Value = (byte)result;
             else if (index == 1) Combo1.Value = (byte)result;
             else Combo2.Value = (byte)result;
+            SetSlot(first, ElementId.None);
+            SetSlot(second, ElementId.None);
+            attributeCooldowns[first] = attributeCooldowns[second] = 0f;
+            CastElement = ElementId.None;
             comboCooldowns[index] = 0f;
             return true;
         }
@@ -604,32 +611,31 @@ namespace OctopusSurvivors
         void RollOffers()
         {
             ChoiceRevision.Value++;
-            if (_offerPool == null)
-                _offerPool = (UpgradeId[])Upgrades.All.Clone();
-
-            // 이미 만렙인 능력은 후보에서 뺀다.
-            int end = _offerPool.Length;
-            for (int i = end - 1; i >= 0; i--)
+            var regular = new List<UpgradeId>();
+            var hidden = new List<UpgradeId>();
+            foreach (var id in Upgrades.All)
+                if (CanOffer(id)) (Upgrades.IsHidden(id) ? hidden : regular).Add(id);
+            var offers = new byte[3];
+            for (int i = 0; i < offers.Length; i++)
             {
-                if (UpgradeCount(_offerPool[i]) < Upgrades.MaxPicks(_offerPool[i]))
-                    continue;
-                end--;
-                (_offerPool[i], _offerPool[end]) = (_offerPool[end], _offerPool[i]);
+                bool hiddenRoll = Random.value < UpgradeTuning.Data.hiddenOfferChance;
+                var pool = hiddenRoll && hidden.Count > 0 ? hidden : regular;
+                if (i == 2 && pool == regular && CanOffer(UpgradeId.ExtraDash) && Random.value < GameConfig.ExtraDashOfferChance)
+                { offers[i] = (byte)UpgradeId.ExtraDash; continue; }
+                // Never bypass the hidden roll when the ordinary pool is exhausted.
+                if (pool.Count == 0) continue;
+                int pick = Random.Range(0, pool.Count);
+                offers[i] = (byte)pool[pick];
+                pool.RemoveAt(pick);
             }
-
-            int choices = Mathf.Min(GameConfig.UpgradeChoices, end);
-            for (int i = 0; i < choices; i++)
-            {
-                int pick = Random.Range(i, end);
-                (_offerPool[i], _offerPool[pick]) = (_offerPool[pick], _offerPool[i]);
-            }
-
-            Offer0.Value = choices > 0 ? (byte)_offerPool[0] : (byte)0;
-            Offer1.Value = choices > 0 ? (byte)_offerPool[1 % choices] : (byte)0;
-            Offer2.Value = choices > 0 ? (byte)_offerPool[2 % choices] : (byte)0;
-            if (ExtraDash.Value == 0 && Random.value < GameConfig.ExtraDashOfferChance)
-                Offer2.Value = (byte)UpgradeId.ExtraDash;
+            Offer0.Value = offers[0]; Offer1.Value = offers[1]; Offer2.Value = offers[2];
+            if (offers[0] == 0 && offers[1] == 0 && offers[2] == 0)
+            { PendingPicks.Value = 0; StageChoiceComplete.Value = true; }
         }
+
+        bool CanOffer(UpgradeId id) => UpgradeCount(id) < Upgrades.MaxPicks(id) &&
+            (Upgrades.RequiredElement(id) == ElementId.None || HasElement(Upgrades.RequiredElement(id))) &&
+            (Upgrades.RequiredCombo(id) == ComboId.None || HasCombo(Upgrades.RequiredCombo(id)));
 
         public UpgradeId Offer(int index)
         {
@@ -644,6 +650,7 @@ namespace OctopusSurvivors
 
         public int UpgradeCount(UpgradeId id)
         {
+            if ((int)id >= 10 && (int)id <= 27) return (int)((SkillLevels.Value >> (((int)id - 10) * 3)) & 7UL);
             switch (id)
             {
                 case UpgradeId.ExtraDash: return ExtraDash.Value;
@@ -673,7 +680,7 @@ namespace OctopusSurvivors
             if (PendingPicks.Value == 0 || revision != ChoiceRevision.Value || GameSession.Instance.StageFlow.Value != (byte)StageState.Choosing)
                 return;
             var id = Offer(index);
-            if (id == UpgradeId.None)
+            if (id == UpgradeId.None || !CanOffer(id))
                 return;
 
             ApplyUpgrade(id);
@@ -691,6 +698,12 @@ namespace OctopusSurvivors
 
         void ApplyUpgrade(UpgradeId id)
         {
+            if (!IsServer || !CanOffer(id)) return;
+            if ((int)id >= 10 && (int)id <= 27)
+            {
+                SkillLevels.Value += 1UL << (((int)id - 10) * 3);
+                return;
+            }
             switch (id)
             {
                 case UpgradeId.ExtraDash:
@@ -726,7 +739,7 @@ namespace OctopusSurvivors
         {
             if (SlotElement(slot) == ElementId.None)
                 return 1;
-            return Mathf.Clamp(1 + UpAttrRank.Value, 1, 5);
+            return 1 + UpgradeCount(Upgrades.ForElement(SlotElement(slot)));
         }
 
         public ElementId SlotElement(byte slot) => (ElementId)(slot == 0 ? Slot0.Value : slot == 1 ? Slot1.Value : slot == 2 ? Slot2.Value : slot == 3 ? Slot3.Value : 0);

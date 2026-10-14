@@ -7,6 +7,7 @@
 ## 주 담당 파일
 
 - `Source/문어_유한맵/Assets/Scripts/Core/Upgrades.cs`
+- `Source/문어_유한맵/Assets/Scripts/Core/UpgradeTuning.cs`
 - `Source/문어_유한맵/Assets/Scripts/World/PearlStackVisual.cs`
 
 ## 관련 파일
@@ -14,6 +15,7 @@
 - `Source/문어_유한맵/Assets/Resources/Art/RelicPearl.bytes`
 - `Source/문어_유한맵/Assets/Resources/Art/RelicSandGlyph.bytes`
 - `Source/문어_유한맵/Assets/Resources/GameplayRules.json`
+- `Source/문어_유한맵/Assets/Resources/UpgradeTuning.asset`
 - `Source/문어_유한맵/Assets/Scripts/Core/GameplayRules.cs`
 - `Source/문어_유한맵/Assets/Scripts/Player/OctopusPlayer.cs`
 
@@ -21,21 +23,21 @@
 
 - `TickStageTransition` — 450행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `CompleteStage` — 470행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `StartArtifactStage` — 1477행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ClearFieldForNextStage` — 1506행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickArtifacts` — 1875행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickPotions` — 1521행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CollectPickup` — 1323행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TryDropAttribute` — 1471행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `DropBossSpecial` — 1023행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `AttributeNeeded` — 1465행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `StartArtifactStage` — 1479행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ClearFieldForNextStage` — 1508행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickArtifacts` — 1877행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickPotions` — 1523행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CollectPickup` — 1325행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TryDropAttribute` — 1473행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `DropBossSpecial` — 1025행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `AttributeNeeded` — 1467행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Player/OctopusPlayer.cs` 진입 함수
 
-- `GrantStageChoice` — 348행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `RollOffers` — 604행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ChooseUpgradeServerRpc` — 671행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TryPickup` — 472행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `GrantStageChoice` — 351행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `RollOffers` — 611행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ChooseUpgradeServerRpc` — 678행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TryPickup` — 475행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

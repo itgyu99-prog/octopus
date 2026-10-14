@@ -15,7 +15,7 @@ namespace OctopusSurvivors
         Vector3 previous;
         float clock, emit;
         bool impact, initialized;
-        public static bool Supports(ActorKind kind) => kind == ActorKind.Droplet || kind == ActorKind.WaterImpact;
+        public static bool Supports(ActorKind kind) => kind == ActorKind.Balloon || kind == ActorKind.Droplet || kind == ActorKind.WaterImpact;
         public static Sprite Frame(int index)
         {
             if (frames == null)

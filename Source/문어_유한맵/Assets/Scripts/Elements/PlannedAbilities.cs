@@ -9,26 +9,27 @@ namespace OctopusSurvivors
         public void CastBasicAbility(OctopusPlayer p, ElementId id, int level)
         {
             if (!IsServer || !CombatActive || p == null || p.Downed.Value) return;
-            int l = Mathf.Clamp(level, 1, 5);
-            float upgradeMul = 1f + .22f * p.UpAttrRank.Value;
+            int l = Mathf.Clamp(level, 1, 6);
+            float upgradeMul = 1f + UpgradeTuning.Data.attributeDamagePerLevel * p.UpAttrRank.Value;
             Vector2 dir = p.Facing.Value.sqrMagnitude > 0.01f ? p.Facing.Value.normalized : Vector2.right;
             switch (id)
             {
                 case ElementId.Fire:
-                    Effect(ActorKind.FlameAura, p.Pos, DensestFireDirection(p.Pos, dir, 4f + .3f * l), 4f + .3f * l, 1.25f, 70f * upgradeMul, p, l);
+                    Effect(ActorKind.FlameAura, p.Pos, DensestFireDirection(p.Pos, dir, 4.3f + UpgradeTuning.Data.fireRangePerLevel * (l - 1)), 4.3f + UpgradeTuning.Data.fireRangePerLevel * (l - 1), 1.25f, 70f * upgradeMul, p, l);
                     break;
                 case ElementId.Water:
-                    var water = Effect(ActorKind.WaterEmitter, p.Pos, p.NextWaterDirection(dir), .1f, l * GameplayRules.Data.attributeRepeatInterval, 27f * upgradeMul, p, l);
+                    var water = Effect(ActorKind.WaterEmitter, p.Pos, p.NextWaterDirection(dir), .1f, l * UpgradeTuning.Data.repeatInterval, 27f * upgradeMul, p, l);
                     water.Bounces = l;
                     break;
                 case ElementId.Grass:
                     Effect(ActorKind.ThornEmitter, p.Pos, Vector2.zero, 9f, 4 * .16f, 19f * upgradeMul, p, 3 + (l - 1));
                     break;
                 case ElementId.Electric:
-                    var current = Effect(ActorKind.CurrentEmitter, p.Pos, dir, 6.1f, l * GameplayRules.Data.attributeRepeatInterval, 24f * upgradeMul, p, l);
+                    var current = Effect(ActorKind.CurrentEmitter, p.Pos, dir, 6.1f, l * UpgradeTuning.Data.repeatInterval, 24f * upgradeMul, p, l);
                     current.Bounces = l;
                     break;
             }
+            CastHiddenAbilities(p, id, dir, upgradeMul);
         }
 
         public Vector2 DensestFireDirection(Vector2 origin, Vector2 fallback, float range)
@@ -57,39 +58,68 @@ namespace OctopusSurvivors
         {
             if (!IsServer || !CombatActive || p == null || p.Downed.Value) return;
             var t = GameplayRules.Tuning(combo);
-            int l = p.ElementLevel;
-            float damage = t.damage * (1f + .3f * (l - 1));
+            int rank = p.ComboUpgradeLevel(combo);
+            int l = rank + 1;
+            float damage = t.damage * (1f + UpgradeTuning.Data.elementDamagePerLevel * p.UpElemRank.Value);
             Vector2 dir = p.Facing.Value.sqrMagnitude > .01f ? p.Facing.Value.normalized : Vector2.right;
             switch (combo)
             {
                 case ComboId.Fog:
-                    Effect(ActorKind.Mist, p.Pos, Vector2.zero, t.range, t.duration, damage, p, l);
+                    var mist = Effect(ActorKind.Mist, p.Pos, Vector2.zero, t.range,
+                        t.duration + rank * UpgradeTuning.Data.durationPerLevel,
+                        damage * (rank == 5 ? UpgradeTuning.Data.masterFogDamageMultiplier : 1), p, l);
+                    mist.SkillTime = t.range + rank * UpgradeTuning.Data.fogRangePerLevel;
                     break;
                 case ComboId.Chili:
                 case ComboId.Lemon:
-                    int count = 8 + 2 * (l - 1);
-                    for (int i = 0; i < count; i++)
+                    FireComboVolley(p, combo, l, damage, dir);
+                    if (rank > 0)
                     {
-                        Vector2 shot = AbilityRunner.Rotate(dir, i * 360f / count);
-                        Effect(combo == ComboId.Chili ? ActorKind.ChiliShot : ActorKind.LemonShot,
-                            p.Pos + shot * .3f, shot * 8f, t.range, t.duration, damage, p, l);
+                        var repeat = Effect(ActorKind.ComboRepeater, p.Pos, dir, .1f,
+                            (rank + 1) * UpgradeTuning.Data.repeatInterval, damage, p, l);
+                        repeat.Mark = (int)combo; repeat.Bounces = rank;
+                        repeat.Pulse = UpgradeTuning.Data.repeatInterval;
                     }
+                    if (rank == 5 && combo == ComboId.Chili)
+                        Effect(ActorKind.ChiliField, p.Pos, Vector2.zero, 2f, UpgradeTuning.Data.chiliFieldDuration, damage, p, l);
+                    if (rank == 5 && combo == ComboId.Lemon)
+                        for (int i = 0; i < 2; i++)
+                            Effect(ActorKind.LemonWheel, p.Pos, AbilityRunner.Rotate(dir, Random.Range(0f, 360f)) * 6f,
+                                t.range * UpgradeTuning.Data.masterSizeMultiplier, t.duration, damage, p, l);
                     break;
                 case ComboId.Tree:
-                    Effect(ActorKind.FruitTree, p.Pos, Vector2.zero, t.range, t.duration, damage, p, l);
+                    for (int i = 0; i <= rank; i++)
+                        Effect(ActorKind.FruitTree, GameConfig.ClampToMap(p.Pos + (i == 0 ? Vector2.zero :
+                            AbilityRunner.Rotate(dir, i * 137.5f) * 2f), .5f), Vector2.zero, t.range, t.duration, damage, p, l);
                     break;
                 case ComboId.Soda:
-                    for (int i = 0; i < 5; i++)
+                    for (int i = 0; i < 5 + rank + (rank == 5 ? 1 : 0); i++)
                     {
-                        Vector2 spot = RandomSodaPosition(p.Pos, t.range);
+                        float size = t.range * (rank == 5 && i == 10 ? UpgradeTuning.Data.masterSizeMultiplier : 1);
+                        Vector2 spot = RandomSodaPosition(p.Pos, size);
                         var bottle = Effect(ActorKind.SodaWave, spot, AbilityRunner.Rotate(Vector2.right, Random.Range(0f, 360f)) * 6f,
-                            t.range, t.duration, damage, p, l);
+                            size, t.duration + rank * UpgradeTuning.Data.durationPerLevel, damage, p, l);
                         bottle.ContactCooldown = Random.Range(.3f, .8f);
                     }
                     break;
                 case ComboId.BlueFlame:
-                    Effect(ActorKind.ChainEmitter, p.Pos, Vector2.zero, t.range, t.duration, damage, p, l);
+                    for (int i = 0; i < (rank == 5 ? 2 : 1); i++)
+                    {
+                        var chain = Effect(ActorKind.ChainEmitter, p.Pos, Vector2.zero, t.range, t.duration, damage, p, l);
+                        chain.SkillPhase = (byte)i;
+                    }
                     break;
+            }
+        }
+
+        void FireComboVolley(OctopusPlayer p, ComboId combo, int level, float damage, Vector2 dir)
+        {
+            var t = GameplayRules.Tuning(combo);
+            for (int i = 0; i < 8; i++)
+            {
+                Vector2 shot = AbilityRunner.Rotate(dir, i * 45f);
+                Effect(combo == ComboId.Chili ? ActorKind.ChiliShot : ActorKind.LemonShot,
+                    p.Pos + shot * .3f, shot * 8f, t.range, t.duration, damage, p, level);
             }
         }
 
@@ -115,22 +145,23 @@ namespace OctopusSurvivors
             switch (a.Kind)
             {
                 case ActorKind.Mist:
+                    a.Size = Mathf.Lerp(GameplayRules.Tuning(ComboId.Fog).range * .4f, a.SkillTime, Mathf.Clamp01(a.Age / a.Duration));
                     DamageCircle(a.Pos, a.Size, a.Damage * dt, StatusMask.Slow, .3f, 0f);
                     break;
                 case ActorKind.FlameAura:
                     a.Pos = a.Owner.Pos;
-                    DamageCone(a.Pos, a.Vel, a.Size, 60f, a.Damage * dt, StatusMask.Burn, 1.2f, 8f);
+                    DamageCone(a.Pos, a.Vel, a.Size, 60f, a.Damage * dt, StatusMask.Burn, 1.2f, 8f * (1f + UpgradeTuning.Data.attributeDamagePerLevel * a.Owner.UpAttrRank.Value));
                     break;
                 case ActorKind.ThornEmitter:
                     a.Pos = a.Owner.Pos;
-                    if (a.Pulse <= 0f) { a.Pulse = .16f; StrikeNearestVines(a.Pos, a.Size, a.EffectLevel, a.Damage); }
+                    if (a.Pulse <= 0f) { a.Pulse = .16f; StrikeUpgradedVines(a); }
                     break;
                 case ActorKind.WaterEmitter:
                 case ActorKind.CurrentEmitter:
                     a.Pos = a.Owner.Pos;
                     if (a.Pulse <= 0f && a.Bounces > 0)
                     {
-                        a.Pulse = GameplayRules.Data.attributeRepeatInterval;
+                        a.Pulse = UpgradeTuning.Data.repeatInterval;
                         a.Bounces--;
                         if (a.Kind == ActorKind.WaterEmitter)
                         {
@@ -150,7 +181,7 @@ namespace OctopusSurvivors
                     foreach (var enemy in TempEnemies(a.Pos, front))
                     {
                         if (!a.HitTargets.Add(enemy.Id)) continue;
-                        ApplyDamage(enemy, a.Damage, Random.value < .2f ? StatusMask.Stun : StatusMask.None, .7f, 0f);
+                        ApplyDamage(enemy, a.Damage, a.Owner.HasUpgrade(UpgradeId.Paralysis) || Random.value < .2f ? StatusMask.Stun : StatusMask.None, UpgradeTuning.Data.paralysisDuration, 0f);
                     }
                     break;
                 case ActorKind.SodaWave:
@@ -171,7 +202,7 @@ namespace OctopusSurvivors
                 case ActorKind.FruitTree:
                     if (a.Pulse <= 0f)
                     {
-                        a.Pulse = .5f;
+                        a.Pulse = a.EffectLevel == 6 ? UpgradeTuning.Data.masterFruitInterval : UpgradeTuning.Data.treeFruitInterval;
                         Vector2 landing = GameConfig.ClampToMap(a.Pos + Random.insideUnitCircle * Mathf.Max(0f, a.Size - .5f), .5f);
                         Effect(ActorKind.Fruit, landing, Vector2.zero, .5f, .6f, a.Damage, a.Owner, a.EffectLevel);
                     }
@@ -181,7 +212,7 @@ namespace OctopusSurvivors
                     break;
                 case ActorKind.ChainEmitter:
                     a.Pos = a.Owner.Pos;
-                    if (a.Pulse <= 0f) { a.Pulse = .6f; CastChain(a); }
+                    if (a.Pulse <= 0f) CastChain(a);
                     break;
             }
             if (a.Life <= 0f) a.Dead = true;
@@ -190,25 +221,32 @@ namespace OctopusSurvivors
 
         void CastChain(SimActor source)
         {
-            var used = new HashSet<ushort>();
-            Vector2 from = source.Pos;
-            for (int jump = 0; jump < 3 + source.EffectLevel && CombatActive; jump++)
+            // One authoritative hop per interval. Damage occurs only when the visible arc is emitted.
+            if (source.Mark == 0) source.Anchor = source.Pos;
+            Vector2 from = source.Anchor;
+            SimActor nearest = null;
+            float best = source.Size * source.Size;
+            var candidates = TempEnemies(from, source.Size);
+            candidates.Sort((a, b) => (a.Pos - from).sqrMagnitude.CompareTo((b.Pos - from).sqrMagnitude));
+            foreach (var enemy in candidates)
             {
-                SimActor nearest = null;
-                float best = source.Size * source.Size;
-                foreach (var enemy in _actors)
-                {
-                    if (enemy.Dead || used.Contains(enemy.Id) || (enemy.Kind != ActorKind.Enemy && enemy.Kind != ActorKind.Boss)) continue;
-                    float dist = (enemy.Pos - from).sqrMagnitude;
-                    if (dist <= best) { best = dist; nearest = enemy; }
-                }
-                if (nearest == null) break;
-                used.Add(nearest.Id);
-                Vector2 to = nearest.Pos;
-                Effect(ActorKind.ChainArc, (from + to) * .5f, to - from, Mathf.Max(.1f, Vector2.Distance(from, to) * .5f), .18f, 0f, source.Owner, source.EffectLevel);
-                ApplyDamage(nearest, source.Damage, StatusMask.None, 0f, 0f);
-                from = to;
+                if (source.HitTargets.Contains(enemy.Id)) continue;
+                if (source.Mark == 0 && source.SkillPhase == 1 && candidates.Count > 1 && enemy == candidates[0]) continue;
+                float dist = (enemy.Pos - from).sqrMagnitude;
+                if (dist <= best) { best = dist; nearest = enemy; }
             }
+            if (nearest == null || source.Mark >= 3 + source.EffectLevel)
+            {
+                source.Mark = 0; source.HitTargets.Clear(); source.Pulse = .6f;
+                return;
+            }
+            source.HitTargets.Add(nearest.Id);
+            Vector2 to = nearest.Pos;
+            Effect(ActorKind.ChainArc, (from + to) * .5f, to - from,
+                Mathf.Max(.1f, Vector2.Distance(from, to) * .5f), .22f, 0f, source.Owner, source.EffectLevel);
+            ApplyDamage(nearest, source.Damage, StatusMask.None, 0f, 0f);
+            source.Anchor = to; source.Mark++;
+            source.Pulse = UpgradeTuning.Data.chainInterval;
         }
     }
 }

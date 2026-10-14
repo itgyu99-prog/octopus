@@ -108,7 +108,9 @@
         "Assets/Scripts/UI/CombinePanel.cs",
         "Assets/Resources/Art/Element_*.bytes",
         "Assets/Resources/Art/Special_*.bytes",
-        "Assets/Resources/Vfx/*"
+        "Assets/Resources/Vfx/*",
+        "Assets/Scripts/Core/UpgradeTuning.cs",
+        "Assets/Resources/UpgradeTuning.asset"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
@@ -135,13 +137,15 @@
       "purpose": "스테이지 진행, 능력 선택, 납품, 드랍·회복",
       "primary": [
         "Assets/Scripts/Core/Upgrades.cs",
-        "Assets/Scripts/World/PearlStackVisual.cs"
+        "Assets/Scripts/World/PearlStackVisual.cs",
+        "Assets/Scripts/Core/UpgradeTuning.cs"
       ],
       "related": [
         "Assets/Resources/GameplayRules.json",
         "Assets/Scripts/Core/GameplayRules.cs",
         "Assets/Scripts/Player/OctopusPlayer.cs",
-        "Assets/Resources/Art/Relic*.bytes"
+        "Assets/Resources/Art/Relic*.bytes",
+        "Assets/Resources/UpgradeTuning.asset"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [

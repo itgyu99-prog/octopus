@@ -257,7 +257,7 @@ namespace OctopusSurvivors
             var crt = _cardRoot.GetComponent<RectTransform>();
             crt.anchorMin = crt.anchorMax = new Vector2(0.5f, 0.5f);
             crt.pivot = new Vector2(0.5f, 0.5f);
-            crt.anchoredPosition = new Vector2(0f, -240f);
+            crt.anchoredPosition = new Vector2(0f, -140f);
             crt.sizeDelta = new Vector2(1100f, 320f);
 
             _cardHeader = UiUtil.Label(_cardRoot.transform, Vector2.zero, new Vector2(1100, 50), 32, new Color(1f, 0.92f, 0.5f), TextAnchor.MiddleCenter);
@@ -270,7 +270,7 @@ namespace OctopusSurvivors
             for (int i = 0; i < CardCount; i++)
             {
                 float x = (i - (CardCount - 1) * 0.5f) * spacing;
-                var card = UiUtil.Panel(_cardRoot.transform, new Vector2(x, -60f), new Vector2(330f, 180f), new Color(0.11f, 0.13f, 0.18f, 0.96f));
+                var card = UiUtil.Panel(_cardRoot.transform, new Vector2(x, -60f), new Vector2(330f, 290f), new Color(0.11f, 0.13f, 0.18f, 0.96f));
                 card.gameObject.name = "Card" + i;
                 _cards[i] = card;
 
@@ -287,8 +287,12 @@ namespace OctopusSurvivors
                 var key = UiUtil.Label(card.transform, new Vector2(18f, -14f), new Vector2(60f, 40f), 30, new Color(1f, 1f, 1f, 0.6f));
                 key.text = (i + 1).ToString();
 
-                _cardTitles[i] = UiUtil.Label(card.transform, new Vector2(18f, -58f), new Vector2(294f, 46f), 28, Color.white);
-                _cardDeltas[i] = UiUtil.Label(card.transform, new Vector2(18f, -108f), new Vector2(294f, 60f), 22, new Color(0.85f, 0.9f, 1f));
+                _cardTitles[i] = UiUtil.Label(card.transform, new Vector2(18f, -58f), new Vector2(294f, 60f), 24, Color.white);
+                _cardDeltas[i] = UiUtil.Label(card.transform, new Vector2(18f, -122f), new Vector2(294f, 152f), 21, new Color(0.85f, 0.9f, 1f), TextAnchor.UpperLeft);
+                _cardDeltas[i].resizeTextForBestFit = true;
+                _cardDeltas[i].resizeTextMinSize = 16;
+                _cardDeltas[i].resizeTextMaxSize = 21;
+                _cardDeltas[i].verticalOverflow = VerticalWrapMode.Truncate;
             }
 
             _cardRoot.SetActive(false);
@@ -399,9 +403,9 @@ namespace OctopusSurvivors
                     continue;
 
                 int owned = p.UpgradeCount(id);
-                _cardTitles[i].text = owned > 0 ? $"{Upgrades.Name(id)}  +{owned}" : Upgrades.Name(id);
+                _cardTitles[i].text = $"[{Upgrades.Grade(id)}] {Upgrades.Name(id)}";
                 _cardTitles[i].color = Upgrades.Tint(id);
-                _cardDeltas[i].text = Upgrades.Delta(id, owned);
+                _cardDeltas[i].text = (Upgrades.IsHidden(id) || id == UpgradeId.ExtraDash ? "1회 습득\n" : $"Lv.{owned} → {owned + 1} / {Upgrades.MaxPicks(id)}\n") + Upgrades.Delta(id, owned);
             }
         }
 

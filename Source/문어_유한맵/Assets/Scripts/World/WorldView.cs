@@ -94,7 +94,13 @@ namespace OctopusSurvivors
                     sr.transform.rotation = Quaternion.identity;
             }
 
-            sr.enabled = true;
+            sr.enabled = kind != ActorKind.ComboRepeater;
+            if (kind == ActorKind.LightningWarning)
+            {
+                sr.sprite = SpriteFactory.Ring(new Color(.3f, .8f, 1f, .7f));
+                sr.color = new Color(.3f, .8f, 1f, .7f);
+                sr.transform.localScale = Vector3.one * size * 2f;
+            }
             if (kind == ActorKind.Statue && sr.GetComponent<PearlStackVisual>() == null)
                 sr.gameObject.AddComponent<PearlStackVisual>();
             if (kind == ActorKind.Boss)

@@ -113,7 +113,7 @@ namespace OctopusSurvivors
                         if(guestMoving)
                         {
                             Check(guestMovementDistance>.1f,"guest movement replicated during countdown");
-                            Check(player.SlotElement(3)!=ElementId.None&&player.ComboCount==1,"guest fourth slot and ingredient-preserving synthesis replicated");
+                            Check(player.SlotElement(3)!=ElementId.None&&player.SlotElement(0)==ElementId.None&&player.SlotElement(1)==ElementId.None&&player.ComboCount==1,"guest fourth slot and consumed synthesis ingredients replicated");
                             guestMovementChecks++;guestMoving=false;
                         }
                     }
@@ -204,8 +204,11 @@ namespace OctopusSurvivors
                 for(int choice=0;choice<3;choice++)Check(p.Offer(choice)!=UpgradeId.MoveSpeed,"movement speed excluded from offers");
             }
             Check(p.ServerCombine(0,1),"synthesis available at stage one");
-            Check(p.HasElement(ElementId.Fire)&&p.HasElement(ElementId.Water),"synthesis retains ingredients");
-            Check(p.ServerCombine(0,2)&&p.ServerCombine(0,3)&&!p.ServerCombine(1,2),"three combo maximum enforced");
+            Check(!p.HasElement(ElementId.Fire)&&!p.HasElement(ElementId.Water),"synthesis consumes both ingredients");
+            Check(!p.ServerCombine(0,1),"consumed ingredients cannot be reused");
+            Check(p.GrantElement(ElementId.Fire)&&p.ServerCombine(0,2),"consumed ingredient can be reacquired and combined");
+            Check(p.GrantElement(ElementId.Fire)&&p.ServerCombine(0,3)&&!p.ServerCombine(1,2),"three combo maximum enforced");
+            foreach(var element in GameplayRules.BasicElements)p.GrantElement(element);
             ResetField(s);p.transform.position=Vector3.zero;p.NetPos.Value=Vector2.zero;
             foreach(var player in OctopusPlayer.All){player.transform.position=Vector3.zero;player.NetPos.Value=Vector2.zero;}
             var randomState=UnityEngine.Random.state;

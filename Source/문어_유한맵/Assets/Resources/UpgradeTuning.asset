@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 996d96e7b54f41458dcc0e7941515ea0, type: 3}
+  m_Name: UpgradeTuning
+  m_EditorClassIdentifier:
+  hiddenOfferChance: 0.2
+  attributeDamagePerLevel: 0.22
+  elementDamagePerLevel: 0.3
+  repeatInterval: 0.22
+  fireRangePerLevel: 0.3
+  durationPerLevel: 0.4
+  fogRangePerLevel: 0.3
+  treeFruitInterval: 0.5
+  masterFruitInterval: 0.15
+  chainInterval: 0.12
+  thornDuration: 3
+  thornTick: 0.4
+  thornDamageMultiplier: 0.4
+  splitDamageMultiplier: 0.4
+  balloonRadius: 2.5
+  tornadoDuration: 2
+  fireworkRadius: 2
+  lightningWarning: 0.45
+  paralysisDuration: 0.7
+  chiliFieldDuration: 4
+  chiliFieldInterval: 0.4
+  masterFogDamageMultiplier: 1.5
+  masterSizeMultiplier: 2
+  balloonDamage: 27
+  tornadoDps: 35
+  fireworkDamage: 70
+  lightningDamage: 48
+  tornadoRadius: 1.5
+  lightningRadius: 1.8
+  thornRadius: 0.9
+  hiddenProjectileLife: 3
+  thornProjectileLife: 1.4
+  balloonSpeed: 6
+  tornadoSpeed: 5
+  fireworkSpeed: 9
+  thornSpeed: 8
+  hiddenTickInterval: 0.25
+  lemonWheelTick: 0.3

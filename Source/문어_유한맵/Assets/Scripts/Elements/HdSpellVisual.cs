@@ -39,9 +39,9 @@ namespace OctopusSurvivors
             name="ElementAtlas";rows=4;row=0;
             switch(k)
             {
-                case ActorKind.FlameAura:return true;
+                case ActorKind.FlameAura:case ActorKind.Tornado:case ActorKind.Firework:case ActorKind.Explosion:return true;
                 case ActorKind.RadialCurrent:case ActorKind.ElectricWave:case ActorKind.LightningBolt:row=1;return true;
-                case ActorKind.Vine:row=2;return true;
+                case ActorKind.Vine:case ActorKind.ThornPatch:case ActorKind.ThornShot:row=2;return true;
             }
             name="DetailAtlas";rows=4;
             switch(k)
@@ -55,10 +55,10 @@ namespace OctopusSurvivors
             switch(k)
             {
                 case ActorKind.Mist:case ActorKind.SteamField:case ActorKind.Fog:row=0;return true;
-                case ActorKind.ChiliShot:case ActorKind.Pepper:row=1;return true;
+                case ActorKind.ChiliField:case ActorKind.ChiliShot:case ActorKind.Pepper:row=1;return true;
                 case ActorKind.FruitTree:case ActorKind.GrownTree:case ActorKind.Tree:row=2;return true;
                 case ActorKind.SodaWave:row=3;return true;
-                case ActorKind.LemonShot:row=4;return true;
+                case ActorKind.LemonWheel:case ActorKind.LemonShot:row=4;return true;
                 case ActorKind.ChainArc:row=5;return true;
             }
             name="LegacyAtlas";rows=7;
@@ -118,6 +118,9 @@ namespace OctopusSurvivors
             if(kind==ActorKind.FruitTree || kind==ActorKind.GrownTree)scale=.8f;
             if(kind==ActorKind.ChiliShot || kind==ActorKind.LemonShot || kind==ActorKind.MossShot)scale=2.7f;
             if(kind==ActorKind.Jellyfish || kind==ActorKind.CurrentFan){scale=1.2f;center=Vector3.right*.4f;}
+            if(kind==ActorKind.Tornado || kind==ActorKind.LemonWheel)
+                image.transform.localRotation=Quaternion.Euler(0,0,age*220);
+            if(kind==ActorKind.ThornPatch || kind==ActorKind.ChiliField){image.sortingOrder=3;alpha=.65f;}
             float fade=duration>0?Mathf.Clamp01((duration-age)/Mathf.Min(.2f,duration*.35f)):1;
             image.transform.localPosition=center;image.transform.localScale=Vector3.one*scale;
             image.color=new Color(1,1,1,alpha*fade);

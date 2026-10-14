@@ -593,7 +593,7 @@ namespace OctopusSurvivors
                 if (a.Dead)
                     continue;
 
-                if (TickPlannedAbility(a, dt) || TickElementEffect(a, dt)) continue;
+                if (TickUpgradeAbility(a, dt) || TickPlannedAbility(a, dt) || TickElementEffect(a, dt)) continue;
 
                 switch (a.Kind)
                 {
@@ -732,6 +732,7 @@ namespace OctopusSurvivors
                 {
                     DamageCircle(a.Pos, 1.25f, a.Damage * 0.75f, StatusMask.Slow, 1.3f, 0f);
                     SpawnTransient(ActorKind.WaterImpact, a.Pos, 1.6f, 0.2f);
+                    SplitWater(a);
                     a.Dead = true;
                 }
                 else if (a.Kind == ActorKind.AutoBolt)
@@ -765,6 +766,7 @@ namespace OctopusSurvivors
                 {
                     DamageCircle(a.Pos, 1.1f, a.Damage * 0.5f, StatusMask.Slow, 0.8f, 0f);
                     SpawnTransient(ActorKind.WaterImpact, a.Pos, 1.3f, 0.18f);
+                    SplitWater(a);
                 }
 
                 a.Dead = true;

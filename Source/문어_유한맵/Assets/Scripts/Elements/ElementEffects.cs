@@ -317,18 +317,18 @@ namespace OctopusSurvivors
             if (hit == null) return;
             a.Pos = hit.Pos;
             ApplyDamage(hit, a.Damage, StatusMask.None, 0f, 0f);
-            if (a.Kind == ActorKind.ChiliShot) ApplySpicy(hit, a.EffectLevel);
+            if (a.Kind == ActorKind.ChiliShot) ApplySpicy(hit, 1, 1f + UpgradeTuning.Data.elementDamagePerLevel * a.Owner.UpElemRank.Value);
             if (a.Kind != ActorKind.MossShot) { a.Dead = true; return; }
             a.LastHit = hit;
             a.Target = null;
             if (--a.Bounces <= 0) a.Dead = true;
         }
 
-        void ApplySpicy(SimActor enemy, int level)
+        void ApplySpicy(SimActor enemy, int level, float multiplier = 1f)
         {
             if (enemy.Dead) return;
             enemy.SpicyTime = Mathf.Max(enemy.SpicyTime, 2f + 0.4f * (level - 1));
-            enemy.SpicyDps = Mathf.Max(enemy.SpicyDps, 10f + 4f * (level - 1));
+            enemy.SpicyDps = Mathf.Max(enemy.SpicyDps, (10f + 4f * (level - 1)) * multiplier);
             enemy.SpicyDir = Random.insideUnitCircle.normalized;
         }
     }

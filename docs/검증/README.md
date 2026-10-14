@@ -95,3 +95,10 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 - GiantAtlas 최종 편집: “Edit target: giant monster sprite sheet. Crucial technical correction: exactly 4 equal columns and 5 equal rows. Shrink EVERY individual sprite to only 55% of the width and height of its own cell and CENTER it, with at least 22% totally TRANSPARENT padding on ALL FOUR sides inside EACH cell. No part of any sprite, spike, tentacle, claw, star, or effect may enter another cell. Keep same five characters, same four poses each, same pixel style and colors. Row1 crab; row2 hermit; row3 jellyfish; row4 starfish; row5 urchin. Each row has exactly idle, preparing, attacking, recovering. Particularly shrink jellyfish attacking tentacles and urchin spikes and remove launched projectile stars from the starfish attacking pose (only starfish body remains). Transparent background, no grid drawn, no words. Uniform cell grid is mandatory; characters should look SMALL with large empty spacing.”
 
 </details>
+
+
+## 2026-10-14 능력치 시스템 Windows 패키지
+
+- 능력치·히든·합성 재료 소모를 반영한 Windows 패키지를 `문어지지마_2안_v0.1.0_Windows.zip`으로 만들었다. 크기 58,542,305바이트, 214개 파일. ZIP CRC 및 실행 필수 파일을 확인했다. Unity 6000.5.7f1 Windows 빌드와 기존 시스템 데이터 사전 검사가 통과했다.
+- SHA-256: `4768f1001789e71524754dfa8022844d7e0342f4b699f5cac7b8115fb99872c5`. 게임을 실제 실행하는 검사는 자동 승인 검토에서 거절되어 수행하지 않았다.
+- 히든 20%는 슬롯별 설정값이며 결과는 난수에 따른다. 정상 플레이 장기 밸런스, 네트워크 참가자 화면 및 에셋 실제 배치는 실행 테스트 전까지 미확인이다.
