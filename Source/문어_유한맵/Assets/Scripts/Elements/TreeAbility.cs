@@ -35,9 +35,21 @@ namespace OctopusSurvivors
             {
                 tree.Mark++;
                 Vector2 landing = TreeLandingPoint(tree, tuning.fruitRadius);
-                Effect(ActorKind.Fruit, landing, Vector2.zero, tuning.fruitRadius,
+                var fruit = Effect(ActorKind.Fruit, landing, Vector2.zero, tuning.fruitRadius,
                     tuning.fruitFallSeconds, tree.Damage, tree.Owner, tree.EffectLevel);
+                // Keep the original tree footprint after the tree itself expires.
+                fruit.SkillPoint = tree.Pos;
+                fruit.SkillTime = tree.Size;
             }
+        }
+
+        void LandTreeFruit(SimActor fruit)
+        {
+            if (fruit.Life > 0f || fruit.Dead) return;
+            Vector2 center = fruit.SkillTime > 0f ? fruit.SkillPoint : fruit.Pos;
+            float radius = fruit.SkillTime > 0f ? fruit.SkillTime : fruit.Size;
+            DamageCircle(center, radius, fruit.Damage, StatusMask.None, 0f, 0f);
+            fruit.Dead = true;
         }
 
         Vector2 TreeLandingPoint(SimActor tree, float fruitRadius)

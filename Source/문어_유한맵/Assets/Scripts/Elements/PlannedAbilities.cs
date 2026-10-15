@@ -212,7 +212,7 @@ namespace OctopusSurvivors
                     TickTreeAbility(a);
                     break;
                 case ActorKind.Fruit:
-                    if (a.Life <= 0f) DamageCircle(a.Pos, a.Size, a.Damage, StatusMask.None, 0f, 0f);
+                    LandTreeFruit(a);
                     break;
                 case ActorKind.ChainEmitter:
                     a.Pos = a.Owner.Pos;

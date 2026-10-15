@@ -140,6 +140,7 @@
         "Assets/Scripts/Elements/TreeAbility.cs": [
           "CastTreeAbility",
           "TickTreeAbility",
+          "LandTreeFruit",
           "TreeLandingPoint"
         ]
       }
