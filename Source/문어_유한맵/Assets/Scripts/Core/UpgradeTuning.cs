@@ -21,6 +21,8 @@ namespace OctopusSurvivors
         [Min(0)] public float fireOrbBurnDps = 4f;
         [Range(.1f, .8f)] public float fireOrbTrailTime = .48f;
         [Min(.1f)] public float fireOrbPatrolDistance = 1.4f, fireOrbPatrolSpeed = 4.2f;
+        [Min(.1f)] public float fireOrbSeekSpeed = 14f, fireOrbTargetRangeMultiplier = 1.5f;
+        [Min(.05f)] public float fireOrbRetargetInterval = .65f, fireOrbTargetHold = .18f;
         [Min(0)] public float durationPerLevel = .4f, fogRangePerLevel = .3f;
         [Min(.03f)] public float chainInterval = .08f;
         [Min(0)] public float blueFlameSplashRangePerLevel = .3f;

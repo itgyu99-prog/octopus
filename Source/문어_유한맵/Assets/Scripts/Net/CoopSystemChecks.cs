@@ -474,7 +474,7 @@ namespace OctopusSurvivors
             var flame = fireOrbs[1];
             Call(s, "TickPlannedAbility", flame, .8f);
             Check(Vector2.Distance(flame.Pos, FireOrbGeometry.Position(flame.Anchor, flame.SkillPoint, flame.SkillTime,
-                flame.Bounces, flame.Age, flame.Duration, p.Pos)) < .01f, "fire follows fixed throw geometry without homing");
+                flame.Bounces, flame.Age, flame.Duration, p.Pos)) < .01f, "fire preserves initial throw geometry before auto-target acquisition");
             Check(GameConfig.ActorBytes == 25, "returning fire keeps existing snapshot layout");
             ResetField(s); s.CastBasicAbility(p, ElementId.Fire, 6);
             Check(Mathf.Abs(Actors(s).Find(a => a.Kind == ActorKind.FlameAura).SkillTime - 8.7f) < .001f,

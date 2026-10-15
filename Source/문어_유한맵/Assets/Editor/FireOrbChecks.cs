@@ -116,7 +116,7 @@ namespace OctopusSurvivors.EditorTools
             var far = Target(s, new Vector2(200, 200));
             Call(s, "TickPlannedAbility", center, .1f);
             Vector2 expected = FireOrbGeometry.Position(center.Anchor, center.SkillPoint, center.SkillTime, 1, center.Age, center.Duration, p.Pos);
-            Check(Vector2.Distance(center.Pos, expected) < .001f, "enemy positions never steer the trajectory");
+            Check(Vector2.Distance(center.Pos, expected) < .001f, "initial fan throw stays unchanged before targeting");
             far.Dead = true;
             while (center.Age < 3.9f) Call(s, "TickPlannedAbility", center, Mathf.Min(.03f, 3.9f - center.Age));
             var returning = Target(s, new Vector2(1.4f, 0));
@@ -129,6 +129,7 @@ namespace OctopusSurvivors.EditorTools
             while (!moving.Dead) Call(s, "TickPlannedAbility", moving, .03f);
             Check(Vector2.Distance(moving.Pos, p.Pos) < .01f, "recall returns to the moving owner rather than the cast point");
             Check(GameConfig.ActorBytes == 25, "existing snapshot record preserved");
+            ValidateAutoTargets(s, p);
 
             Clear(s); p.transform.position = new Vector3(-5, 0, 0); p.NetPos.Value = p.Pos;
             for (int i = 0; i < 22; i++)
@@ -151,7 +152,69 @@ namespace OctopusSurvivors.EditorTools
             }
             Check(UnityEngine.Object.FindObjectsByType<FireOrbVisual>(FindObjectsSortMode.None).Length == 0, "visuals retire with recalled actors");
             Time.captureDeltaTime = 0;
-            Debug.Log("FIRE ORB CHECKS PASS: 3 / no homing / head and tail union / recall / stable FPS / live capture");
+            Debug.Log("FIRE ORB CHECKS PASS: fan launch / distributed auto-targets / target rotation / head and tail union / recall / stable FPS / live capture");
+        }
+        static void ValidateAutoTargets(GameSession s, OctopusPlayer p)
+        {
+            Clear(s); p.transform.position = Vector3.zero; p.NetPos.Value = Vector2.zero;
+            for (int i = 0; i < 6; i++) Target(s, new Vector2(4 + i % 2 * 2, (i / 2 - 1) * 2));
+            s.CastBasicAbility(p, ElementId.Fire, 1);
+            var orbs = Actors(s).FindAll(a => a.Kind == ActorKind.FlameAura);
+            foreach (var orb in orbs)
+            {
+                Call(s, "TickPlannedAbility", orb, .5f);
+                Vector2 initial = FireOrbGeometry.Position(orb.Anchor, orb.SkillPoint, orb.SkillTime, orb.Bounces, orb.Age, orb.Duration, p.Pos);
+                Check(orb.Target == null && Vector2.Distance(orb.Pos, initial) < .001f, "spread and launch interval retained for shot " + orb.Bounces);
+            }
+            Check(Mathf.Abs(FireOrbGeometry.Launch(1) - FireOrbGeometry.Launch(0) - .16f) < .001f,
+                "three shots retain the 0.16 second stagger");
+            foreach (var orb in orbs) Call(s, "TickPlannedAbility", orb, .55f);
+            var chosen = new HashSet<ushort>();
+            foreach (var orb in orbs) if (orb.Target != null) chosen.Add(orb.Target.Id);
+            Check(chosen.Count == 3, "three orbs acquire distinct monsters when available");
+            var tracking = orbs[2]; var movingTarget = tracking.Target;
+            movingTarget.Pos += new Vector2(.5f, .4f);
+            float distance = Vector2.Distance(tracking.Pos, movingTarget.Pos);
+            Call(s, "TickPlannedAbility", tracking, .03f);
+            Check(tracking.Target == movingTarget && Vector2.Distance(tracking.Pos, movingTarget.Pos) < distance,
+                "locked orb follows a moving monster");
+            var histories = new Dictionary<ushort, HashSet<ushort>>();
+            foreach (var orb in orbs) histories[orb.Id] = new HashSet<ushort>();
+            for (int frame = 0; frame < 40; frame++) foreach (var orb in orbs)
+            {
+                Call(s, "TickPlannedAbility", orb, 1f/30);
+                if (orb.Target != null) histories[orb.Id].Add(orb.Target.Id);
+            }
+            var all = new HashSet<ushort>();
+            foreach (var orb in orbs)
+            { Check(histories[orb.Id].Count >= 2, "shot " + orb.Bounces + " alternates between monsters"); all.UnionWith(histories[orb.Id]); }
+            Check(all.Count >= 5, "attacks are distributed across the group rather than focused on one monster");
+            var dead = orbs[0].Target; dead.Dead = true;
+            Call(s, "TickPlannedAbility", orbs[0], .02f);
+            Check(orbs[0].Target != null && orbs[0].Target != dead && !orbs[0].Target.Dead,
+                "dead targets are replaced immediately");
+            foreach (var actor in Actors(s)) if (actor.Kind == ActorKind.Enemy || actor.Kind == ActorKind.Boss) actor.Dead = true;
+            foreach (var orb in orbs) Call(s, "TickPlannedAbility", orb, .1f);
+            Check(orbs.TrueForAll(a => a.Target == null && !a.Dead), "empty battlefield keeps the skill alive safely");
+            var only = Target(s, new Vector2(2, 0));
+            foreach (var orb in orbs) Call(s, "TickPlannedAbility", orb, .1f);
+            Check(orbs.TrueForAll(a => a.Target == only), "one remaining enemy is still attacked by all three shots");
+            foreach (int count in new[] { 2, 3 })
+            {
+                Clear(s);
+                for (int i = 0; i < count; i++) Target(s, new Vector2(4, -2 + i * 2));
+                s.CastBasicAbility(p, ElementId.Fire, 1);
+                var smallGroup = Actors(s).FindAll(a => a.Kind == ActorKind.FlameAura);
+                var visited = new Dictionary<ushort, HashSet<ushort>>();
+                foreach (var orb in smallGroup) visited[orb.Id] = new HashSet<ushort>();
+                for (int frame = 0; frame < 90; frame++) foreach (var orb in smallGroup)
+                {
+                    Call(s, "TickPlannedAbility", orb, 1f/30);
+                    if (orb.Target != null) visited[orb.Id].Add(orb.Target.Id);
+                }
+                foreach (var orb in smallGroup) Check(visited[orb.Id].Count >= 2,
+                    "shot " + orb.Bounces + " rotates even with only " + count + " monsters");
+            }
         }
         static void Capture(Camera camera, string path)
         {

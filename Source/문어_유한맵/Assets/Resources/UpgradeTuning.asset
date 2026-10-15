@@ -33,6 +33,10 @@ MonoBehaviour:
   fireOrbTrailTime: 0.48
   fireOrbPatrolDistance: 1.4
   fireOrbPatrolSpeed: 4.2
+  fireOrbSeekSpeed: 14
+  fireOrbTargetRangeMultiplier: 1.5
+  fireOrbRetargetInterval: 0.65
+  fireOrbTargetHold: 0.18
   durationPerLevel: 0.4
   fogRangePerLevel: 0.3
   chainInterval: 0.08

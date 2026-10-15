@@ -167,7 +167,8 @@
         "Assets/Scripts/Elements/FireOrbAbility.cs": [
           "CastFireOrbs",
           "TickFireOrb",
-          "DamageFireTrail"
+          "DamageFireTrail",
+          "MoveFireOrbToTarget"
         ],
         "Assets/Scripts/Elements/FireOrbVisual.cs": [
           "Configure",
