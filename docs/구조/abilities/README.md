@@ -7,6 +7,7 @@
 ## 주 담당 파일
 
 - `Source/문어_유한맵/Assets/Scripts/Elements/AbilityRunner.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/BlueFlameVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementEffects.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementEffectVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementRules.cs`
@@ -33,6 +34,8 @@
 - `Source/문어_유한맵/Assets/Resources/GameplayRules.json`
 - `Source/문어_유한맵/Assets/Resources/TreeAbilityTuning.asset`
 - `Source/문어_유한맵/Assets/Resources/UpgradeTuning.asset`
+- `Source/문어_유한맵/Assets/Resources/Vfx/BlueFlameGlow.shader`
+- `Source/문어_유한맵/Assets/Resources/Vfx/BlueFlameGlow.shader.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ComboAtlas.png`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ComboAtlas.png.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/DetailAtlas.png`
@@ -77,8 +80,13 @@
 
 ## `Assets/Scripts/Elements/HdSpellVisual.cs` 진입 함수
 
-- `DrawSplashLightning` — 140행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `LateUpdate` — 192행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `Configure` — 83행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `LateUpdate` — 130행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+## `Assets/Scripts/Elements/BlueFlameVisual.cs` 진입 함수
+
+- `Configure` — 24행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `RenderAt` — 79행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/TreeAbility.cs` 진입 함수
 

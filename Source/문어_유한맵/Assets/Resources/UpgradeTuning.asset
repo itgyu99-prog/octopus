@@ -24,7 +24,7 @@ MonoBehaviour:
   fireRecentTargetWeight: 0.35
   durationPerLevel: 0.4
   fogRangePerLevel: 0.3
-  chainInterval: 0.12
+  chainInterval: 0.08
   blueFlameSplashRangePerLevel: 0.3
   blueFlameBurstInterval: 0.6
   blueFlameChainTargets: 20

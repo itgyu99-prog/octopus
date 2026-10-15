@@ -200,14 +200,21 @@ namespace OctopusSurvivors
 
         public static void StartHost()
         {
+            StartHost(GameConfig.Port);
+        }
+
+        internal static void StartHost(ushort port)
+        {
             if (!CanStartNetwork())
                 return;
 
             RelaySession.Clear();
             _instance.PrepareLanTransport(true, "0.0.0.0");
+            if (port != GameConfig.Port)
+                _instance._nm.GetComponent<UnityTransport>().SetConnectionData("127.0.0.1", port, "127.0.0.1");
             if (!_instance._nm.StartHost())
             {
-                LanLobby.Show($"Host 시작 실패. 포트 {GameConfig.Port}이 사용 중인지 확인하세요.");
+                LanLobby.Show($"Host 시작 실패. 포트 {port}이 사용 중인지 확인하세요.");
                 return;
             }
 

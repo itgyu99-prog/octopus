@@ -140,8 +140,12 @@
           "ShowBlueFlameArc"
         ],
         "Assets/Scripts/Elements/HdSpellVisual.cs": [
-          "DrawSplashLightning",
+          "Configure",
           "LateUpdate"
+        ],
+        "Assets/Scripts/Elements/BlueFlameVisual.cs": [
+          "Configure",
+          "RenderAt"
         ],
         "Assets/Scripts/Elements/TreeAbility.cs": [
           "CastTreeAbility",

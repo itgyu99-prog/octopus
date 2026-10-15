@@ -12,10 +12,6 @@ namespace OctopusSurvivors
         float age,duration,offset;
         Vector3 previous;
         bool initialized;
-        LineRenderer lightningGlow, lightningCore;
-        readonly SpriteRenderer[] lightningTextureSegments = new SpriteRenderer[8];
-        readonly Vector3[] lightningPoints = new Vector3[9];
-        SpriteRenderer lightningImpact;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetCache() => sheets.Clear();
 
@@ -87,6 +83,12 @@ namespace OctopusSurvivors
         public void Configure(ActorKind value,float serverAge,float life)
         {
             kind=value;duration=life;
+            if (kind == ActorKind.ChainArc)
+            {
+                var blueFlame = GetComponent<BlueFlameVisual>() ?? gameObject.AddComponent<BlueFlameVisual>();
+                blueFlame.Configure(serverAge, life);
+                return;
+            }
             if(image==null)
             {
                 image=Layer("Textured skill",12);echo=Layer("Textured afterglow",11);
@@ -125,75 +127,10 @@ namespace OctopusSurvivors
             var sr=go.AddComponent<SpriteRenderer>();sr.sortingOrder=order;return sr;
         }
 
-        LineRenderer LightningLine(string label, float width, int order)
-        {
-            var go = new GameObject(label); go.transform.SetParent(transform, false);
-            var line = go.AddComponent<LineRenderer>();
-            line.useWorldSpace = false;
-            line.sharedMaterial = image.sharedMaterial;
-            line.widthMultiplier = width;
-            line.sortingOrder = order;
-            line.numCapVertices = 2;
-            return line;
-        }
-
-        void DrawSplashLightning()
-        {
-            // Actor transform already encodes the midpoint, half-length and direction.
-            // Dedicated geometry keeps the bolt endpoints on the actual hit targets.
-            image.enabled = echo.enabled = false;
-            if (lightningCore == null)
-            {
-                lightningGlow = LightningLine("Lightning glow", .16f, 14);
-                lightningCore = LightningLine("Lightning core", .035f, 16);
-                for (int i = 0; i < lightningTextureSegments.Length; i++)
-                    lightningTextureSegments[i] = Layer("Original blue flame texture", 15);
-                lightningImpact = Layer("Lightning splash impact", 17);
-            }
-            float fade = Mathf.Clamp01((duration - age) / .25f);
-            float visualScale = Mathf.Max(.1f, UpgradeTuning.Data.blueFlameVisualScale);
-            lightningGlow.widthMultiplier = .055f * visualScale;
-            lightningCore.widthMultiplier = .012f * visualScale;
-            float lengthScale = Mathf.Max(.15f, transform.lossyScale.x);
-            for (int i = 0; i < lightningPoints.Length; i++)
-            {
-                float u = i / 8f;
-                float jitter = i == 0 || i == 8 ? 0f :
-                    Mathf.Sin(i * 8.3f + offset * 13f) * .09f * visualScale / lengthScale;
-                lightningPoints[i] = new Vector3(Mathf.Lerp(-1f, 1f, u), jitter, 0f);
-            }
-            lightningGlow.positionCount = lightningCore.positionCount = lightningPoints.Length;
-            lightningGlow.SetPositions(lightningPoints);
-            lightningCore.SetPositions(lightningPoints);
-            lightningGlow.startColor = lightningGlow.endColor = new Color(.15f, .55f, 1f, fade * .55f);
-            lightningCore.startColor = lightningCore.endColor = new Color(.8f, 1f, 1f, fade);
-            // Reuse the original ComboAtlas blue-flame animation along the bent path.
-            // Length follows the link; transverse thickness stays constant in world units.
-            var textureFrame = Frame("ComboAtlas", 6, 20 + (int)((age + offset) * 14f) % 4);
-            if (textureFrame == null) return;
-            for (int i = 0; i < lightningTextureSegments.Length; i++)
-            {
-                var piece = lightningTextureSegments[i];
-                Vector3 delta = lightningPoints[i + 1] - lightningPoints[i];
-                piece.sprite = textureFrame;
-                piece.transform.localPosition = (lightningPoints[i] + lightningPoints[i + 1]) * .5f;
-                piece.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
-                piece.transform.localScale = new Vector3(delta.magnitude * 1.08f / textureFrame.bounds.size.x,
-                    .24f * visualScale / (lengthScale * textureFrame.bounds.size.y), 1f);
-                piece.color = new Color(1f, 1f, 1f, fade * .9f);
-            }
-            lightningImpact.sprite = textureFrame;
-            lightningImpact.transform.localPosition = Vector3.right;
-            lightningImpact.transform.localScale = Vector3.one * .35f * visualScale /
-                (lengthScale * Mathf.Max(textureFrame.bounds.size.x, textureFrame.bounds.size.y));
-            lightningImpact.color = new Color(1f, 1f, 1f, fade);
-        }
-
         void LateUpdate()
         {
             if(image==null || !Mapping(kind,out string name,out int rows,out int row))return;
             age+=Time.deltaTime;
-            if (kind == ActorKind.ChainArc) { DrawSplashLightning(); return; }
             int frame=(int)((age+offset)*14)%4;
             bool tree = kind == ActorKind.FruitTree;
             if (tree) frame = 0; // Stable trunk/canopy; only the falling fruit animates.

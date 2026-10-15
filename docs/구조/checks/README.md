@@ -6,6 +6,7 @@ Unity 에디터 검사, 협동 검사, 빌드·배포 설정
 
 ## 주 담당 파일
 
+- `Source/문어_유한맵/Assets/Editor/BlueFlameCheckLauncher.cs`
 - `Source/문어_유한맵/Assets/Editor/BuildTool.cs`
 - `Source/문어_유한맵/Assets/Editor/CharacterVisualChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/CombatVisualChecks.cs`

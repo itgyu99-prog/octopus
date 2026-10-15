@@ -14,6 +14,7 @@ namespace OctopusSurvivors
     {
         bool host, solo, relay, started, ready, guestReady, registered, done, finishRequested;
         bool sawGiantVisual;
+        bool blueFlameCheck;
         int guestMovementChecks;
         float deadline, nextPick;
         int observedPending = -1;
@@ -31,11 +32,19 @@ namespace OctopusSurvivors
         {
             var args=Environment.GetCommandLineArgs();
             bool single=Array.IndexOf(args,"-octopus-test-solo")>=0;
+#if UNITY_EDITOR
+            bool editorBlueFlame = UnityEditor.SessionState.GetBool("Octopus.BlueFlameCheck", false);
+            single |= editorBlueFlame;
+#endif
             bool server=single||Array.IndexOf(args,"-octopus-test-host")>=0;
             if(!server&&Array.IndexOf(args,"-octopus-test-client")<0) return;
             var go=new GameObject("CoopSystemChecks");DontDestroyOnLoad(go);
             var runner=go.AddComponent<CoopSystemChecks>();
             runner.host=server;runner.solo=single;
+            runner.blueFlameCheck=Array.IndexOf(args,"-octopus-blueflame-check")>=0;
+#if UNITY_EDITOR
+            runner.blueFlameCheck |= editorBlueFlame;
+#endif
             runner.relay=Array.IndexOf(args,"-octopus-relay-check")>=0;
             runner.deadline=Time.realtimeSinceStartup+150f;
             Application.targetFrameRate=60;
@@ -46,7 +55,7 @@ namespace OctopusSurvivors
             {
                 if(done) return;
                 if(Time.realtimeSinceStartup>deadline) throw new Exception("Integration timeout");
-                if (ready && host && run != null && Array.IndexOf(Environment.GetCommandLineArgs(), "-octopus-balance-check") >= 0)
+                if (ready && host && run != null && (blueFlameCheck || Array.IndexOf(Environment.GetCommandLineArgs(), "-octopus-balance-check") >= 0))
                 {
                     if (!run.MoveNext()) run = null;
                     return; // Continue exit checks even after GameSession despawns.
@@ -65,7 +74,15 @@ namespace OctopusSurvivors
                     }
                     started=true;
                     if(relay) { if(host) GameBootstrap.StartRelayHost(); else GameBootstrap.StartRelayClient(joinCode); }
-                    else if(host) GameBootstrap.StartHost(); else GameBootstrap.StartClient("127.0.0.1");
+                    else if(host)
+                    {
+                        ushort port=GameConfig.Port;
+#if UNITY_EDITOR
+                        if(blueFlameCheck)port=(ushort)UnityEditor.SessionState.GetInt("Octopus.BlueFlamePort",17777);
+#endif
+                        GameBootstrap.StartHost(port);
+                    }
+                    else GameBootstrap.StartClient("127.0.0.1");
                     return;
                 }
                 var s=GameSession.Instance;if(s==null||!s.IsSpawned)return;
@@ -130,6 +147,13 @@ namespace OctopusSurvivors
         static void FinishChecks(int code)
         {
 #if UNITY_EDITOR
+            if (UnityEditor.SessionState.GetBool("Octopus.BlueFlameCheck", false))
+            {
+                UnityEditor.SessionState.SetBool("Octopus.BlueFlameCheck", false);
+                System.IO.File.WriteAllText(Application.dataPath+"/../Logs/blueflame-check.status", code==0?"PASS":"FAIL");
+                UnityEditor.EditorApplication.isPlaying=false;
+                return;
+            }
             UnityEditor.EditorApplication.Exit(code);
 #else
             Application.Quit(code);
@@ -175,7 +199,7 @@ namespace OctopusSurvivors
         }
         IEnumerator RunHost(GameSession s,OctopusPlayer p)
         {
-            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-octopus-balance-check") >= 0)
+            if (blueFlameCheck || Array.IndexOf(Environment.GetCommandLineArgs(), "-octopus-balance-check") >= 0)
             {
                 yield return null;
                 var balance = RunBalanceChecks(s, p);
@@ -406,6 +430,12 @@ namespace OctopusSurvivors
         }
         IEnumerator RunBalanceChecks(GameSession s, OctopusPlayer p)
         {
+            if (blueFlameCheck || Array.IndexOf(Environment.GetCommandLineArgs(), "-octopus-blueflame-check") >= 0)
+            {
+                var blueFlame = RunBlueFlameChecks(s, p);
+                while (blueFlame.MoveNext()) yield return blueFlame.Current;
+                yield break;
+            }
             s.enabled = false; // Advance simulation explicitly; UI continues through real frames.
             p.transform.position = Vector3.zero; p.NetPos.Value = Vector2.zero;
             p.UpElemRank.Value = p.UpAttrRank.Value = 0;
@@ -517,7 +547,89 @@ namespace OctopusSurvivors
             Debug.Log("BALANCE A-D CHECKS PASS");
         }
 
-        void Capture(string name)
+        IEnumerator RunBlueFlameChecks(GameSession s, OctopusPlayer p)
+        {
+            s.enabled = false;
+            p.transform.position = Vector3.zero; p.NetPos.Value = Vector2.zero;
+            p.UpElemRank.Value = 0; p.SkillLevels.Value = 0;
+            p.Combo.Value = (byte)ComboId.BlueFlame;
+            foreach (float step in new[] { 1f/30, 1f/60, 1f/144, .25f })
+            {
+                ResetField(s);
+                var targets = new List<SimActor>();
+                for (int i=0;i<23;i++)
+                {
+                    var enemy = Target(s, Vector2.right * 2f);
+                    enemy.Pos = new Vector2(2f + i * 6f, 0f); targets.Add(enemy);
+                }
+                s.CastPlannedCombo(p, ComboId.BlueFlame);
+                var emitter = Actors(s).Find(a => a.Kind == ActorKind.ChainEmitter);
+                int frames = 0;
+                while (!emitter.Dead && frames++ < 1000) Call(s, "TickPlannedAbility", emitter, step);
+                Check(emitter.Mark == 20 && emitter.HitTargets.Count == 20, "blue flame hits exactly 20 direct targets at step " + step);
+                Check(Vector2.Distance(targets[19].Pos, p.Pos) > emitter.Size * 10f, "chain reaches far beyond initial acquisition range");
+                for (int i=0;i<targets.Count;i++)
+                    Check(Mathf.Abs((10000-targets[i].Hp) - (i<20 ? emitter.Damage : 0f)) < .01f, "direct damage and untouched target " + i);
+                Check(Actors(s).FindAll(a => a.Kind == ActorKind.ChainArc).Count == 20, "one visible link per direct strike");
+            }
+            ResetField(s);
+            var direct = Target(s, new Vector2(8,0));
+            var collateral = Target(s, new Vector2(4,.3f));
+            var outside = Target(s, new Vector2(4,1.2f));
+            var reverse = Target(s, Vector2.zero);
+            var source = s.SpawnPersistent(ActorKind.ChainEmitter,Vector2.zero,Vector2.zero,4.5f,3f,40f,p,StatusMask.None);
+            source.BlueFlameSplashTargets = new HashSet<ushort>(); source.Duration=3f;source.EffectLevel=1;
+            Call(s,"StrikeBlueFlameLink",source,Vector2.zero,direct);
+            Check(Mathf.Abs(direct.Hp-9960f)<.01f,"direct target gets full damage");
+            Check(Mathf.Abs(collateral.Hp-9980f)<.01f,"corridor target gets exactly half damage");
+            Check(Mathf.Abs(outside.Hp-10000f)<.01f,"outside corridor gets no damage");
+            Call(s,"StrikeBlueFlameLink",source,direct.Pos,reverse);
+            Check(Mathf.Abs(collateral.Hp-9980f)<.01f,"crossing links do not stack collateral damage");
+            Call(s,"StrikeBlueFlameLink",source,reverse.Pos,collateral);
+            Check(Mathf.Abs(collateral.Hp-9960f)<.01f,"later direct strike tops collateral up to full damage");
+            Check(GameSession.InsideBlueFlameCorridor(Vector2.zero,Vector2.zero,Vector2.zero,.65f),"zero length link has safe corridor geometry");
+            ResetField(s);
+            Target(s,Vector2.right*2f);
+            s.CastPlannedCombo(p,ComboId.BlueFlame);
+            var single = Actors(s).Find(a=>a.Kind==ActorKind.ChainEmitter);
+            for(int i=0;i<10&&!single.Dead;i++) Call(s,"TickPlannedAbility",single,.1f);
+            Check(single.Dead&&single.Mark==1,"chain ends safely when no unhit target remains");
+
+            // Real game render, using the same snapshots, camera and enemy art as normal play.
+            ResetField(s);
+            p.transform.position=new Vector3(-9,-4.5f,0); p.NetPos.Value=new Vector2(-9,-4.5f);
+            for(int row=0;row<4;row++)for(int col=0;col<5;col++)
+            {
+                var enemy=Target(s,new Vector2(-7+col*3.5f,-4.5f+row*3f)); enemy.Element=ElementId.Fire;enemy.Hp=enemy.MaxHp=50f;
+            }
+            for(int i=0;i<8;i++)
+            {
+                var enemy=Target(s,new Vector2(-5.3f+(i%4)*3.5f,-4.1f+(i/4)*6f));enemy.Element=ElementId.Grass;enemy.Hp=enemy.MaxHp=50f;
+            }
+            s.CastPlannedCombo(p,ComboId.BlueFlame);
+            var preview = Actors(s).Find(a=>a.Kind==ActorKind.ChainEmitter);
+            var camera=Camera.main;
+            var follower=camera.GetComponent<PlayerCameraFollow>();if(follower!=null)follower.enabled=false;
+            camera.orthographicSize=7f;camera.transform.position=new Vector3(0,0,-10);
+            string framesDirectory=System.IO.Path.GetFullPath(Application.dataPath+"/../Build/Validation/BlueFlameFrames");
+            System.IO.Directory.CreateDirectory(framesDirectory);
+            for(int frame=0;frame<132;frame++)
+            {
+                const float dt=1f/60;
+                if(!preview.Dead)Call(s,"TickPlannedAbility",preview,dt);
+                foreach(var actor in Actors(s)) if(actor.Kind==ActorKind.ChainArc)
+                {actor.Age+=dt;actor.Life-=dt;if(actor.Life<=0)actor.Dead=true;}
+                Call(s,"RenderLocal");
+                yield return new WaitForEndOfFrame();
+                if(frame%4==0)Capture("frame-"+(frame/4).ToString("D3"),framesDirectory);
+                if(frame==14||frame==44||frame==84)Capture("balance-blueflame-"+frame);
+            }
+            var visual=UnityEngine.Object.FindFirstObjectByType<BlueFlameVisual>();
+            Check(visual!=null&&visual.GetComponentInChildren<MeshRenderer>()!=null,"dedicated blue flame meshes rendered in game");
+            Debug.Log("BLUE FLAME CHECKS PASS: 20 direct / 50 percent corridor / no duplicate collateral / real game capture");
+        }
+
+        void Capture(string name, string outputDirectory = null)
         {
             if(SystemInfo.graphicsDeviceType==UnityEngine.Rendering.GraphicsDeviceType.Null) return;
             string directory=Application.dataPath+"/../Screenshots";
@@ -525,6 +637,7 @@ namespace OctopusSurvivors
             if (name.StartsWith("balance-", StringComparison.Ordinal))
                 directory = System.IO.Path.GetFullPath(Application.dataPath + "/../../../docs/검증");
 #endif
+            if(outputDirectory!=null)directory=outputDirectory;
             System.IO.Directory.CreateDirectory(directory);
             var camera=Camera.main;
             if(camera==null) throw new Exception("Capture camera missing");

@@ -120,3 +120,11 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 
 - Unity 에디터에서 Play Mode를 종료한 뒤 Windows 빌드 사전 검사 중 캐시된 배경 `Texture2D`가 이미 해제되어 `MissingReferenceException`이 발생했다. `RuntimeArt`가 해제된 텍스처와 그 스프라이트를 감지해 다시 만들도록 수정했다.
 - 수정 후 실제 Unity 빌드는 사용자가 에디터에서 재시도해야 하므로 이 항목에서는 통과를 주장하지 않는다.
+
+## 2026-10-15 청염 전용 VFX와 피해 검증
+
+- Unity 6000.5.7f1의 열린 에디터에서 `문어/청염 개발 검증`을 실행했다. 에디터 컴파일 및 시스템 데이터 검사, Play Mode 실제 NGO 로컬 호스트 검사를 통과하고 편집 모드로 복귀했다. 별도 Windows 빌드/ZIP 없음.
+- 30/60/144FPS와 0.25초 지연 틱에서 첫 적 포함 정확히20명 직접 공격, 최초 사거리 밖 전이, 21번째 이후 비피격, 직접 피해100%, 선분 주변50%, 범위 밖 무피해, 교차 경로의 주변 피해 중복 방지, 이후 직접 피격 시 차액만 추가, 대상 부족 시 종료를 확인했다.
+- `BlueFlameVisual` 리본 메시/전용 알파·가산 셰이더의 실제 게임 표시를 확인했다. 밝은 모래 배경의 푸른 외곽 대비를 보정한 뒤 재실행에서도 `BLUE FLAME CHECKS PASS`를 확인했다. 네트워크 검사 포트는 기존 플레이와 충돌하지 않는 임시 루프백 포트를 사용한다.
+- 결과 발췌: `Source/문어_유한맵/Logs/blueflame-checks.log`. 원본은 같은 프로젝트 `Logs/Editor.log`, 최신 상태는 `Logs/blueflame-check.status`. 캡처 원본 프레임은 `Build/Validation/BlueFlameFrames`의 고정 경로를 재사용한다.
+- [실제 Unity 전투 GIF](blueflame-preview.gif), [전이 중](host-balance-blueflame-44.png), [연결 경로](host-balance-blueflame-84.png). 정지된 적과 수동 시뮬레이션을 쓰는 통제 검사이며, 두 PC/Relay 및 정상 장기 플레이 밸런스는 이번에 검증하지 않았다.
