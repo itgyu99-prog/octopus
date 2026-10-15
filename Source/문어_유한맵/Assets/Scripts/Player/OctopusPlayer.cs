@@ -386,6 +386,7 @@ namespace OctopusSurvivors
                 attributeCooldowns[slot] -= dt;
                 if (attributeCooldowns[slot] > 0f) continue;
                 attributeCooldowns[slot] = GameConfig.AttributeCycle * GameConfig.AttributeCdMul(UpAttrCd.Value);
+                if (element == ElementId.Fire) attributeCooldowns[slot] += UpgradeTuning.Data.fireOrbDuration;
                 CastElement = element;
                 CastLevel = EffectiveAttrLevel(slot);
                 GameSession.Instance.CastBasicAbility(this, element, CastLevel);

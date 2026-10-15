@@ -102,7 +102,9 @@
       "title": "속성·요소",
       "purpose": "기본 속성, 합성 요소, 특수능력 및 효과",
       "primary": [
-        "Assets/Scripts/Elements/*.cs"
+        "Assets/Scripts/Elements/*.cs",
+        "Assets/Scripts/Elements/FireOrbAbility.cs",
+        "Assets/Scripts/Elements/FireOrbVisual.cs"
       ],
       "related": [
         "Assets/Resources/GameplayRules.json",
@@ -116,7 +118,8 @@
         "Assets/Resources/UpgradeTuning.asset",
         "Assets/Scripts/Elements/TreeAbilityTuning.cs",
         "Assets/Resources/TreeAbilityTuning.asset",
-        "../../tools/balance_simulator.html"
+        "../../tools/balance_simulator.html",
+        "Assets/Resources/Vfx/FireOrbPixel.bytes"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
@@ -160,6 +163,15 @@
           "TickTreeAbility",
           "LandTreeFruit",
           "TreeLandingPoint"
+        ],
+        "Assets/Scripts/Elements/FireOrbAbility.cs": [
+          "CastFireOrbs",
+          "TickFireOrb",
+          "DamageFireTrail"
+        ],
+        "Assets/Scripts/Elements/FireOrbVisual.cs": [
+          "Configure",
+          "LateUpdate"
         ]
       }
     },
@@ -273,7 +285,8 @@
         "Assets/Scripts/Net/CoopSystemChecks.cs",
         "Assets/Editor/CombatVisualChecks.cs",
         "Assets/Editor/GiantMonsterSetup.cs",
-        "Assets/Scripts/Net/GiantCombatChecks.cs"
+        "Assets/Scripts/Net/GiantCombatChecks.cs",
+        "Assets/Editor/FireOrbChecks.cs"
       ],
       "related": [
         "ProjectSettings/ProjectVersion.txt",

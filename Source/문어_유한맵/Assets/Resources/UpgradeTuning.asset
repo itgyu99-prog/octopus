@@ -22,6 +22,17 @@ MonoBehaviour:
   fireTurnSpeed: 180
   fireClusterRadius: 3
   fireRecentTargetWeight: 0.35
+  fireOrbDuration: 4.8
+  fireOrbThrowTime: 0.68
+  fireOrbReturnTime: 0.9
+  fireOrbLaunchGap: 0.16
+  fireOrbSpread: 32
+  fireOrbRadius: 0.45
+  fireOrbDps: 24
+  fireOrbBurnDps: 4
+  fireOrbTrailTime: 0.48
+  fireOrbPatrolDistance: 1.4
+  fireOrbPatrolSpeed: 4.2
   durationPerLevel: 0.4
   fogRangePerLevel: 0.3
   chainInterval: 0.08

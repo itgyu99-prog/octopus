@@ -468,37 +468,17 @@ namespace OctopusSurvivors
                 Vector2.Distance(a.Pos, emptyTree.Pos) + a.Size <= emptyTree.Size + .001f), "empty tree landings stay within visible footprint");
 
             ResetField(s);
-            var inside = Target(s, new Vector2(6.44f, 0));
-            var outside = Target(s, new Vector2(6.46f, 0));
             s.CastBasicAbility(p, ElementId.Fire, 1);
-            var flame = Actors(s).Find(a => a.Kind == ActorKind.FlameAura);
-            Call(s, "TickPlannedAbility", flame, .01f);
-            Check(Mathf.Abs(flame.Size - 6.45f) < .001f && inside.Hp < inside.MaxHp && outside.Hp == outside.MaxHp, "expanded fire boundary matches radius");
-            inside.Pos = new Vector2(-3, 0); outside.Pos = new Vector2(-3, .2f);
-            typeof(GameSession).GetField("fireCacheUntil", Hidden).SetValue(s, -1f);
-            Vector2 before = flame.Vel;
-            Call(s, "TickPlannedAbility", flame, .15f);
-            float turned = Vector2.Angle(before, flame.Vel);
-            Check(turned > 1 && turned <= 27.01f, "fire retargets but obeys 180 degrees per second");
-            inside.Dead = outside.Dead = true;
-            typeof(GameSession).GetField("fireCacheUntil", Hidden).SetValue(s, -1f);
-            flame.Pulse = 0; before = flame.Vel;
-            Call(s, "TickPlannedAbility", flame, .15f);
-            Check(Vector2.Angle(before, flame.Vel) < .01f, "fire without enemies keeps its current direction");
-            var recent = Target(s, new Vector2(3, 0));
-            var fresh = Target(s, new Vector2(0, 3));
-            flame.HitTargets.Clear(); flame.HitTargets.Add(recent.Id);
-            typeof(GameSession).GetField("fireCacheUntil", Hidden).SetValue(s, -1f);
-            var aim = (Vector2)Call(s, "TrackedFireDirection", flame);
-            Check(Vector2.Angle(aim, Vector2.up) < .01f, "fire prefers an unhit cluster");
-            fresh.Dead = true;
-            aim = (Vector2)Call(s, "TrackedFireDirection", flame);
-            Check(Vector2.Angle(aim, Vector2.right) < .01f, "fire still attacks the only remaining target");
-            flame.Vel = Vector2.up;
-            byte packed = (byte)typeof(GameSession).GetMethod("PackFlags", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { flame });
-            Check(GameConfig.ActorBytes == 25 && Mathf.Abs(packed / 255f * 360 - 90) < 1, "existing 25-byte actor record carries steering angle");
+            var fireOrbs = Actors(s).FindAll(a => a.Kind == ActorKind.FlameAura);
+            Check(fireOrbs.Count == 3, "fire launches three persistent returning orbs");
+            var flame = fireOrbs[1];
+            Call(s, "TickPlannedAbility", flame, .8f);
+            Check(Vector2.Distance(flame.Pos, FireOrbGeometry.Position(flame.Anchor, flame.SkillPoint, flame.SkillTime,
+                flame.Bounces, flame.Age, flame.Duration, p.Pos)) < .01f, "fire follows fixed throw geometry without homing");
+            Check(GameConfig.ActorBytes == 25, "returning fire keeps existing snapshot layout");
             ResetField(s); s.CastBasicAbility(p, ElementId.Fire, 6);
-            Check(Mathf.Abs(Actors(s).Find(a => a.Kind == ActorKind.FlameAura).Size - 8.7f) < .001f, "fire range upgrade remains effective at maximum rank");
+            Check(Mathf.Abs(Actors(s).Find(a => a.Kind == ActorKind.FlameAura).SkillTime - 8.7f) < .001f,
+                "fire range upgrades extend throw distance");
 
             ResetField(s);
             Target(s, new Vector2(3, 1)); Target(s, new Vector2(4, 0)); Target(s, new Vector2(2, -1));

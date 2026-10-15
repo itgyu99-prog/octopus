@@ -15,10 +15,7 @@ namespace OctopusSurvivors
             switch (id)
             {
                 case ElementId.Fire:
-                    float reach = (4.3f + UpgradeTuning.Data.fireRangePerLevel * (l - 1)) * UpgradeTuning.Data.fireSizeMultiplier;
-                    var fire = Effect(ActorKind.FlameAura, p.Pos, DensestFireDirection(p.Pos, dir, reach), reach, 1.25f, 70f * upgradeMul, p, l);
-                    fire.SkillPoint = fire.Vel;
-                    fire.Pulse = UpgradeTuning.Data.fireRetargetInterval;
+                    CastFireOrbs(p, dir, l, upgradeMul);
                     break;
                 case ElementId.Water:
                     var water = Effect(ActorKind.WaterEmitter, p.Pos, p.NextWaterDirection(dir), .1f, l * UpgradeTuning.Data.repeatInterval, 27f * upgradeMul, p, l);
@@ -152,16 +149,7 @@ namespace OctopusSurvivors
                     DamageCircle(a.Pos, a.Size, a.Damage * dt, StatusMask.Slow, .3f, 0f);
                     break;
                 case ActorKind.FlameAura:
-                    a.Pos = a.Owner.Pos;
-                    if (a.Pulse <= 0f)
-                    {
-                        a.Pulse = Mathf.Max(.05f, UpgradeTuning.Data.fireRetargetInterval);
-                        a.SkillPoint = TrackedFireDirection(a);
-                        a.HitTargets.Clear();
-                    }
-                    a.Vel = TurnFireDirection(a.Vel, a.SkillPoint, dt);
-                    DamageCone(a.Pos, a.Vel, a.Size, 60f, a.Damage * Mathf.Min(dt, Mathf.Max(0f, a.Life + dt)), StatusMask.Burn, 1.2f,
-                        8f * (1f + UpgradeTuning.Data.attributeDamagePerLevel * a.Owner.UpAttrRank.Value), a.HitTargets);
+                    TickFireOrb(a, dt);
                     break;
                 case ActorKind.ThornEmitter:
                     a.Pos = a.Owner.Pos;

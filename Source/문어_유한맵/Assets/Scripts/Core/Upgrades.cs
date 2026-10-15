@@ -135,7 +135,7 @@ namespace OctopusSurvivors
                 case UpgradeId.GrassTargets: return "타겟 +1 · 같은 공격에 동일 대상 중복 없음";
                 case UpgradeId.WaterRepeats: return "기존 물 공격 +1회 · 기본 주기 유지";
                 case UpgradeId.ElectricRepeats: return "전기 방출 +1회 · 기본 주기 유지";
-                case UpgradeId.FireRange: return "화염 방사 범위와 이펙트 확대";
+                case UpgradeId.FireRange: return "불덩이 3발 투척 거리 증가 · 본체와 꼬리 지속 피해 · 복귀 중에도 공격";
                 case UpgradeId.LingeringThorns: return "가시가 필드에 남아 주기적으로 피해";
                 case UpgradeId.ThornBurst: return "풀 공격 처치 위치에서 가시 발사 · 재연쇄 없음";
                 case UpgradeId.WaterSplit: return "물방울이 터질 때 작은 물방울 발사 · 재분열 없음";

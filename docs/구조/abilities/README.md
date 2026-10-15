@@ -8,6 +8,8 @@
 
 - `Source/문어_유한맵/Assets/Scripts/Elements/AbilityRunner.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/BlueFlameVisual.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/FireOrbAbility.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/FireOrbVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementEffects.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementEffectVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementRules.cs`
@@ -35,6 +37,7 @@
 - `Source/문어_유한맵/Assets/Resources/GameplayRules.json`
 - `Source/문어_유한맵/Assets/Resources/TreeAbilityTuning.asset`
 - `Source/문어_유한맵/Assets/Resources/UpgradeTuning.asset`
+- `Source/문어_유한맵/Assets/Resources/Vfx/FireOrbPixel.bytes`
 - `Source/문어_유한맵/Assets/Resources/Vfx/BlueFlameGlow.shader`
 - `Source/문어_유한맵/Assets/Resources/Vfx/BlueFlameGlow.shader.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ComboAtlas.png`
@@ -112,3 +115,16 @@ python tools/project_index.py --category abilities --find "검색어"
 ```
 
 이 파일은 자동 생성된다. 수동 작업 메모는 같은 폴더의 `NOTES.md`에 기록한다.
+
+
+## `Assets/Scripts/Elements/FireOrbAbility.cs` 진입 함수
+
+- `CastFireOrbs` — 43행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickFireOrb` — 57행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `DamageFireTrail` — 85행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+
+## `Assets/Scripts/Elements/FireOrbVisual.cs` 진입 함수
+
+- `Configure` — 25행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `LateUpdate` — 70행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
