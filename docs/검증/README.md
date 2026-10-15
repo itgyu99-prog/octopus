@@ -128,3 +128,4 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 - `BlueFlameVisual` 리본 메시/전용 알파·가산 셰이더의 실제 게임 표시를 확인했다. 밝은 모래 배경의 푸른 외곽 대비를 보정한 뒤 재실행에서도 `BLUE FLAME CHECKS PASS`를 확인했다. 네트워크 검사 포트는 기존 플레이와 충돌하지 않는 임시 루프백 포트를 사용한다.
 - 결과 발췌: `Source/문어_유한맵/Logs/blueflame-checks.log`. 원본은 같은 프로젝트 `Logs/Editor.log`, 최신 상태는 `Logs/blueflame-check.status`. 캡처 원본 프레임은 `Build/Validation/BlueFlameFrames`의 고정 경로를 재사용한다.
 - [실제 Unity 전투 GIF](blueflame-preview.gif), [전이 중](host-balance-blueflame-44.png), [연결 경로](host-balance-blueflame-84.png). 정지된 적과 수동 시뮬레이션을 쓰는 통제 검사이며, 두 PC/Relay 및 정상 장기 플레이 밸런스는 이번에 검증하지 않았다.
+- 같은 전투 프레임의 시각 배율 비교: [3배](host-balance-blueflame-size-3.png), [5배](host-balance-blueflame-size-5.png), [10배](host-balance-blueflame-size-10.png). 번개 폭·섬광·불씨 배율만 변경하고 캡처 직후 기본1로 복구했다. 피해 범위는 변경하지 않았다.

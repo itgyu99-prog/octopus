@@ -623,6 +623,29 @@ namespace OctopusSurvivors
                 yield return new WaitForEndOfFrame();
                 if(frame%4==0)Capture("frame-"+(frame/4).ToString("D3"),framesDirectory);
                 if(frame==14||frame==44||frame==84)Capture("balance-blueflame-"+frame);
+                if(frame==44)
+                {
+                    var tuning=UpgradeTuning.Data;
+                    float originalScale=tuning.blueFlameVisualScale;
+                    var visuals=UnityEngine.Object.FindObjectsByType<BlueFlameVisual>(FindObjectsSortMode.None);
+                    var ages=new float[visuals.Length];
+                    var ageField=typeof(BlueFlameVisual).GetField("age",Hidden);
+                    for(int i=0;i<visuals.Length;i++)ages[i]=(float)ageField.GetValue(visuals[i]);
+                    try
+                    {
+                        foreach(int multiplier in new[]{3,5,10})
+                        {
+                            tuning.blueFlameVisualScale=multiplier;
+                            for(int i=0;i<visuals.Length;i++)visuals[i].RenderAt(ages[i]);
+                            Capture("balance-blueflame-size-"+multiplier);
+                        }
+                    }
+                    finally
+                    {
+                        tuning.blueFlameVisualScale=originalScale;
+                        for(int i=0;i<visuals.Length;i++)visuals[i].RenderAt(ages[i]);
+                    }
+                }
             }
             var visual=UnityEngine.Object.FindFirstObjectByType<BlueFlameVisual>();
             Check(visual!=null&&visual.GetComponentInChildren<MeshRenderer>()!=null,"dedicated blue flame meshes rendered in game");
