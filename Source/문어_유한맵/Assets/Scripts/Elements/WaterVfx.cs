@@ -15,10 +15,20 @@ namespace OctopusSurvivors
         Vector3 previous;
         float clock, emit;
         bool impact, initialized;
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetCache()
+        {
+            frames = null;
+            pool.Clear();
+            particles.Clear();
+            updateFrame = -1;
+        }
+
         public static bool Supports(ActorKind kind) => kind == ActorKind.Balloon || kind == ActorKind.Droplet || kind == ActorKind.WaterImpact;
         public static Sprite Frame(int index)
         {
-            if (frames == null)
+            if (frames == null || frames[Mathf.Clamp(index, 0, 15)] == null ||
+                frames[Mathf.Clamp(index, 0, 15)].texture == null)
             {
                 var texture = Resources.Load<Texture2D>("Vfx/WaterAtlas");
                 if (texture == null) return null;

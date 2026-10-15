@@ -12,9 +12,14 @@ namespace OctopusSurvivors
         float age,duration,offset;
         Vector3 previous;
         bool initialized;
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetCache() => sheets.Clear();
+
         public static Sprite Frame(string name,int rows,int index)
         {
-            if(!sheets.TryGetValue(name,out var frames))
+            if(!sheets.TryGetValue(name,out var frames) || frames == null || frames.Length != rows * 4 ||
+                frames[Mathf.Clamp(index, 0, frames.Length - 1)] == null ||
+                frames[Mathf.Clamp(index, 0, frames.Length - 1)].texture == null)
             {
                 var texture=Resources.Load<Texture2D>("Vfx/"+name);if(texture==null)return null;
                 frames=new Sprite[rows*4];int w=texture.width/4,h=texture.height/rows;
@@ -138,7 +143,7 @@ namespace OctopusSurvivors
             if(kind==ActorKind.ChainArc){scale=2;alpha=1;}
             if(kind==ActorKind.RadialCurrent){scale=2*Mathf.Clamp01(age/Mathf.Max(.01f,duration));alpha=.85f;}
             if(kind==ActorKind.Mist || kind==ActorKind.SteamField || kind==ActorKind.Fog){scale=2;alpha=.3f;image.sortingOrder=2;echo.sortingOrder=1;}
-            if(kind==ActorKind.FruitTree || kind==ActorKind.GrownTree)scale=.8f;
+            if(kind==ActorKind.FruitTree || kind==ActorKind.GrownTree)scale=3f;
             if(kind==ActorKind.ChiliShot || kind==ActorKind.LemonShot || kind==ActorKind.MossShot)scale=2.7f;
             if(kind==ActorKind.Jellyfish || kind==ActorKind.CurrentFan){scale=1.2f;center=Vector3.right*.4f;}
             if(kind==ActorKind.Tornado || kind==ActorKind.LemonWheel)
