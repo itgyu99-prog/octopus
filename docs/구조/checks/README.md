@@ -14,6 +14,7 @@ Unity 에디터 검사, 협동 검사, 빌드·배포 설정
 - `Source/문어_유한맵/Assets/Editor/FiniteMapChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/GiantMonsterSetup.cs`
 - `Source/문어_유한맵/Assets/Editor/SystemDataChecks.cs`
+- `Source/문어_유한맵/Assets/Editor/TreeSkillChecks.cs`
 - `Source/문어_유한맵/Assets/Scripts/Net/CoopSystemChecks.cs`
 - `Source/문어_유한맵/Assets/Scripts/Net/GiantCombatChecks.cs`
 
@@ -23,6 +24,7 @@ Unity 에디터 검사, 협동 검사, 빌드·배포 설정
 - `Source/문어_유한맵/../../docs/검증/host-balance-exit-confirmation.png`
 - `Source/문어_유한맵/../../docs/검증/host-balance-tree-fire.png`
 - `Source/문어_유한맵/../../tools/balance_simulator.html`
+- `Source/문어_유한맵/Assets/Editor/TreeSkillChecks.cs`
 - `Source/문어_유한맵/Packages/manifest.json`
 - `Source/문어_유한맵/ProjectSettings/EditorBuildSettings.asset`
 - `Source/문어_유한맵/ProjectSettings/ProjectVersion.txt`

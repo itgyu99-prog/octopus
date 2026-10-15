@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   treeVisualScale: 3
   fruitVisualScaleRatio: 2.5
+  palette: 0
+  leafShake: 0.055
   fruitInterval: 0.05
   masterFruitInterval: 0.04
   fruitDamageMultiplier: 0.2

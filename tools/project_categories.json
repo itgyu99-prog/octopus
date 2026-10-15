@@ -150,6 +150,11 @@
           "Configure",
           "RenderAt"
         ],
+        "Assets/Scripts/Elements/TreeSkillVisual.cs": [
+          "Configure",
+          "ReleasePoint",
+          "RenderAt"
+        ],
         "Assets/Scripts/Elements/TreeAbility.cs": [
           "CastTreeAbility",
           "TickTreeAbility",
@@ -277,6 +282,7 @@
         "../../.gitignore",
         "../../tools/balance_simulator.html",
         "../../docs/검증/host-balance-tree-fire.png",
+        "Assets/Editor/TreeSkillChecks.cs",
         "../../docs/검증/host-balance-exit-confirmation.png"
       ]
     }

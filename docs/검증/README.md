@@ -1,5 +1,13 @@
 # 최신 시스템 검증 요약
 
+## 2026-10-15 나무 도트 시안 A/B/C 플레이 영상
+
+- Unity 6000.5.7f1 실제 호스트 Play Mode에서 플레이어 이동·적 추적·나무 자동 발동·열매 착지 피해를 고정 30Hz로 진행했다. 같은 난수·이동·적 배치를 재생하는 비교용 전투이며 사용자 수동 조작 녹화는 아니다. 색상별 총 피해 567/567/567 일치, 렌더링 예외 없음.
+- 각 영상은 H.264 MP4, 1280×720, 30fps, 180프레임/6초다. `Source/문어_유한맵/Build/Validation/TreeSkill/tree-A-gameplay.mp4`, `tree-B-gameplay.mp4`, `tree-C-gameplay.mp4`; 세 영상을 순서대로 잇는 `tree-ABC-comparison.mp4`는 18초다. 같은 폴더의 프레임 50/88 PNG로 나무·열매·캐릭터·HUD 구도를 확인했다. 영상과 중간 캡처는 소스 커밋에서 제외한다.
+- 검사: 강화 0~5 × 30/60/144Hz/0.25초 지연 틱. 나무 수 1~6, 그루당 기본 70발/최종 88발, 수명 종료 뒤 추가 발사 없음, 모든 열매 1회 착지 피해, 착지 전 피해 없음, 반경 밖 적 제외, 기존 25바이트 스냅샷 유지. A/B/C 잎 흔들림과 실제 적 피해 검사 통과. 두 PC 동시 접속 검사는 이번 범위에서 실행하지 않았다.
+- 재생성: Unity 메뉴 `문어/나무 A B C 플레이 영상 및 검증`, 또는 배치 실행의 `-executeMethod OctopusSurvivors.EditorTools.TreeSkillChecks.Run`(다른 에디터가 프로젝트를 점유하지 않을 때). 로그 `Source/문어_유한맵/Logs/tree-skill-checks.log`, 상태 `tree-skill-check.status=PASS`. 실패한 초기 촬영의 진단은 같은 Logs의 `tree-skill-checks.failed.log`에 보존했다.
+- 아트: 내장 imagegen으로 `Assets/Resources/Vfx/TreeVariants.png` 생성. 프롬프트 핵심: "three equal-width columns, identical rounded three-lobed canopy and slender trunk, A fresh green/B warm olive/C deep green, clean full trees only, crisp chunky pixel art, transparent background, remove fruit/motion studies/glow/text". 런타임에서 열매와 잔상·잎 흔들림을 따로 표시한다. Inspector `TreeAbilityTuning.palette`로 세 색상을 선택한다. 기본 A는 선택 전 임시값이며 촬영 후 원래 설정을 복원한다.
+
 2026-10-13. Unity 6000.5.7f1 / Windows. 원본 로그는 `Source/문어_유한맵/Logs`에 보관하며 여기에 전체 로그를 복제하지 않는다.
 
 | 검증 | 결과 | 로그 |
