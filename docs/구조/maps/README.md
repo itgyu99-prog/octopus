@@ -16,6 +16,10 @@
 - `Source/문어_유한맵/Assets/Scripts/Core/GameConfig.cs`
 - `Source/문어_유한맵/Assets/Scripts/Core/RuntimeArt.cs`
 
+## `Assets/Scripts/World/WorldView.cs` 진입 함수
+
+- `TryEnemyBodyDiameter` — 48행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
 - `RandomInterior` — 1966행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)

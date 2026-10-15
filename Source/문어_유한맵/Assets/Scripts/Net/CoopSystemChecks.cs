@@ -595,6 +595,29 @@ namespace OctopusSurvivors
             for(int i=0;i<10&&!single.Dead;i++) Call(s,"TickPlannedAbility",single,.1f);
             Check(single.Dead&&single.Mark==1,"chain ends safely when no unhit target remains");
 
+            ResetField(s);
+            var small=Target(s,new Vector2(2,0));small.Size=.4f;
+            var large=Target(s,new Vector2(6,0));large.Size=1.2f;
+            Call(s,"RenderLocal");
+            Check(WorldView.Instance.TryEnemyBodyDiameter(small.Pos,out float smallDiameter)&&
+                WorldView.Instance.TryEnemyBodyDiameter(large.Pos,out float largeDiameter)&&
+                Mathf.Abs(largeDiameter/smallDiameter-3f)<.01f,"impact sizing follows small and large monster bodies");
+            var bodySource=s.SpawnPersistent(ActorKind.ChainEmitter,Vector2.zero,Vector2.zero,4.5f,3f,40f,p,StatusMask.None);
+            bodySource.Duration=3f;
+            Call(s,"ShowBlueFlameArc",bodySource,Vector2.zero,small.Pos);
+            Call(s,"ShowBlueFlameArc",bodySource,small.Pos,large.Pos);
+            Call(s,"RenderLocal");
+            var views=(Dictionary<ushort,SpriteRenderer>)typeof(WorldView).GetField("_views",Hidden).GetValue(WorldView.Instance);
+            foreach(var arc in Actors(s).FindAll(a=>a.Kind==ActorKind.ChainArc))
+            {
+                var v=views[arc.Id].GetComponent<BlueFlameVisual>();v.RenderAt(.1f);
+                var body=v.transform.Find("Original blue flame").GetComponent<SpriteRenderer>();
+                Vector2 end=arc.Pos+arc.Vel.normalized*arc.Size;
+                WorldView.Instance.TryEnemyBodyDiameter(end,out float diameter);
+                Check(Mathf.Abs(Mathf.Max(body.bounds.size.x,body.bounds.size.y)-diameter*UpgradeTuning.Data.blueFlameImpactBodyScale)<.02f,
+                    "actual hit sprite fits monster independently of 5x beam scale");
+            }
+
             // Real game render, using the same snapshots, camera and enemy art as normal play.
             ResetField(s);
             p.transform.position=new Vector3(-9,-4.5f,0); p.NetPos.Value=new Vector2(-9,-4.5f);

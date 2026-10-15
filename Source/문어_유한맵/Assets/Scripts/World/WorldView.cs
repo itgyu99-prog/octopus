@@ -18,6 +18,7 @@ namespace OctopusSurvivors
         readonly Dictionary<ushort, Vector3> _basePositions = new Dictionary<ushort, Vector3>();
         readonly HashSet<ushort> _floatingPickups = new HashSet<ushort>();
         readonly HashSet<ushort> _seen = new HashSet<ushort>();
+        readonly Dictionary<ushort, Vector3> _enemyBodies = new Dictionary<ushort, Vector3>();
         bool _hasBoss;
         ushort _bossId;
         Vector2 _bossPos;
@@ -42,6 +43,20 @@ namespace OctopusSurvivors
         public void BeginFrame()
         {
             _seen.Clear();
+        }
+
+        public bool TryEnemyBodyDiameter(Vector2 position, out float diameter)
+        {
+            diameter = .7f;
+            float nearest = float.PositiveInfinity;
+            foreach (var body in _enemyBodies.Values)
+            {
+                float distance = ((Vector2)body-position).sqrMagnitude;
+                float tolerance = Mathf.Max(.75f,body.z);
+                if(distance>tolerance*tolerance || distance>=nearest)continue;
+                nearest=distance;diameter=body.z;
+            }
+            return !float.IsPositiveInfinity(nearest);
         }
 
         public void Show(ushort id, ActorKind kind, Vector2 pos, float size, byte extra, float age = 0f, float duration = 0f, byte hp = 255)
@@ -126,6 +141,8 @@ namespace OctopusSurvivors
             }
             if (kind == ActorKind.Enemy || kind == ActorKind.Boss)
             {
+                float spriteDiameter=sr.sprite!=null?Mathf.Max(sr.sprite.bounds.size.x,sr.sprite.bounds.size.y):1f;
+                _enemyBodies[id]=new Vector3(pos.x,pos.y,Mathf.Max(.15f,size)*spriteDiameter);
                 var impact = sr.GetComponent<ElementHitVisual>() ?? sr.gameObject.AddComponent<ElementHitVisual>();
                 impact.Configure(extra, duration < 1000 ? (ElementId)Mathf.RoundToInt(duration) : ElementId.None);
             }
@@ -187,6 +204,7 @@ namespace OctopusSurvivors
                 if (_views.TryGetValue(id, out var sr) && sr != null)
                     Destroy(sr.gameObject);
                 _views.Remove(id);
+                _enemyBodies.Remove(id);
                 _target.Remove(id);
                 _basePositions.Remove(id);
                 _floatingPickups.Remove(id);
@@ -206,6 +224,7 @@ namespace OctopusSurvivors
             }
 
             _views.Clear();
+            _enemyBodies.Clear();
             _target.Clear();
             _basePositions.Clear();
             _floatingPickups.Clear();

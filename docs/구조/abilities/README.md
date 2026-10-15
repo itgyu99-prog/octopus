@@ -85,8 +85,8 @@
 
 ## `Assets/Scripts/Elements/BlueFlameVisual.cs` 진입 함수
 
-- `Configure` — 24행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `RenderAt` — 79행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `Configure` — 26행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `RenderAt` — 86행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/TreeAbility.cs` 진입 함수
 
