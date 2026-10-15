@@ -19,22 +19,25 @@ namespace OctopusSurvivors
 
         public static Sprite Basic(int row, int frame)
         {
-            if (_basic == null) _basic = LoadCharacterSheet("Basic", 8, 6);
-            return _basic[Mathf.Clamp(row, 0, 5), Mathf.Clamp(frame, 0, 7)];
+            int r = Mathf.Clamp(row, 0, 5), f = Mathf.Clamp(frame, 0, 7);
+            if (_basic == null || _basic[r, f] == null) _basic = LoadCharacterSheet("Basic", 8, 6);
+            return _basic[r, f];
         }
 
         public static Sprite Attack(Vector2 facing, int frame)
         {
-            if (_attack == null) _attack = LoadCharacterSheet("Attack", 8, 4);
             int row;
             if (Mathf.Abs(facing.x) > Mathf.Abs(facing.y)) row = facing.x < 0f ? 1 : 2;
             else row = facing.y < 0f ? 0 : 3;
-            return _attack[row, Mathf.Clamp(frame, 0, 7)];
+            int f = Mathf.Clamp(frame, 0, 7);
+            if (_attack == null || _attack[row, f] == null) _attack = LoadCharacterSheet("Attack", 8, 4);
+            return _attack[row, f];
         }
 
         public static Sprite Whip(int frame)
         {
-            if (_whip == null)
+            int f = Mathf.Clamp(frame, 0, 7);
+            if (_whip == null || _whip[f] == null)
             {
                 _whip = new Sprite[8];
                 var texture = LoadTexture("Whip");
@@ -52,14 +55,15 @@ namespace OctopusSurvivors
                         maxX - minX + 1, maxY - minY + 1), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);
                 }
             }
-            return _whip[Mathf.Clamp(frame, 0, 7)];
+            return _whip[f];
         }
 
         // Original pixel art: ember imp, water slime, leaf beetle, spark bat.
         public static Sprite ElementMonster(ElementId element)
         {
             string key = "Monster_" + element;
-            if (Singles.TryGetValue(key, out var cached)) return cached;
+            if (Singles.TryGetValue(key, out var cached) && cached != null) return cached;
+            Singles.Remove(key);
             const int n = 32;
             var texture = new Texture2D(n,n,TextureFormat.RGBA32,false) { filterMode = FilterMode.Point };
             var pixels = new Color[n*n]; var mask = new bool[n*n];
@@ -97,7 +101,8 @@ namespace OctopusSurvivors
         public static Sprite Icon(string name)
         {
             if (string.IsNullOrEmpty(name)) return null;
-            if (Singles.TryGetValue(name, out var cached)) return cached;
+            if (Singles.TryGetValue(name, out var cached) && cached != null) return cached;
+            Singles.Remove(name);
             var texture = LoadTexture(name);
             if (texture == null) return null;
             var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
@@ -201,7 +206,17 @@ namespace OctopusSurvivors
 
         static Texture2D LoadTexture(string name)
         {
-            if (Textures.TryGetValue(name, out var cached)) return cached;
+            if (Textures.TryGetValue(name, out var cached))
+            {
+                if (cached != null) return cached;
+                Textures.Remove(name);
+                // Unity may unload runtime-created art after Play Mode ends. Sprites made
+                // from the released sheet must be recreated with its replacement texture.
+                if (name == "Basic") _basic = null;
+                if (name == "Attack") _attack = null;
+                if (name == "Whip") _whip = null;
+                Singles.Remove(name);
+            }
             var data = Resources.Load<TextAsset>("Art/" + name);
             if (data == null) { Debug.LogError("Art/" + name + ".bytes 를 찾을 수 없습니다."); return null; }
             var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false)
