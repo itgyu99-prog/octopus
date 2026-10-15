@@ -73,6 +73,11 @@
 - `CastChain` — 272행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `ShowBlueFlameArc` — 294행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
+## `Assets/Scripts/Elements/HdSpellVisual.cs` 진입 함수
+
+- `DrawSplashLightning` — 140행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `LateUpdate` — 185행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
 ## `Assets/Scripts/Elements/TreeAbility.cs` 진입 함수
 
 - `CastTreeAbility` — 7행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)

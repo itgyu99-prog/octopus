@@ -12,6 +12,10 @@ namespace OctopusSurvivors
         float age,duration,offset;
         Vector3 previous;
         bool initialized;
+        LineRenderer lightningGlow, lightningCore;
+        readonly LineRenderer[] lightningBranches = new LineRenderer[2];
+        readonly Vector3[] lightningPoints = new Vector3[9];
+        SpriteRenderer lightningImpact;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetCache() => sheets.Clear();
 
@@ -120,10 +124,69 @@ namespace OctopusSurvivors
             var go=new GameObject(name);go.transform.SetParent(transform,false);
             var sr=go.AddComponent<SpriteRenderer>();sr.sortingOrder=order;return sr;
         }
+
+        LineRenderer LightningLine(string label, float width, int order)
+        {
+            var go = new GameObject(label); go.transform.SetParent(transform, false);
+            var line = go.AddComponent<LineRenderer>();
+            line.useWorldSpace = false;
+            line.sharedMaterial = image.sharedMaterial;
+            line.widthMultiplier = width;
+            line.sortingOrder = order;
+            line.numCapVertices = 2;
+            return line;
+        }
+
+        void DrawSplashLightning()
+        {
+            // Actor transform already encodes the midpoint, half-length and direction.
+            // Dedicated geometry keeps the bolt endpoints on the actual hit targets.
+            image.enabled = echo.enabled = false;
+            if (lightningCore == null)
+            {
+                lightningGlow = LightningLine("Lightning glow", .16f, 14);
+                lightningCore = LightningLine("Lightning core", .035f, 16);
+                for (int i = 0; i < lightningBranches.Length; i++)
+                    lightningBranches[i] = LightningLine("Lightning fork", .025f, 15);
+                lightningImpact = Layer("Lightning splash impact", 17);
+                lightningImpact.sprite = SpriteFactory.Ring(Color.white);
+            }
+            float fade = Mathf.Clamp01(1f - age / Mathf.Max(.01f, duration));
+            float lengthScale = Mathf.Max(.15f, transform.lossyScale.x);
+            for (int i = 0; i < lightningPoints.Length; i++)
+            {
+                float u = i / 8f;
+                float jitter = i == 0 || i == 8 ? 0f :
+                    Mathf.Sin(i * 8.3f + Mathf.Floor(age * 35f) * 2.1f + offset * 13f) * .14f / lengthScale;
+                lightningPoints[i] = new Vector3(Mathf.Lerp(-1f, 1f, u), jitter, 0f);
+            }
+            lightningGlow.positionCount = lightningCore.positionCount = lightningPoints.Length;
+            lightningGlow.SetPositions(lightningPoints);
+            lightningCore.SetPositions(lightningPoints);
+            lightningGlow.startColor = lightningGlow.endColor = new Color(.15f, .55f, 1f, fade * .55f);
+            lightningCore.startColor = lightningCore.endColor = new Color(.8f, 1f, 1f, fade);
+            for (int i = 0; i < lightningBranches.Length; i++)
+            {
+                var line = lightningBranches[i];
+                Vector3 start = lightningPoints[3 + i * 2];
+                float side = i == 0 ? 1f : -1f;
+                line.positionCount = 3;
+                line.SetPosition(0, start);
+                line.SetPosition(1, start + new Vector3(.16f, side * .24f / lengthScale, 0f));
+                line.SetPosition(2, start + new Vector3(.3f, side * .42f / lengthScale, 0f));
+                line.startColor = new Color(.4f, .85f, 1f, fade * .85f);
+                line.endColor = new Color(.2f, .6f, 1f, 0f);
+            }
+            lightningImpact.transform.localPosition = Vector3.right;
+            lightningImpact.transform.localScale = Vector3.one * Mathf.Lerp(.2f, .85f, 1f - fade) / lengthScale;
+            lightningImpact.color = new Color(.55f, .9f, 1f, fade);
+        }
+
         void LateUpdate()
         {
             if(image==null || !Mapping(kind,out string name,out int rows,out int row))return;
             age+=Time.deltaTime;
+            if (kind == ActorKind.ChainArc) { DrawSplashLightning(); return; }
             int frame=(int)((age+offset)*14)%4;
             bool tree = kind == ActorKind.FruitTree;
             if (tree) frame = 0; // Stable trunk/canopy; only the falling fruit animates.

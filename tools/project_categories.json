@@ -137,6 +137,10 @@
           "CastChain",
           "ShowBlueFlameArc"
         ],
+        "Assets/Scripts/Elements/HdSpellVisual.cs": [
+          "DrawSplashLightning",
+          "LateUpdate"
+        ],
         "Assets/Scripts/Elements/TreeAbility.cs": [
           "CastTreeAbility",
           "TickTreeAbility",
