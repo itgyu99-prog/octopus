@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2f9b8d74da246bd935dab2d34ba04b2, type: 3}
   m_Name: TreeAbilityTuning
   m_EditorClassIdentifier:
-  fruitInterval: 0.1
-  masterFruitInterval: 0.08
+  treeVisualScale: 3
+  fruitVisualScaleRatio: 2.5
+  fruitInterval: 0.05
+  masterFruitInterval: 0.04
   fruitDamageMultiplier: 0.2
   masterFruitDamageMultiplier: 0.53333336
   fruitRadius: 0.5

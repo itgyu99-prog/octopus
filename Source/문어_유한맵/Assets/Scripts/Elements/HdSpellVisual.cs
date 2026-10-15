@@ -137,13 +137,17 @@ namespace OctopusSurvivors
                 image.transform.rotation=echo.transform.rotation=Quaternion.Euler(0,0,Mathf.Atan2(delta.y,delta.x)*Mathf.Rad2Deg);
             float scale=2f,alpha=.85f;
             Vector3 center=Vector3.zero;
-            if(kind==ActorKind.Fruit)center=Vector3.up*Mathf.Max(0,1-age/Mathf.Max(.01f,duration))*3;
+            if(kind==ActorKind.Fruit)
+            {
+                center=Vector3.up*Mathf.Max(0,1-age/Mathf.Max(.01f,duration))*3;
+                scale=TreeAbilityTuning.Data.treeVisualScale * TreeAbilityTuning.Data.fruitVisualScaleRatio;
+            }
             if(tree)image.transform.localRotation=echo.transform.localRotation=Quaternion.identity;
             if(kind==ActorKind.FlameAura){scale=1.05f;center=Vector3.right*.48f;}
             if(kind==ActorKind.ChainArc){scale=2;alpha=1;}
             if(kind==ActorKind.RadialCurrent){scale=2*Mathf.Clamp01(age/Mathf.Max(.01f,duration));alpha=.85f;}
             if(kind==ActorKind.Mist || kind==ActorKind.SteamField || kind==ActorKind.Fog){scale=2;alpha=.3f;image.sortingOrder=2;echo.sortingOrder=1;}
-            if(kind==ActorKind.FruitTree || kind==ActorKind.GrownTree)scale=3f;
+            if(kind==ActorKind.FruitTree || kind==ActorKind.GrownTree)scale=TreeAbilityTuning.Data.treeVisualScale;
             if(kind==ActorKind.ChiliShot || kind==ActorKind.LemonShot || kind==ActorKind.MossShot)scale=2.7f;
             if(kind==ActorKind.Jellyfish || kind==ActorKind.CurrentFan){scale=1.2f;center=Vector3.right*.4f;}
             if(kind==ActorKind.Tornado || kind==ActorKind.LemonWheel)
