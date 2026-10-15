@@ -14,7 +14,7 @@ namespace OctopusSurvivors
         readonly Vector3[] vertices = new Vector3[Points * 3];
         readonly Color[] colors = new Color[Points * 3];
         readonly SpriteRenderer[] embers = new SpriteRenderer[6];
-        SpriteRenderer impact, flare, flame, sourceFlare;
+        SpriteRenderer impact, flame, sourceFlare;
         float age, duration, seed;
         bool initialized;
 
@@ -55,7 +55,6 @@ namespace OctopusSurvivors
                 renderer.sortingOrder = 13 + i; ribbons[i] = mesh;
             }
             impact = Sprite("Impact halo", SpriteFactory.Circle(Color.white), 16);
-            flare = Sprite("Impact needle", SpriteFactory.Square(Color.white), 18);
             sourceFlare = Sprite("Departure spark", SpriteFactory.Circle(Color.white), 16);
             flame = Sprite("Original blue flame", null, 17);
             for (int i = 0; i < embers.Length; i++) embers[i] = Sprite("Blue ember", SpriteFactory.Circle(Color.white), 16);
@@ -119,8 +118,6 @@ namespace OctopusSurvivors
             float hit = arrived * Mathf.Exp(-impactAge * 15f) * lifeFade;
             Place(impact, Vector3.right, new Vector2(.32f + impactAge * .9f, .32f + impactAge * .9f) * width / scale,
                 new Color(.03f,.3f,1f,hit * .35f));
-            Place(flare, Vector3.right, new Vector2(.60f,.025f) * width / scale, new Color(.6f,1f,1f,hit));
-            flare.transform.localRotation = Quaternion.Euler(0f,0f,35f);
             float start = Mathf.Exp(-time * 22f) * lifeFade;
             Place(sourceFlare, Vector3.left, Vector2.one * .14f * width / scale, new Color(.25f,.8f,1f,start));
             flame.sprite = HdSpellVisual.Frame("ComboAtlas", 6, 20 + Mathf.Min(3, (int)(impactAge * 16f)));
