@@ -133,7 +133,9 @@
           "CastPlannedCombo",
           "TickPlannedAbility",
           "TrackedFireDirection",
-          "TurnFireDirection"
+          "TurnFireDirection",
+          "CastChain",
+          "ShowBlueFlameArc"
         ],
         "Assets/Scripts/Elements/TreeAbility.cs": [
           "CastTreeAbility",

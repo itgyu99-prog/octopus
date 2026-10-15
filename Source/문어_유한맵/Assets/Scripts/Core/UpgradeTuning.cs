@@ -16,6 +16,8 @@ namespace OctopusSurvivors
         [Range(0, 1)] public float fireRecentTargetWeight = .35f;
         [Min(0)] public float durationPerLevel = .4f, fogRangePerLevel = .3f;
         [Range(.1f, .15f)] public float chainInterval = .12f;
+        [Min(0)] public float blueFlameSplashRangePerLevel = .3f;
+        [Min(.1f)] public float blueFlameBurstInterval = .6f;
         [Min(.1f)] public float thornDuration = 3f, thornTick = .4f;
         [Min(0)] public float thornDamageMultiplier = .4f, splitDamageMultiplier = .4f;
         [Min(.1f)] public float balloonRadius = 2.5f, tornadoDuration = 2f, fireworkRadius = 2f;

@@ -271,32 +271,30 @@ namespace OctopusSurvivors
 
         void CastChain(SimActor source)
         {
-            // One authoritative hop per interval. Damage occurs only when the visible arc is emitted.
-            if (source.Mark == 0) source.Anchor = source.Pos;
-            Vector2 from = source.Anchor;
-            SimActor nearest = null;
-            float best = source.Size * source.Size;
-            var candidates = TempEnemies(from, source.Size);
-            candidates.Sort((a, b) => (a.Pos - from).sqrMagnitude.CompareTo((b.Pos - from).sqrMagnitude));
-            foreach (var enemy in candidates)
+            source.Pulse = UpgradeTuning.Data.blueFlameBurstInterval;
+            var candidates = TempEnemies(source.Pos, source.Size);
+            if (candidates.Count == 0) return;
+            candidates.Sort((a, b) => (a.Pos - source.Pos).sqrMagnitude.CompareTo((b.Pos - source.Pos).sqrMagnitude));
+            // The second mastery emitter starts from a different nearby target when possible.
+            var primary = candidates[source.SkillPhase == 1 && candidates.Count > 1 ? 1 : 0];
+            Vector2 center = primary.Pos;
+            float radius = source.Size + Mathf.Max(0, source.EffectLevel - 1) * UpgradeTuning.Data.blueFlameSplashRangePerLevel;
+            // Snapshot targets before damage can kill the primary or spawn more actors.
+            var splashTargets = TempEnemies(center, radius);
+            ShowBlueFlameArc(source, source.Pos, center);
+            ApplyDamage(primary, source.Damage, StatusMask.None, 0f, 0f);
+            foreach (var enemy in splashTargets)
             {
-                if (source.HitTargets.Contains(enemy.Id)) continue;
-                if (source.Mark == 0 && source.SkillPhase == 1 && candidates.Count > 1 && enemy == candidates[0]) continue;
-                float dist = (enemy.Pos - from).sqrMagnitude;
-                if (dist <= best) { best = dist; nearest = enemy; }
+                if (enemy.Id == primary.Id || enemy.Dead) continue;
+                ShowBlueFlameArc(source, center, enemy.Pos);
+                ApplyDamage(enemy, source.Damage, StatusMask.None, 0f, 0f);
             }
-            if (nearest == null || source.Mark >= 3 + source.EffectLevel)
-            {
-                source.Mark = 0; source.HitTargets.Clear(); source.Pulse = .6f;
-                return;
-            }
-            source.HitTargets.Add(nearest.Id);
-            Vector2 to = nearest.Pos;
+        }
+
+        void ShowBlueFlameArc(SimActor source, Vector2 from, Vector2 to)
+        {
             Effect(ActorKind.ChainArc, (from + to) * .5f, to - from,
                 Mathf.Max(.1f, Vector2.Distance(from, to) * .5f), .22f, 0f, source.Owner, source.EffectLevel);
-            ApplyDamage(nearest, source.Damage, StatusMask.None, 0f, 0f);
-            source.Anchor = to; source.Mark++;
-            source.Pulse = UpgradeTuning.Data.chainInterval;
         }
     }
 }
