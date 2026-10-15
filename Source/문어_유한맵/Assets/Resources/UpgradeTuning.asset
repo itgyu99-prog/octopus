@@ -27,6 +27,8 @@ MonoBehaviour:
   chainInterval: 0.08
   blueFlameSplashRangePerLevel: 0.3
   blueFlameBurstInterval: 0.6
+  blueFlameBaseBranches: 3
+  blueFlameBranchesPerLevel: 1
   blueFlameChainTargets: 20
   blueFlameVisualScale: 5
   blueFlameImpactIntensity: 1.5

@@ -149,7 +149,7 @@ namespace OctopusSurvivors
                 case UpgradeId.TreeMastery: return "나무 +1\n5레벨: 열매 생성 간격 대폭 감소";
                 case UpgradeId.LemonMastery: return "레몬 공격 +1회\n5레벨: 거대 레몬 바퀴 2개 추가";
                 case UpgradeId.FogMastery: return "확산 범위·피해 지속시간 증가\n5레벨: 모든 안개 피해 증가";
-                case UpgradeId.BlueFlameMastery: return $"최대 {UpgradeTuning.Data.blueFlameChainTargets}마리 연결 · 경로 주변 {UpgradeTuning.Data.blueFlameSplashDamageMultiplier * 100:0}% 피해 · 폭 +{UpgradeTuning.Data.blueFlameSplashRangePerLevel:0.##}\n5레벨: 별도 번개 1개 추가";
+                case UpgradeId.BlueFlameMastery: return $"기본 {UpgradeTuning.Data.blueFlameBaseBranches}갈래 · 강화마다 +{UpgradeTuning.Data.blueFlameBranchesPerLevel}갈래\n갈래마다 최대 {UpgradeTuning.Data.blueFlameChainTargets}마리 연결 · 경로 주변 {UpgradeTuning.Data.blueFlameSplashDamageMultiplier * 100:0}% 피해 · 폭 +{UpgradeTuning.Data.blueFlameSplashRangePerLevel:0.##}";
                 default:
                     return string.Empty;
             }

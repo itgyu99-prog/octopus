@@ -553,6 +553,25 @@ namespace OctopusSurvivors
             p.transform.position = Vector3.zero; p.NetPos.Value = Vector2.zero;
             p.UpElemRank.Value = 0; p.SkillLevels.Value = 0;
             p.Combo.Value = (byte)ComboId.BlueFlame;
+            Debug.Log("BLUE FLAME CHECKS BEGIN");
+            for (int rank=0;rank<=5;rank++)
+            {
+                ResetField(s);
+                p.SkillLevels.Value=(ulong)rank << (((int)UpgradeId.BlueFlameMastery-10)*3);
+                for(int i=0;i<8;i++)
+                    Target(s,new Vector2(Mathf.Cos(i*Mathf.PI/4),Mathf.Sin(i*Mathf.PI/4))*(2f+i*.1f));
+                s.CastPlannedCombo(p,ComboId.BlueFlame);
+                var branches=Actors(s).FindAll(a=>a.Kind==ActorKind.ChainEmitter);
+                Check(branches.Count==3+rank,"blue flame branch count at rank "+rank);
+                var starts=new HashSet<ushort>();
+                foreach(var branch in branches)
+                {
+                    Call(s,"TickPlannedAbility",branch,.001f);
+                    foreach(var id in branch.HitTargets) starts.Add(id);
+                }
+                Check(starts.Count==branches.Count,"branches start on distinct enemies at rank "+rank);
+            }
+            p.SkillLevels.Value=0;
             foreach (float step in new[] { 1f/30, 1f/60, 1f/144, .25f })
             {
                 ResetField(s);
@@ -630,7 +649,8 @@ namespace OctopusSurvivors
                 var enemy=Target(s,new Vector2(-5.3f+(i%4)*3.5f,-4.1f+(i/4)*6f));enemy.Element=ElementId.Grass;enemy.Hp=enemy.MaxHp=50f;
             }
             s.CastPlannedCombo(p,ComboId.BlueFlame);
-            var preview = Actors(s).Find(a=>a.Kind==ActorKind.ChainEmitter);
+            var previewEmitters = Actors(s).FindAll(a=>a.Kind==ActorKind.ChainEmitter);
+            var preview = previewEmitters[0];
             var camera=Camera.main;
             var follower=camera.GetComponent<PlayerCameraFollow>();if(follower!=null)follower.enabled=false;
             camera.orthographicSize=7f;camera.transform.position=new Vector3(0,0,-10);
@@ -639,7 +659,8 @@ namespace OctopusSurvivors
             for(int frame=0;frame<132;frame++)
             {
                 const float dt=1f/60;
-                if(!preview.Dead)Call(s,"TickPlannedAbility",preview,dt);
+                foreach(var branch in previewEmitters)
+                    if(!branch.Dead)Call(s,"TickPlannedAbility",branch,dt);
                 foreach(var actor in Actors(s)) if(actor.Kind==ActorKind.ChainArc)
                 {actor.Age+=dt;actor.Life-=dt;if(actor.Life<=0)actor.Dead=true;}
                 Call(s,"RenderLocal");

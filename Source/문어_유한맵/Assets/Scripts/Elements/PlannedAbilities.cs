@@ -104,7 +104,7 @@ namespace OctopusSurvivors
                     }
                     break;
                 case ComboId.BlueFlame:
-                    for (int i = 0; i < (rank == 5 ? 2 : 1); i++)
+                    for (int i = 0; i < Mathf.Clamp(UpgradeTuning.Data.blueFlameBaseBranches + rank * UpgradeTuning.Data.blueFlameBranchesPerLevel, 1, 256); i++)
                     {
                         float chainLife = Mathf.Max(t.duration,
                             (Mathf.Max(1, UpgradeTuning.Data.blueFlameChainTargets) + 1) * Mathf.Max(.01f, UpgradeTuning.Data.chainInterval) + .2f);
@@ -300,8 +300,8 @@ namespace OctopusSurvivors
             { source.Pulse += Mathf.Max(.1f, UpgradeTuning.Data.blueFlameBurstInterval); return; }
             source.Pulse += Mathf.Max(.01f, UpgradeTuning.Data.chainInterval);
             candidates.Sort((a, b) => (a.Pos - source.Pos).sqrMagnitude.CompareTo((b.Pos - source.Pos).sqrMagnitude));
-            // The second mastery emitter starts from a different nearby target when possible.
-            var primary = candidates[source.SkillPhase == 1 && candidates.Count > 1 ? 1 : 0];
+            // Spread starting branches across nearby enemies, wrapping only when targets are scarce.
+            var primary = candidates[source.SkillPhase % candidates.Count];
             Vector2 center = primary.Pos;
             source.BlueFlameSplashTargets = new HashSet<ushort>();
             source.Anchor = center;

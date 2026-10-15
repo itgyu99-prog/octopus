@@ -18,6 +18,8 @@ namespace OctopusSurvivors
         [Min(.03f)] public float chainInterval = .08f;
         [Min(0)] public float blueFlameSplashRangePerLevel = .3f;
         [Min(.1f)] public float blueFlameBurstInterval = .6f;
+        [Min(1)] public int blueFlameBaseBranches = 3;
+        [Min(0)] public int blueFlameBranchesPerLevel = 1;
         [Min(1)] public int blueFlameChainTargets = 20;
         [Min(.1f)] public float blueFlameVisualScale = 5f;
         [Range(1f, 4f)] public float blueFlameImpactIntensity = 1.5f;
