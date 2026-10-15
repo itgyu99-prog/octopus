@@ -42,6 +42,8 @@
 
 ## 2026-10-14 A~D 적용 완료
 
+- 2026-10-15: 나무 요소의 전용 수치를 `Assets/Resources/TreeAbilityTuning.asset`로, 시전·열매 발사·조준 코드를 `Assets/Scripts/Elements/TreeAbility.cs`로 분리했다. 기존 나무 수치와 동작은 유지하며 Unity Resources 경로로 읽는다.
+
 - `PlannedAbilities.CastPlannedCombo/TickPlannedAbility/TreeLandingPoint`: 나무 범위6, 기존 Fruit 착지 공격 재사용. 기본0.1초/피해9, 마스터리5는0.08초/피해24. 나무 수1~6 유지. 적 위치를 무작위 선택하고 없으면 범위 내 낙하. 만료 시 추가 발사 없이 프레임 독립 발사 예산(기본35발/그루, 만렙44발/그루)을 보장한다.
 - `CastBasicAbility/TrackedFireDirection/TurnFireDirection/RefreshFireCache`: 기본 화염 반경과 표시1.5배, 0.15초마다 밀집 재탐색, 최대180도/초. 최근 적중 대상 가중치0.35, 단일 대상 유지. 서버 공유 적 목록/밀집 수 캐시를 사용하며 다른 불 계열·특수·팀 필살기는 변경하지 않았다.
 - `HdSpellVisual.Configure/LateUpdate`: 나무 프레임 고정·잔상 제거, 생성 반경과 화염 부채꼴 표시, 설정된 열매 낙하시간 반영. UpgradeTuning.cs/.asset에 새 계수를 노출하고 GameplayRules.json 나무 range=6 적용.

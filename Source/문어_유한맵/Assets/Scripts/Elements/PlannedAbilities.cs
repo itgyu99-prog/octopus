@@ -91,10 +91,7 @@ namespace OctopusSurvivors
                                 t.range * UpgradeTuning.Data.masterSizeMultiplier, t.duration, damage, p, l);
                     break;
                 case ComboId.Tree:
-                    float fruitDamage = damage * (rank == 5 ? UpgradeTuning.Data.masterFruitDamageMultiplier : UpgradeTuning.Data.treeFruitDamageMultiplier);
-                    for (int i = 0; i <= rank; i++)
-                        Effect(ActorKind.FruitTree, GameConfig.ClampToMap(p.Pos + (i == 0 ? Vector2.zero :
-                            AbilityRunner.Rotate(dir, i * 137.5f) * 2f), .5f), Vector2.zero, t.range, t.duration, fruitDamage, p, l);
+                    CastTreeAbility(p, rank, l, damage, dir);
                     break;
                 case ComboId.Soda:
                     for (int i = 0; i < 5 + rank + (rank == 5 ? 1 : 0); i++)
@@ -212,15 +209,7 @@ namespace OctopusSurvivors
                     StepEffectProjectile(a, dt, false);
                     break;
                 case ActorKind.FruitTree:
-                    float fruitInterval = Mathf.Max(.01f, a.EffectLevel == 6 ? UpgradeTuning.Data.masterFruitInterval : UpgradeTuning.Data.treeFruitInterval);
-                    // Indexed schedule keeps the same budget at 30/60/144 FPS and excludes a shot at expiry.
-                    while (a.Mark * fruitInterval < a.Duration - .0001f && a.Mark * fruitInterval < a.Age)
-                    {
-                        a.Mark++;
-                        Vector2 landing = TreeLandingPoint(a);
-                        Effect(ActorKind.Fruit, landing, Vector2.zero, UpgradeTuning.Data.treeFruitRadius,
-                            UpgradeTuning.Data.treeFruitFallSeconds, a.Damage, a.Owner, a.EffectLevel);
-                    }
+                    TickTreeAbility(a);
                     break;
                 case ActorKind.Fruit:
                     if (a.Life <= 0f) DamageCircle(a.Pos, a.Size, a.Damage, StatusMask.None, 0f, 0f);
@@ -278,21 +267,6 @@ namespace OctopusSurvivors
             float to = Mathf.Atan2(target.y, target.x) * Mathf.Rad2Deg;
             float angle = Mathf.MoveTowardsAngle(from, to, UpgradeTuning.Data.fireTurnSpeed * dt) * Mathf.Deg2Rad;
             return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-        }
-
-        Vector2 TreeLandingPoint(SimActor tree)
-        {
-            // Reservoir sampling chooses a live target without allocating a list per fruit.
-            SimActor target = null;
-            int count = 0;
-            float radius = Mathf.Max(0f, tree.Size - UpgradeTuning.Data.treeFruitRadius);
-            foreach (var e in _actors)
-            {
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss) ||
-                    (e.Pos - tree.Pos).sqrMagnitude > radius * radius) continue;
-                if (Random.Range(0, ++count) == 0) target = e;
-            }
-            return target != null ? target.Pos : GameConfig.ClampToMap(tree.Pos + Random.insideUnitCircle * radius, .5f);
         }
 
         void CastChain(SimActor source)

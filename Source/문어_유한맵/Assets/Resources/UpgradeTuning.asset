@@ -24,12 +24,6 @@ MonoBehaviour:
   fireRecentTargetWeight: 0.35
   durationPerLevel: 0.4
   fogRangePerLevel: 0.3
-  treeFruitInterval: 0.1
-  masterFruitInterval: 0.08
-  treeFruitDamageMultiplier: 0.2
-  masterFruitDamageMultiplier: 0.53333336
-  treeFruitRadius: 0.5
-  treeFruitFallSeconds: 0.6
   chainInterval: 0.12
   thornDuration: 3
   thornTick: 0.4

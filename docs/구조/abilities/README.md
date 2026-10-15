@@ -13,6 +13,8 @@
 - `Source/문어_유한맵/Assets/Scripts/Elements/HdSpellVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/PlannedAbilities.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/SpecialAbilities.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/TreeAbility.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/TreeAbilityTuning.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/UpgradeAbilities.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/WaterVfx.cs`
 
@@ -29,6 +31,7 @@
 - `Source/문어_유한맵/Assets/Resources/Art/Special_Meteorite.bytes`
 - `Source/문어_유한맵/Assets/Resources/Art/Special_Spirit.bytes`
 - `Source/문어_유한맵/Assets/Resources/GameplayRules.json`
+- `Source/문어_유한맵/Assets/Resources/TreeAbilityTuning.asset`
 - `Source/문어_유한맵/Assets/Resources/UpgradeTuning.asset`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ComboAtlas.png`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ComboAtlas.png.meta`
@@ -42,6 +45,7 @@
 - `Source/문어_유한맵/Assets/Resources/Vfx/WaterAtlas.png.meta`
 - `Source/문어_유한맵/Assets/Scripts/Core/GameplayRules.cs`
 - `Source/문어_유한맵/Assets/Scripts/Core/UpgradeTuning.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/TreeAbilityTuning.cs`
 - `Source/문어_유한맵/Assets/Scripts/Player/OctopusPlayer.cs`
 - `Source/문어_유한맵/Assets/Scripts/UI/CombinePanel.cs`
 
@@ -63,10 +67,15 @@
 
 - `CastBasicAbility` — 9행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `CastPlannedCombo` — 60행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickPlannedAbility` — 141행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TrackedFireDirection` — 257행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TreeLandingPoint` — 283행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TurnFireDirection` — 274행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickPlannedAbility` — 138행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TrackedFireDirection` — 246행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TurnFireDirection` — 263행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+## `Assets/Scripts/Elements/TreeAbility.cs` 진입 함수
+
+- `CastTreeAbility` — 7행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickTreeAbility` — 26행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TreeLandingPoint` — 43행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

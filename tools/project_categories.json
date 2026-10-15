@@ -111,6 +111,8 @@
         "Assets/Resources/Vfx/*",
         "Assets/Scripts/Core/UpgradeTuning.cs",
         "Assets/Resources/UpgradeTuning.asset",
+        "Assets/Scripts/Elements/TreeAbilityTuning.cs",
+        "Assets/Resources/TreeAbilityTuning.asset",
         "../../tools/balance_simulator.html"
       ],
       "anchors": {
@@ -131,8 +133,12 @@
           "CastPlannedCombo",
           "TickPlannedAbility",
           "TrackedFireDirection",
-          "TreeLandingPoint",
           "TurnFireDirection"
+        ],
+        "Assets/Scripts/Elements/TreeAbility.cs": [
+          "CastTreeAbility",
+          "TickTreeAbility",
+          "TreeLandingPoint"
         ]
       }
     },
