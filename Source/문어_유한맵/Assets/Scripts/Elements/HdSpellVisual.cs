@@ -152,12 +152,15 @@ namespace OctopusSurvivors
                 lightningImpact.sprite = SpriteFactory.Ring(Color.white);
             }
             float fade = Mathf.Clamp01(1f - age / Mathf.Max(.01f, duration));
+            float visualScale = Mathf.Max(.1f, UpgradeTuning.Data.blueFlameVisualScale);
+            lightningGlow.widthMultiplier = .16f * visualScale;
+            lightningCore.widthMultiplier = .035f * visualScale;
             float lengthScale = Mathf.Max(.15f, transform.lossyScale.x);
             for (int i = 0; i < lightningPoints.Length; i++)
             {
                 float u = i / 8f;
                 float jitter = i == 0 || i == 8 ? 0f :
-                    Mathf.Sin(i * 8.3f + Mathf.Floor(age * 35f) * 2.1f + offset * 13f) * .14f / lengthScale;
+                    Mathf.Sin(i * 8.3f + Mathf.Floor(age * 35f) * 2.1f + offset * 13f) * .14f * visualScale / lengthScale;
                 lightningPoints[i] = new Vector3(Mathf.Lerp(-1f, 1f, u), jitter, 0f);
             }
             lightningGlow.positionCount = lightningCore.positionCount = lightningPoints.Length;
@@ -168,17 +171,18 @@ namespace OctopusSurvivors
             for (int i = 0; i < lightningBranches.Length; i++)
             {
                 var line = lightningBranches[i];
+                line.widthMultiplier = .025f * visualScale;
                 Vector3 start = lightningPoints[3 + i * 2];
                 float side = i == 0 ? 1f : -1f;
                 line.positionCount = 3;
                 line.SetPosition(0, start);
-                line.SetPosition(1, start + new Vector3(.16f, side * .24f / lengthScale, 0f));
-                line.SetPosition(2, start + new Vector3(.3f, side * .42f / lengthScale, 0f));
+                line.SetPosition(1, start + new Vector3(.16f, side * .24f * visualScale / lengthScale, 0f));
+                line.SetPosition(2, start + new Vector3(.3f, side * .42f * visualScale / lengthScale, 0f));
                 line.startColor = new Color(.4f, .85f, 1f, fade * .85f);
                 line.endColor = new Color(.2f, .6f, 1f, 0f);
             }
             lightningImpact.transform.localPosition = Vector3.right;
-            lightningImpact.transform.localScale = Vector3.one * Mathf.Lerp(.2f, .85f, 1f - fade) / lengthScale;
+            lightningImpact.transform.localScale = Vector3.one * Mathf.Lerp(.2f, .85f, 1f - fade) * visualScale / lengthScale;
             lightningImpact.color = new Color(.55f, .9f, 1f, fade);
         }
 

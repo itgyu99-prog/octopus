@@ -67,16 +67,16 @@
 
 - `CastBasicAbility` — 9행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `CastPlannedCombo` — 60행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickPlannedAbility` — 138행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TrackedFireDirection` — 246행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TurnFireDirection` — 263행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CastChain` — 272행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ShowBlueFlameArc` — 294행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickPlannedAbility` — 140행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TrackedFireDirection` — 248행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TurnFireDirection` — 265행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CastChain` — 274행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ShowBlueFlameArc` — 325행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/HdSpellVisual.cs` 진입 함수
 
 - `DrawSplashLightning` — 140행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `LateUpdate` — 185행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `LateUpdate` — 189행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/TreeAbility.cs` 진입 함수
 

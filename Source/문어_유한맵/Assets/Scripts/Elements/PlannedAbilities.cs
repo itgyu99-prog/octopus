@@ -106,7 +106,9 @@ namespace OctopusSurvivors
                 case ComboId.BlueFlame:
                     for (int i = 0; i < (rank == 5 ? 2 : 1); i++)
                     {
-                        var chain = Effect(ActorKind.ChainEmitter, p.Pos, Vector2.zero, t.range, t.duration, damage, p, l);
+                        float chainLife = Mathf.Max(t.duration,
+                            (Mathf.Max(1, UpgradeTuning.Data.blueFlameChainTargets) + 1) * Mathf.Max(.01f, UpgradeTuning.Data.chainInterval) + .2f);
+                        var chain = Effect(ActorKind.ChainEmitter, p.Pos, Vector2.zero, t.range, chainLife, damage, p, l);
                         chain.SkillPhase = (byte)i;
                     }
                     break;
@@ -216,7 +218,7 @@ namespace OctopusSurvivors
                     break;
                 case ActorKind.ChainEmitter:
                     a.Pos = a.Owner.Pos;
-                    if (a.Pulse <= 0f) CastChain(a);
+                    while (a.Pulse <= 0f && !a.Dead) CastChain(a);
                     break;
             }
             if (a.Life <= 0f) a.Dead = true;
@@ -271,9 +273,34 @@ namespace OctopusSurvivors
 
         void CastChain(SimActor source)
         {
-            source.Pulse = UpgradeTuning.Data.blueFlameBurstInterval;
+            if (source.Bounces != 0)
+            {
+                source.Pulse += Mathf.Max(.01f, UpgradeTuning.Data.chainInterval);
+                if (source.Mark >= Mathf.Max(1, UpgradeTuning.Data.blueFlameChainTargets))
+                { source.Dead = true; return; }
+                SimActor next = null;
+                float nearestDistance = float.PositiveInfinity;
+                foreach (var enemy in _actors)
+                {
+                    if (enemy.Dead || (enemy.Kind != ActorKind.Enemy && enemy.Kind != ActorKind.Boss) ||
+                        source.HitTargets.Contains(enemy.Id)) continue;
+                    float distance = (enemy.Pos - source.Anchor).sqrMagnitude;
+                    if (distance < nearestDistance) { nearestDistance = distance; next = enemy; }
+                }
+                if (next == null) { source.Dead = true; return; }
+                Vector2 landing = next.Pos;
+                source.HitTargets.Add(next.Id);
+                ShowBlueFlameArc(source, source.Anchor, landing);
+                ApplyDamage(next, source.Damage, StatusMask.None, 0f, 0f);
+                source.Anchor = landing;
+                source.Mark++;
+                if (source.Mark >= Mathf.Max(1, UpgradeTuning.Data.blueFlameChainTargets)) source.Dead = true;
+                return;
+            }
             var candidates = TempEnemies(source.Pos, source.Size);
-            if (candidates.Count == 0) return;
+            if (candidates.Count == 0)
+            { source.Pulse += Mathf.Max(.1f, UpgradeTuning.Data.blueFlameBurstInterval); return; }
+            source.Pulse += Mathf.Max(.01f, UpgradeTuning.Data.chainInterval);
             candidates.Sort((a, b) => (a.Pos - source.Pos).sqrMagnitude.CompareTo((b.Pos - source.Pos).sqrMagnitude));
             // The second mastery emitter starts from a different nearby target when possible.
             var primary = candidates[source.SkillPhase == 1 && candidates.Count > 1 ? 1 : 0];
@@ -281,6 +308,10 @@ namespace OctopusSurvivors
             float radius = source.Size + Mathf.Max(0, source.EffectLevel - 1) * UpgradeTuning.Data.blueFlameSplashRangePerLevel;
             // Snapshot targets before damage can kill the primary or spawn more actors.
             var splashTargets = TempEnemies(center, radius);
+            source.HitTargets.Add(primary.Id);
+            foreach (var enemy in splashTargets) source.HitTargets.Add(enemy.Id);
+            source.Anchor = center;
+            source.Bounces = 1;
             ShowBlueFlameArc(source, source.Pos, center);
             ApplyDamage(primary, source.Damage, StatusMask.None, 0f, 0f);
             foreach (var enemy in splashTargets)
