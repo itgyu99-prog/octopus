@@ -13,7 +13,7 @@ namespace OctopusSurvivors
         Vector3 previous;
         bool initialized;
         LineRenderer lightningGlow, lightningCore;
-        readonly LineRenderer[] lightningBranches = new LineRenderer[2];
+        readonly SpriteRenderer[] lightningTextureSegments = new SpriteRenderer[8];
         readonly Vector3[] lightningPoints = new Vector3[9];
         SpriteRenderer lightningImpact;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -146,21 +146,20 @@ namespace OctopusSurvivors
             {
                 lightningGlow = LightningLine("Lightning glow", .16f, 14);
                 lightningCore = LightningLine("Lightning core", .035f, 16);
-                for (int i = 0; i < lightningBranches.Length; i++)
-                    lightningBranches[i] = LightningLine("Lightning fork", .025f, 15);
+                for (int i = 0; i < lightningTextureSegments.Length; i++)
+                    lightningTextureSegments[i] = Layer("Original blue flame texture", 15);
                 lightningImpact = Layer("Lightning splash impact", 17);
-                lightningImpact.sprite = SpriteFactory.Ring(Color.white);
             }
-            float fade = Mathf.Clamp01(1f - age / Mathf.Max(.01f, duration));
+            float fade = Mathf.Clamp01((duration - age) / .25f);
             float visualScale = Mathf.Max(.1f, UpgradeTuning.Data.blueFlameVisualScale);
-            lightningGlow.widthMultiplier = .16f * visualScale;
-            lightningCore.widthMultiplier = .035f * visualScale;
+            lightningGlow.widthMultiplier = .055f * visualScale;
+            lightningCore.widthMultiplier = .012f * visualScale;
             float lengthScale = Mathf.Max(.15f, transform.lossyScale.x);
             for (int i = 0; i < lightningPoints.Length; i++)
             {
                 float u = i / 8f;
                 float jitter = i == 0 || i == 8 ? 0f :
-                    Mathf.Sin(i * 8.3f + Mathf.Floor(age * 35f) * 2.1f + offset * 13f) * .14f * visualScale / lengthScale;
+                    Mathf.Sin(i * 8.3f + offset * 13f) * .09f * visualScale / lengthScale;
                 lightningPoints[i] = new Vector3(Mathf.Lerp(-1f, 1f, u), jitter, 0f);
             }
             lightningGlow.positionCount = lightningCore.positionCount = lightningPoints.Length;
@@ -168,22 +167,26 @@ namespace OctopusSurvivors
             lightningCore.SetPositions(lightningPoints);
             lightningGlow.startColor = lightningGlow.endColor = new Color(.15f, .55f, 1f, fade * .55f);
             lightningCore.startColor = lightningCore.endColor = new Color(.8f, 1f, 1f, fade);
-            for (int i = 0; i < lightningBranches.Length; i++)
+            // Reuse the original ComboAtlas blue-flame animation along the bent path.
+            // Length follows the link; transverse thickness stays constant in world units.
+            var textureFrame = Frame("ComboAtlas", 6, 20 + (int)((age + offset) * 14f) % 4);
+            if (textureFrame == null) return;
+            for (int i = 0; i < lightningTextureSegments.Length; i++)
             {
-                var line = lightningBranches[i];
-                line.widthMultiplier = .025f * visualScale;
-                Vector3 start = lightningPoints[3 + i * 2];
-                float side = i == 0 ? 1f : -1f;
-                line.positionCount = 3;
-                line.SetPosition(0, start);
-                line.SetPosition(1, start + new Vector3(.16f, side * .24f * visualScale / lengthScale, 0f));
-                line.SetPosition(2, start + new Vector3(.3f, side * .42f * visualScale / lengthScale, 0f));
-                line.startColor = new Color(.4f, .85f, 1f, fade * .85f);
-                line.endColor = new Color(.2f, .6f, 1f, 0f);
+                var piece = lightningTextureSegments[i];
+                Vector3 delta = lightningPoints[i + 1] - lightningPoints[i];
+                piece.sprite = textureFrame;
+                piece.transform.localPosition = (lightningPoints[i] + lightningPoints[i + 1]) * .5f;
+                piece.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
+                piece.transform.localScale = new Vector3(delta.magnitude * 1.08f / textureFrame.bounds.size.x,
+                    .24f * visualScale / (lengthScale * textureFrame.bounds.size.y), 1f);
+                piece.color = new Color(1f, 1f, 1f, fade * .9f);
             }
+            lightningImpact.sprite = textureFrame;
             lightningImpact.transform.localPosition = Vector3.right;
-            lightningImpact.transform.localScale = Vector3.one * Mathf.Lerp(.2f, .85f, 1f - fade) * visualScale / lengthScale;
-            lightningImpact.color = new Color(.55f, .9f, 1f, fade);
+            lightningImpact.transform.localScale = Vector3.one * .35f * visualScale /
+                (lengthScale * Mathf.Max(textureFrame.bounds.size.x, textureFrame.bounds.size.y));
+            lightningImpact.color = new Color(1f, 1f, 1f, fade);
         }
 
         void LateUpdate()

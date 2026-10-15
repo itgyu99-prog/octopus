@@ -51,10 +51,10 @@
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `SpawnAllySpirit` — 1806행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnPiercingMeteor` — 1815행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CastBlackFlame` — 1836행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `InfectFlame` — 1871행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnAllySpirit` — 1807행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnPiercingMeteor` — 1816행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CastBlackFlame` — 1837행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `InfectFlame` — 1872행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Player/OctopusPlayer.cs` 진입 함수
 
@@ -71,12 +71,14 @@
 - `TrackedFireDirection` — 248행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `TurnFireDirection` — 265행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `CastChain` — 274행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ShowBlueFlameArc` — 325행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `StrikeBlueFlameLink` — 314행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `InsideBlueFlameCorridor` — 335행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ShowBlueFlameArc` — 342행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/HdSpellVisual.cs` 진입 함수
 
 - `DrawSplashLightning` — 140행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `LateUpdate` — 189행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `LateUpdate` — 192행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/TreeAbility.cs` 진입 함수
 

@@ -46,6 +46,7 @@ namespace OctopusSurvivors
         public ushort HitBy;
         public bool BlackFlame;
         public readonly HashSet<ushort> HitTargets = new HashSet<ushort>();
+        public HashSet<ushort> BlueFlameSplashTargets;
     }
 
     public sealed partial class GameSession : NetworkBehaviour

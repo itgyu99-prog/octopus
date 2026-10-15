@@ -289,9 +289,7 @@ namespace OctopusSurvivors
                 }
                 if (next == null) { source.Dead = true; return; }
                 Vector2 landing = next.Pos;
-                source.HitTargets.Add(next.Id);
-                ShowBlueFlameArc(source, source.Anchor, landing);
-                ApplyDamage(next, source.Damage, StatusMask.None, 0f, 0f);
+                StrikeBlueFlameLink(source, source.Anchor, next);
                 source.Anchor = landing;
                 source.Mark++;
                 if (source.Mark >= Mathf.Max(1, UpgradeTuning.Data.blueFlameChainTargets)) source.Dead = true;
@@ -305,27 +303,46 @@ namespace OctopusSurvivors
             // The second mastery emitter starts from a different nearby target when possible.
             var primary = candidates[source.SkillPhase == 1 && candidates.Count > 1 ? 1 : 0];
             Vector2 center = primary.Pos;
-            float radius = source.Size + Mathf.Max(0, source.EffectLevel - 1) * UpgradeTuning.Data.blueFlameSplashRangePerLevel;
-            // Snapshot targets before damage can kill the primary or spawn more actors.
-            var splashTargets = TempEnemies(center, radius);
-            source.HitTargets.Add(primary.Id);
-            foreach (var enemy in splashTargets) source.HitTargets.Add(enemy.Id);
+            source.BlueFlameSplashTargets = new HashSet<ushort>();
             source.Anchor = center;
             source.Bounces = 1;
-            ShowBlueFlameArc(source, source.Pos, center);
-            ApplyDamage(primary, source.Damage, StatusMask.None, 0f, 0f);
-            foreach (var enemy in splashTargets)
+            source.Mark = 1;
+            StrikeBlueFlameLink(source, source.Pos, primary);
+            if (source.Mark >= Mathf.Max(1, UpgradeTuning.Data.blueFlameChainTargets)) source.Dead = true;
+        }
+
+        void StrikeBlueFlameLink(SimActor source, Vector2 from, SimActor direct)
+        {
+            Vector2 to = direct.Pos;
+            source.HitTargets.Add(direct.Id);
+            ShowBlueFlameArc(source, from, to);
+            float splashMultiplier = Mathf.Clamp01(UpgradeTuning.Data.blueFlameSplashDamageMultiplier);
+            float width = UpgradeTuning.Data.blueFlameCorridorRadius +
+                Mathf.Max(0, source.EffectLevel - 1) * UpgradeTuning.Data.blueFlameSplashRangePerLevel;
+            var nearby = TempEnemies((from + to) * .5f, Vector2.Distance(from, to) * .5f + width);
+            // A previous half-damage splash is topped up to one full direct hit.
+            float directMultiplier = source.BlueFlameSplashTargets.Contains(direct.Id) ? 1f - splashMultiplier : 1f;
+            ApplyDamage(direct, source.Damage * directMultiplier, StatusMask.None, 0f, 0f);
+            foreach (var enemy in nearby)
             {
-                if (enemy.Id == primary.Id || enemy.Dead) continue;
-                ShowBlueFlameArc(source, center, enemy.Pos);
-                ApplyDamage(enemy, source.Damage, StatusMask.None, 0f, 0f);
+                if (enemy.Dead || source.HitTargets.Contains(enemy.Id) || source.BlueFlameSplashTargets.Contains(enemy.Id)) continue;
+                if (!InsideBlueFlameCorridor(enemy.Pos, from, to, width)) continue;
+                source.BlueFlameSplashTargets.Add(enemy.Id);
+                ApplyDamage(enemy, source.Damage * splashMultiplier, StatusMask.None, 0f, 0f);
             }
+        }
+
+        public static bool InsideBlueFlameCorridor(Vector2 point, Vector2 from, Vector2 to, float radius)
+        {
+            Vector2 segment = to - from;
+            float t = segment.sqrMagnitude > .0001f ? Mathf.Clamp01(Vector2.Dot(point - from, segment) / segment.sqrMagnitude) : 0f;
+            return (point - (from + segment * t)).sqrMagnitude <= radius * radius;
         }
 
         void ShowBlueFlameArc(SimActor source, Vector2 from, Vector2 to)
         {
             Effect(ActorKind.ChainArc, (from + to) * .5f, to - from,
-                Mathf.Max(.1f, Vector2.Distance(from, to) * .5f), .22f, 0f, source.Owner, source.EffectLevel);
+                Mathf.Max(.1f, Vector2.Distance(from, to) * .5f), Mathf.Max(.35f, source.Duration - source.Age + .25f), 0f, source.Owner, source.EffectLevel);
         }
     }
 }

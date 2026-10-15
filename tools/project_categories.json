@@ -135,6 +135,8 @@
           "TrackedFireDirection",
           "TurnFireDirection",
           "CastChain",
+          "StrikeBlueFlameLink",
+          "InsideBlueFlameCorridor",
           "ShowBlueFlameArc"
         ],
         "Assets/Scripts/Elements/HdSpellVisual.cs": [

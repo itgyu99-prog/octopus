@@ -28,7 +28,9 @@ MonoBehaviour:
   blueFlameSplashRangePerLevel: 0.3
   blueFlameBurstInterval: 0.6
   blueFlameChainTargets: 20
-  blueFlameVisualScale: 5
+  blueFlameVisualScale: 1
+  blueFlameCorridorRadius: 0.65
+  blueFlameSplashDamageMultiplier: 0.5
   thornDuration: 3
   thornTick: 0.4
   thornDamageMultiplier: 0.4
