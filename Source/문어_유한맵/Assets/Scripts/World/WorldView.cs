@@ -125,7 +125,7 @@ namespace OctopusSurvivors
                 _bossPos = pos;
             }
 
-            if (!TreeSkillVisual.Supports(kind) && !HdSpellVisual.Supports(kind) && (ElementEffectVisual.Supports(kind) || kind == ActorKind.Enemy || kind == ActorKind.Boss))
+            if (kind != ActorKind.SodaWave && !TreeSkillVisual.Supports(kind) && !HdSpellVisual.Supports(kind) && (ElementEffectVisual.Supports(kind) || kind == ActorKind.Enemy || kind == ActorKind.Boss))
             {
                 var effect = sr.GetComponent<ElementEffectVisual>() ?? sr.gameObject.AddComponent<ElementEffectVisual>();
                 effect.Configure(kind, size, extra, age, duration);
@@ -150,6 +150,12 @@ namespace OctopusSurvivors
             {
                 var tree = sr.GetComponent<TreeSkillVisual>() ?? sr.gameObject.AddComponent<TreeSkillVisual>();
                 tree.Configure(kind, age, duration);
+                sr.enabled = false;
+            }
+            else if (kind == ActorKind.SodaWave)
+            {
+                var soda = sr.GetComponent<SodaVisual>() ?? sr.gameObject.AddComponent<SodaVisual>();
+                soda.Configure(size, age, duration, extra);
                 sr.enabled = false;
             }
             else if (HdSpellVisual.Supports(kind))

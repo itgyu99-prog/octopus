@@ -129,3 +129,26 @@ python tools/project_index.py --category abilities --find "검색어"
 
 - `Configure` — 25행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `LateUpdate` — 70행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+
+### 탄산수 관련 파일
+
+- `Source/문어_유한맵/Assets/Scripts/Elements/SodaAbility.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/SodaVisual.cs`
+- `Source/문어_유한맵/Assets/Resources/Vfx/SodaFlow.shader`
+- `Source/문어_유한맵/Assets/Resources/Vfx/SodaFlow.shader.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/SodaGlass.bytes`
+- `Source/문어_유한맵/Assets/Resources/Vfx/SodaGlass.bytes.meta`
+- `TickSoda` — 22행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `DamageSodaTrail` — 55행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+## `Assets/Scripts/Elements/SodaAbility.cs` 진입 함수
+
+- `TickSoda` — 22행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `DamageSodaTrail` — 55행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+## `Assets/Scripts/Elements/SodaVisual.cs` 진입 함수
+
+- `Configure` — 27행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `Quad` — 98행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `AnimateBubbles` — 133행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)

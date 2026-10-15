@@ -21,7 +21,7 @@ namespace OctopusSurvivors
         static readonly Color Leaf = new Color(0.3f, 0.8f, 0.24f);
 
         public static bool IsDirectional(ActorKind k) => k == ActorKind.MowerBlade || k == ActorKind.Jellyfish ||
-            k == ActorKind.FlameAura || k == ActorKind.ChainArc || k == ActorKind.CurrentFan || k == ActorKind.MagnetPair || k == ActorKind.MagnetBlast;
+            k == ActorKind.FlameAura || k == ActorKind.SodaWave || k == ActorKind.ChainArc || k == ActorKind.CurrentFan || k == ActorKind.MagnetPair || k == ActorKind.MagnetBlast;
         public static bool Supports(ActorKind k) => (k >= ActorKind.SteamField && k <= ActorKind.MagnetBlast) || (k >= ActorKind.SodaWave && k <= ActorKind.RadialCurrent);
 
         public void Configure(ActorKind kind, float radius, byte flags, float age, float duration)

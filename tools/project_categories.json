@@ -104,7 +104,9 @@
       "primary": [
         "Assets/Scripts/Elements/*.cs",
         "Assets/Scripts/Elements/FireOrbAbility.cs",
-        "Assets/Scripts/Elements/FireOrbVisual.cs"
+        "Assets/Scripts/Elements/FireOrbVisual.cs",
+        "Assets/Scripts/Elements/SodaAbility.cs",
+        "Assets/Scripts/Elements/SodaVisual.cs"
       ],
       "related": [
         "Assets/Resources/GameplayRules.json",
@@ -174,6 +176,15 @@
         "Assets/Scripts/Elements/FireOrbVisual.cs": [
           "Configure",
           "LateUpdate"
+        ],
+        "Assets/Scripts/Elements/SodaAbility.cs": [
+          "TickSoda",
+          "DamageSodaTrail"
+        ],
+        "Assets/Scripts/Elements/SodaVisual.cs": [
+          "Configure",
+          "Quad",
+          "AnimateBubbles"
         ]
       }
     },
@@ -288,7 +299,8 @@
         "Assets/Editor/CombatVisualChecks.cs",
         "Assets/Editor/GiantMonsterSetup.cs",
         "Assets/Scripts/Net/GiantCombatChecks.cs",
-        "Assets/Editor/FireOrbChecks.cs"
+        "Assets/Editor/FireOrbChecks.cs",
+        "Assets/Editor/SodaChecks.cs"
       ],
       "related": [
         "ProjectSettings/ProjectVersion.txt",

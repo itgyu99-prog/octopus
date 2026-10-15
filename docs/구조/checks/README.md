@@ -38,3 +38,8 @@ python tools/project_index.py --category checks --find "검색어"
 ```
 
 이 파일은 자동 생성된다. 수동 작업 메모는 같은 폴더의 `NOTES.md`에 기록한다.
+
+
+### 탄산수 관련 파일
+
+- `Source/문어_유한맵/Assets/Editor/SodaChecks.cs`

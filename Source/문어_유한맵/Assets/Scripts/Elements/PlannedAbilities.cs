@@ -95,7 +95,7 @@ namespace OctopusSurvivors
                     {
                         float size = t.range * (rank == 5 && i == 10 ? UpgradeTuning.Data.masterSizeMultiplier : 1);
                         Vector2 spot = RandomSodaPosition(p.Pos, size);
-                        var bottle = Effect(ActorKind.SodaWave, spot, AbilityRunner.Rotate(Vector2.right, Random.Range(0f, 360f)) * 6f,
+                        var bottle = Effect(ActorKind.SodaWave, spot, AbilityRunner.Rotate(Vector2.right, Random.Range(0f, 360f)) * SodaGeometry.Speed,
                             size, t.duration + rank * UpgradeTuning.Data.durationPerLevel, damage, p, l);
                         bottle.ContactCooldown = Random.Range(.3f, .8f);
                     }
@@ -184,16 +184,7 @@ namespace OctopusSurvivors
                     }
                     break;
                 case ActorKind.SodaWave:
-                    if (a.Pulse <= 0f)
-                    {
-                        a.Pulse = .25f;
-                        DamageCircle(a.Pos, a.Size, a.Damage, StatusMask.None, 0f, 0f);
-                    }
-                    Vector2 next = a.Pos + a.Vel * dt;
-                    if (!FiniteBeach.Walkable(next, a.Size)) a.Vel = AbilityRunner.Rotate(-a.Vel, Random.Range(-45f, 45f)) * 6f;
-                    else a.Pos = next;
-                    a.ContactCooldown -= dt;
-                    if (a.ContactCooldown <= 0f) { a.ContactCooldown = .8f; a.Vel = AbilityRunner.Rotate(a.Vel, Random.Range(-80f, 80f)) * 6f; }
+                    TickSoda(a, Mathf.Min(dt, Mathf.Max(0f, a.Life + dt)));
                     break;
                 case ActorKind.LemonShot:
                     StepEffectProjectile(a, dt, false);
