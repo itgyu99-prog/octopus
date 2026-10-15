@@ -129,3 +129,4 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 - 결과 발췌: `Source/문어_유한맵/Logs/blueflame-checks.log`. 원본은 같은 프로젝트 `Logs/Editor.log`, 최신 상태는 `Logs/blueflame-check.status`. 캡처 원본 프레임은 `Build/Validation/BlueFlameFrames`의 고정 경로를 재사용한다.
 - [실제 Unity 전투 GIF](blueflame-preview.gif), [전이 중](host-balance-blueflame-44.png), [연결 경로](host-balance-blueflame-84.png). 정지된 적과 수동 시뮬레이션을 쓰는 통제 검사이며, 두 PC/Relay 및 정상 장기 플레이 밸런스는 이번에 검증하지 않았다.
 - 같은 전투 프레임의 시각 배율 비교: [3배](host-balance-blueflame-size-3.png), [5배](host-balance-blueflame-size-5.png), [10배](host-balance-blueflame-size-10.png). 번개 폭·섬광·불씨 배율만 변경하고 캡처 직후 기본1로 복구했다. 피해 범위는 변경하지 않았다.
+- 적중점의 둥근 전기/청염 농도 [4종 확대 비교](blueflame-hit-comparison.png): A=1(현재), B=1.5, C=2, D=3. 같은 프레임·크기·카메라로 실제 Unity 렌더 후 동일 영역을 잘라 배치했다. blueFlameImpactIntensity는 촬영 후1로 복구했고 시각 배율도1 유지. Play Mode 검사는 PASS.

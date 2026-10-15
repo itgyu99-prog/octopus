@@ -14,7 +14,7 @@ namespace OctopusSurvivors
         readonly Vector3[] vertices = new Vector3[Points * 3];
         readonly Color[] colors = new Color[Points * 3];
         readonly SpriteRenderer[] embers = new SpriteRenderer[6];
-        SpriteRenderer impact, flame, sourceFlare;
+        SpriteRenderer impact, flame, flameBody, sourceFlare;
         float age, duration, seed;
         bool initialized;
 
@@ -57,6 +57,8 @@ namespace OctopusSurvivors
             impact = Sprite("Impact halo", SpriteFactory.Circle(Color.white), 16);
             sourceFlare = Sprite("Departure spark", SpriteFactory.Circle(Color.white), 16);
             flame = Sprite("Original blue flame", null, 17);
+            flameBody = Sprite("Blue flame color density", null, 16);
+            flameBody.sharedMaterial = bodyMaterial;
             for (int i = 0; i < embers.Length; i++) embers[i] = Sprite("Blue ember", SpriteFactory.Circle(Color.white), 16);
         }
 
@@ -116,17 +118,23 @@ namespace OctopusSurvivors
             float impactAge = Mathf.Max(0, time - FlightSeconds);
             float arrived = time >= FlightSeconds ? 1f : 0f;
             float hit = arrived * Mathf.Exp(-impactAge * 15f) * lifeFade;
+            float intensity = Mathf.Clamp(UpgradeTuning.Data.blueFlameImpactIntensity,1f,4f);
             Place(impact, Vector3.right, new Vector2(.32f + impactAge * .9f, .32f + impactAge * .9f) * width / scale,
-                new Color(.03f,.3f,1f,hit * .35f));
+                new Color(.03f,.3f,1f,Mathf.Min(1f,hit * .35f * intensity)));
             float start = Mathf.Exp(-time * 22f) * lifeFade;
             Place(sourceFlare, Vector3.left, Vector2.one * .14f * width / scale, new Color(.25f,.8f,1f,start));
             flame.sprite = HdSpellVisual.Frame("ComboAtlas", 6, 20 + Mathf.Min(3, (int)(impactAge * 16f)));
             float flameAlpha = arrived * Mathf.Clamp01(1f - impactAge / .32f) * lifeFade;
             float aspect = flame.sprite != null ? flame.sprite.bounds.size.x / flame.sprite.bounds.size.y : 1f;
             Place(flame, Vector3.right + Vector3.up * impactAge * .3f / scale,
-                new Vector2(aspect,.9f) * .65f * width / scale, new Color(.08f,.5f,1f,flameAlpha * .85f));
+                new Vector2(aspect,.9f) * .65f * width / scale, new Color(.08f,.5f,1f,Mathf.Min(1f,flameAlpha * .85f * intensity)));
             if (flame.sprite != null)
                 flame.transform.localScale /= flame.sprite.bounds.size.y;
+            // Saturated alpha layer restores blue contrast on bright terrain without enlarging the effect.
+            flameBody.sprite = flame.sprite;
+            flameBody.transform.localPosition = flame.transform.localPosition;
+            flameBody.transform.localScale = flame.transform.localScale;
+            flameBody.color = new Color(.04f,.25f,.9f,flameAlpha * Mathf.Clamp01((intensity-1f)*.5f));
             for (int i = 0; i < embers.Length; i++)
             {
                 float phase = seed + i * 2.39996f;

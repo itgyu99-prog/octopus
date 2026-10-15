@@ -627,6 +627,9 @@ namespace OctopusSurvivors
                 {
                     var tuning=UpgradeTuning.Data;
                     float originalScale=tuning.blueFlameVisualScale;
+                    float originalIntensity=tuning.blueFlameImpactIntensity;
+                    Vector3 originalCameraPosition=camera.transform.position;
+                    float originalCameraSize=camera.orthographicSize;
                     var visuals=UnityEngine.Object.FindObjectsByType<BlueFlameVisual>(FindObjectsSortMode.None);
                     var ages=new float[visuals.Length];
                     var ageField=typeof(BlueFlameVisual).GetField("age",Hidden);
@@ -639,10 +642,22 @@ namespace OctopusSurvivors
                             for(int i=0;i<visuals.Length;i++)visuals[i].RenderAt(ages[i]);
                             Capture("balance-blueflame-size-"+multiplier);
                         }
+                        tuning.blueFlameVisualScale=originalScale;
+                        camera.transform.position=new Vector3(preview.Anchor.x,preview.Anchor.y,-10);
+                        camera.orthographicSize=1.8f;
+                        foreach(float intensity in new[]{1f,1.5f,2f,3f})
+                        {
+                            tuning.blueFlameImpactIntensity=intensity;
+                            for(int i=0;i<visuals.Length;i++)visuals[i].RenderAt(ages[i]);
+                            Capture("balance-blueflame-hit-"+intensity.ToString("0.0",System.Globalization.CultureInfo.InvariantCulture));
+                        }
                     }
                     finally
                     {
                         tuning.blueFlameVisualScale=originalScale;
+                        tuning.blueFlameImpactIntensity=originalIntensity;
+                        camera.transform.position=originalCameraPosition;
+                        camera.orthographicSize=originalCameraSize;
                         for(int i=0;i<visuals.Length;i++)visuals[i].RenderAt(ages[i]);
                     }
                 }
