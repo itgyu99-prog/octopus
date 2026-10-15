@@ -168,7 +168,8 @@
           "CastFireOrbs",
           "TickFireOrb",
           "DamageFireTrail",
-          "MoveFireOrbToTarget"
+          "MoveFireOrbToTarget",
+          "FindFireLaunchTarget"
         ],
         "Assets/Scripts/Elements/FireOrbVisual.cs": [
           "Configure",

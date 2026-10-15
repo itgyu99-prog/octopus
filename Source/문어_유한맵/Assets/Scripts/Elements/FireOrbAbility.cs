@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace OctopusSurvivors
 {
-    // Initial throw keeps its fan. This geometry also supplies the no-target fallback.
+    // Initial throw aims at a selected enemy; this also supplies the no-target fallback.
     public static class FireOrbGeometry
     {
         public const float SampleStep = 1f / 60f;
@@ -42,6 +42,8 @@ namespace OctopusSurvivors
             public float SwitchAt, ContactAt = -1, SearchAt;
             public bool Recalling;
             public Vector2 RecallFrom;
+            public bool Launched;
+            public float ThrowDistance;
         }
         readonly ConditionalWeakTable<SimActor, FireTrail> fireOrbTrails = new ConditionalWeakTable<SimActor, FireTrail>();
 
@@ -56,9 +58,29 @@ namespace OctopusSurvivors
                 var orb = Effect(ActorKind.FlameAura, player.Pos, heading, tuning.fireOrbRadius,
                     tuning.fireOrbDuration, tuning.fireOrbDps * multiplier, player, level);
                 orb.SkillPoint = heading; orb.SkillTime = reach; orb.Bounces = i;
+                orb.Target = FindFireLaunchTarget(player.Pos, reach, group, null);
                 group.Add(orb);
                 fireOrbTrails.Add(orb, new FireTrail { Owner = player.Pos, Group = group });
             }
+        }
+
+        SimActor FindFireLaunchTarget(Vector2 owner, float reach, List<SimActor> group, SimActor self)
+        {
+            float range = reach * UpgradeTuning.Data.fireOrbTargetRangeMultiplier;
+            SimActor chosen = null; int best = int.MaxValue; float nearest = float.PositiveInfinity;
+            for (int i = 0; i < _actors.Count; i++)
+            {
+                var enemy = _actors[i];
+                if (enemy.Dead || (enemy.Kind != ActorKind.Enemy && enemy.Kind != ActorKind.Boss)) continue;
+                float distance = (enemy.Pos - owner).sqrMagnitude;
+                if (distance > range * range) continue;
+                int reservations = 0;
+                if (group != null) foreach (var other in group)
+                    if (other != self && !other.Dead && other.Target == enemy) reservations++;
+                if (reservations > best || (reservations == best && distance >= nearest)) continue;
+                chosen = enemy; best = reservations; nearest = distance;
+            }
+            return chosen;
         }
 
         void TickFireOrb(SimActor orb, float dt)
@@ -74,10 +96,28 @@ namespace OctopusSurvivors
                 float nextAge = trail.Age + step;
                 Vector2 owner = Vector2.Lerp(trail.Owner, currentOwner, Mathf.InverseLerp(start, end, nextAge));
                 Vector2 previous = orb.Pos;
+                float launch = FireOrbGeometry.Launch(orb.Bounces);
+                if (!trail.Launched && nextAge >= launch)
+                {
+                    trail.Launched = true; orb.Anchor = owner; orb.Pos = previous = owner;
+                    float range = orb.SkillTime * UpgradeTuning.Data.fireOrbTargetRangeMultiplier;
+                    if (orb.Target == null || orb.Target.Dead || (orb.Target.Pos - owner).sqrMagnitude > range * range)
+                        orb.Target = FindFireLaunchTarget(owner, orb.SkillTime, trail.Group, orb);
+                    trail.ThrowDistance = orb.SkillTime;
+                    if (orb.Target != null)
+                    {
+                        Vector2 delta = orb.Target.Pos - owner;
+                        if (delta.sqrMagnitude > .00001f) orb.SkillPoint = orb.Vel = delta.normalized;
+                        trail.ThrowDistance = Mathf.Min(orb.SkillTime, delta.magnitude);
+                        trail.Visited.Add(orb.Target.Id);
+                    }
+                    trail.SwitchAt = launch + UpgradeTuning.Data.fireOrbThrowTime + UpgradeTuning.Data.fireOrbRetargetInterval;
+                }
                 float arrival = FireOrbGeometry.Launch(orb.Bounces) + UpgradeTuning.Data.fireOrbThrowTime;
                 float recall = FireOrbGeometry.ReturnStart(orb.Duration);
                 if (nextAge <= arrival)
-                    orb.Pos = FireOrbGeometry.Position(orb.Anchor, orb.SkillPoint, orb.SkillTime, orb.Bounces, nextAge, orb.Duration, owner);
+                    orb.Pos = FireOrbGeometry.Position(orb.Anchor, orb.SkillPoint,
+                        trail.Launched ? trail.ThrowDistance : orb.SkillTime, orb.Bounces, nextAge, orb.Duration, owner);
                 else if (nextAge >= recall)
                 {
                     if (!trail.Recalling) { trail.Recalling = true; trail.RecallFrom = orb.Pos; orb.Target = null; }

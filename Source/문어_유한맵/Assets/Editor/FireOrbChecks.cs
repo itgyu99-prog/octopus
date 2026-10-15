@@ -129,6 +129,7 @@ namespace OctopusSurvivors.EditorTools
             while (!moving.Dead) Call(s, "TickPlannedAbility", moving, .03f);
             Check(Vector2.Distance(moving.Pos, p.Pos) < .01f, "recall returns to the moving owner rather than the cast point");
             Check(GameConfig.ActorBytes == 25, "existing snapshot record preserved");
+            ValidateInitialAim(s, p);
             ValidateAutoTargets(s, p);
 
             Clear(s); p.transform.position = new Vector3(-5, 0, 0); p.NetPos.Value = p.Pos;
@@ -163,8 +164,9 @@ namespace OctopusSurvivors.EditorTools
             foreach (var orb in orbs)
             {
                 Call(s, "TickPlannedAbility", orb, .5f);
-                Vector2 initial = FireOrbGeometry.Position(orb.Anchor, orb.SkillPoint, orb.SkillTime, orb.Bounces, orb.Age, orb.Duration, p.Pos);
-                Check(orb.Target == null && Vector2.Distance(orb.Pos, initial) < .001f, "spread and launch interval retained for shot " + orb.Bounces);
+                float initialReach = Mathf.Min(orb.SkillTime, Vector2.Distance(orb.Target.Pos, orb.Anchor));
+                Vector2 initial = FireOrbGeometry.Position(orb.Anchor, orb.SkillPoint, initialReach, orb.Bounces, orb.Age, orb.Duration, p.Pos);
+                Check(Vector2.Distance(orb.Pos, initial) < .001f, "enemy-directed initial throw retained for shot " + orb.Bounces);
             }
             Check(Mathf.Abs(FireOrbGeometry.Launch(1) - FireOrbGeometry.Launch(0) - .16f) < .001f,
                 "three shots retain the 0.16 second stagger");
@@ -215,6 +217,37 @@ namespace OctopusSurvivors.EditorTools
                 foreach (var orb in smallGroup) Check(visited[orb.Id].Count >= 2,
                     "shot " + orb.Bounces + " rotates even with only " + count + " monsters");
             }
+        }
+        static void ValidateInitialAim(GameSession s, OctopusPlayer p)
+        {
+            Clear(s); p.transform.position = Vector3.zero; p.NetPos.Value = Vector2.zero; p.Facing.Value = Vector2.right;
+            Target(s, new Vector2(-2, 0)); Target(s, new Vector2(-3, -1)); Target(s, new Vector2(-3, 1));
+            s.CastBasicAbility(p, ElementId.Fire, 1);
+            var orbs = Actors(s).FindAll(a => a.Kind == ActorKind.FlameAura);
+            var initial = new HashSet<ushort>();
+            foreach (var orb in orbs)
+            {
+                Check(orb.Target != null, "shot " + orb.Bounces + " reserves an enemy before launch");
+                initial.Add(orb.Target.Id);
+                Call(s, "TickPlannedAbility", orb, FireOrbGeometry.Launch(orb.Bounces) + .2f);
+                Check(orb.Pos.x < 0 && Vector2.Dot(orb.SkillPoint, (orb.Target.Pos - orb.Anchor).normalized) > .999f,
+                    "shot " + orb.Bounces + " launches toward enemies behind the player rather than facing direction");
+            }
+            Check(initial.Count == 3, "initial shots reserve three distinct targets");
+            Clear(s);
+            var close = Target(s, new Vector2(-1, 0));
+            s.CastBasicAbility(p, ElementId.Fire, 1);
+            var first = Actors(s).Find(a => a.Kind == ActorKind.FlameAura && a.Bounces == 0);
+            Call(s, "TickPlannedAbility", first, UpgradeTuning.Data.fireOrbThrowTime);
+            Check(Vector2.Distance(first.Pos, close.Pos) < .01f, "close enemy is not overshot to maximum throw distance");
+            Clear(s);
+            var dying = Target(s, new Vector2(-2, 0));
+            s.CastBasicAbility(p, ElementId.Fire, 1);
+            var delayed = Actors(s).Find(a => a.Kind == ActorKind.FlameAura && a.Bounces == 2);
+            dying.Dead = true; var replacement = Target(s, new Vector2(0, -2));
+            Call(s, "TickPlannedAbility", delayed, FireOrbGeometry.Launch(2) + .1f);
+            Check(delayed.Target == replacement && delayed.Pos.y < 0 && Mathf.Abs(delayed.Pos.x) < .01f,
+                "delayed shot re-aims when its reserved enemy dies before launch");
         }
         static void Capture(Camera camera, string path)
         {

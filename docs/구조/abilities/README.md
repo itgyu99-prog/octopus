@@ -119,10 +119,11 @@ python tools/project_index.py --category abilities --find "검색어"
 
 ## `Assets/Scripts/Elements/FireOrbAbility.cs` 진입 함수
 
-- `CastFireOrbs` — 48행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickFireOrb` — 64행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `DamageFireTrail` — 145행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `MoveFireOrbToTarget` — 87행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CastFireOrbs` — 50행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickFireOrb` — 86행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `DamageFireTrail` — 185행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `MoveFireOrbToTarget` — 127행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `FindFireLaunchTarget` — 67행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/FireOrbVisual.cs` 진입 함수
 
