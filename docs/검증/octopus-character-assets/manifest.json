@@ -107,33 +107,33 @@
       0.125
     ],
     "durations_ms": [
-      160,
-      90,
-      50,
+      240,
       70,
+      40,
+      60,
       90,
-      110,
-      130,
-      180
+      90,
+      100,
+      190
     ],
-    "source": "exec-36de4c1f-c1d4-4e4d-90fb-1360b7733907.png",
-    "motion": "three-quarter-body-twist-with-subtle-chest-pop-and-front-tentacle",
+    "source": "exec-a6af8765-f975-4a80-b88d-12c127c20ab4.png",
+    "motion": "isolated-local-chest-pulse-with-small-front-tentacle-accent",
     "frame_phases": [
-      "relaxed",
-      "anticipation",
-      "pop-peak",
-      "brief-hold",
-      "release",
-      "inward-recoil",
+      "still",
+      "local-draw-in",
+      "local-pulse-peak",
+      "quick-release",
+      "relax",
+      "tiny-inward-release",
       "recover",
-      "settle"
+      "still"
     ],
     "normalization": {
-      "common_scale": 0.13056379821958458,
+      "common_scale": 0.1282798833819242,
       "median_height_px": 44,
       "feet_baseline_y": 56,
-      "anchor": "bottom 8 percent alpha-weighted foot center"
+      "anchor": "upper 45 percent head contour center x=32; feet baseline y=56"
     },
-    "pose": "screen-right three-quarter body; slight counter-turn of face; short far tentacle; small extra twist at pop peak"
+    "pose": "fixed screen-right three-quarter stance; no animated body yaw or sway; quick lower-chest contraction and release"
   }
 ]
