@@ -119,6 +119,7 @@ namespace OctopusSurvivors
         Mist = 80, WaterEmitter = 81, RadialCurrent = 82, WaterImpact = 83, GiantSpike = 84,
         ThornPatch = 85, ThornShot = 86, Balloon = 87, Tornado = 88, Firework = 89,
         LightningWarning = 90, ComboRepeater = 91, ChiliField = 92, LemonWheel = 93,
+        WaterBalloonShot = 94, WaterBalloonBurst = 95,
         PiercingMeteor = 70
     }
 

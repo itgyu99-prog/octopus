@@ -18,6 +18,7 @@ Unity 에디터 검사, 협동 검사, 빌드·배포 설정
 - `Source/문어_유한맵/Assets/Editor/SystemDataChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/TreeSkillChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/WaterAlternativesChecks.cs`
+- `Source/문어_유한맵/Assets/Editor/WaterBalloonChecks.cs`
 - `Source/문어_유한맵/Assets/Scripts/Net/CoopSystemChecks.cs`
 - `Source/문어_유한맵/Assets/Scripts/Net/GiantCombatChecks.cs`
 
@@ -31,6 +32,7 @@ Unity 에디터 검사, 협동 검사, 빌드·배포 설정
 - `Source/문어_유한맵/../../tools/package_release.py`
 - `Source/문어_유한맵/Assets/Editor/TreeSkillChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/WaterAlternativesChecks.cs`
+- `Source/문어_유한맵/Assets/Editor/WaterBalloonChecks.cs`
 - `Source/문어_유한맵/Packages/manifest.json`
 - `Source/문어_유한맵/ProjectSettings/EditorBuildSettings.asset`
 - `Source/문어_유한맵/ProjectSettings/ProjectVersion.txt`

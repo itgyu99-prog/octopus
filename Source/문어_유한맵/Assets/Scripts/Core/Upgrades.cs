@@ -66,7 +66,7 @@ namespace OctopusSurvivors
                 case UpgradeId.AttributeCooldown: return "속성 쿨타임 감소";
                 case UpgradeId.ElementCooldown: return "요소/특수 쿨타임 감소";
                 case UpgradeId.GrassTargets: return "풀 · 타겟 수 증가";
-                case UpgradeId.WaterRepeats: return "물 · 연속 공격 증가";
+                case UpgradeId.WaterRepeats: return "물 · 물풍선 추가";
                 case UpgradeId.ElectricRepeats: return "전기 · 방출 횟수 증가";
                 case UpgradeId.FireRange: return "불 · 공격 범위 증가";
                 case UpgradeId.LingeringThorns: return "가시덩쿨";
@@ -133,7 +133,7 @@ namespace OctopusSurvivors
                 case UpgradeId.ElementCooldown:
                     return $"{(1f - GameConfig.ElementCdMul(picks)) * 100f:0}% → {(1f - GameConfig.ElementCdMul(picks + 1)) * 100f:0}% 감소";
                 case UpgradeId.GrassTargets: return "타겟 +1 · 같은 공격에 동일 대상 중복 없음";
-                case UpgradeId.WaterRepeats: return "기존 물 공격 +1회 · 기본 주기 유지";
+                case UpgradeId.WaterRepeats: return "물풍선 +1개 · 0.22초 순차 투척 · 기본 주기 유지";
                 case UpgradeId.ElectricRepeats: return "전기 방출 +1회 · 기본 주기 유지";
                 case UpgradeId.FireRange: return "불덩이 3발 사거리 증가 · 자동 조준/대상 교대 · 꼬리와 복귀 중에도 공격";
                 case UpgradeId.LingeringThorns: return "가시가 필드에 남아 주기적으로 피해";

@@ -21,6 +21,8 @@
 - `Source/문어_유한맵/Assets/Scripts/Elements/TreeAbilityTuning.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/TreeSkillVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/UpgradeAbilities.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/WaterBalloonAbility.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/WaterBalloonVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/WaterVfx.cs`
 
 ## 관련 파일
@@ -55,6 +57,12 @@
 - `Source/문어_유한맵/Assets/Resources/Vfx/TreeVariants.png.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/WaterAtlas.png`
 - `Source/문어_유한맵/Assets/Resources/Vfx/WaterAtlas.png.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/WaterBalloonBurst.bytes`
+- `Source/문어_유한맵/Assets/Resources/Vfx/WaterBalloonBurst.bytes.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/WaterBalloonFlow.shader`
+- `Source/문어_유한맵/Assets/Resources/Vfx/WaterBalloonFlow.shader.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/WaterBalloonPixel.bytes`
+- `Source/문어_유한맵/Assets/Resources/Vfx/WaterBalloonPixel.bytes.meta`
 - `Source/문어_유한맵/Assets/Scripts/Core/GameplayRules.cs`
 - `Source/문어_유한맵/Assets/Scripts/Core/UpgradeTuning.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/TreeAbilityTuning.cs`
@@ -117,6 +125,17 @@
 - `TickTreeAbility` — 26행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `LandTreeFruit` — 43행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `TreeLandingPoint` — 50행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+## `Assets/Scripts/Elements/WaterBalloonAbility.cs` 진입 함수
+
+- `CastWaterBalloons` — 27행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `WaterBalloonTarget` — 39행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickWaterBalloon` — 74행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+## `Assets/Scripts/Elements/WaterBalloonVisual.cs` 진입 함수
+
+- `Configure` — 73행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `LateUpdate` — 90행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

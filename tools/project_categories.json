@@ -106,7 +106,9 @@
         "Assets/Scripts/Elements/FireOrbAbility.cs",
         "Assets/Scripts/Elements/FireOrbVisual.cs",
         "Assets/Scripts/Elements/SodaAbility.cs",
-        "Assets/Scripts/Elements/SodaVisual.cs"
+        "Assets/Scripts/Elements/SodaVisual.cs",
+        "Assets/Scripts/Elements/WaterBalloonAbility.cs",
+        "Assets/Scripts/Elements/WaterBalloonVisual.cs"
       ],
       "related": [
         "Assets/Resources/GameplayRules.json",
@@ -180,6 +182,15 @@
           "FindFireLaunchTarget"
         ],
         "Assets/Scripts/Elements/FireOrbVisual.cs": [
+          "Configure",
+          "LateUpdate"
+        ],
+        "Assets/Scripts/Elements/WaterBalloonAbility.cs": [
+          "CastWaterBalloons",
+          "WaterBalloonTarget",
+          "TickWaterBalloon"
+        ],
+        "Assets/Scripts/Elements/WaterBalloonVisual.cs": [
           "Configure",
           "LateUpdate"
         ],
@@ -307,7 +318,8 @@
         "Assets/Scripts/Net/GiantCombatChecks.cs",
         "Assets/Editor/FireOrbChecks.cs",
         "Assets/Editor/SodaChecks.cs",
-        "Assets/Editor/WaterAlternativesChecks.cs"
+        "Assets/Editor/WaterAlternativesChecks.cs",
+        "Assets/Editor/WaterBalloonChecks.cs"
       ],
       "related": [
         "ProjectSettings/ProjectVersion.txt",

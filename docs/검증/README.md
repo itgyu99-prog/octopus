@@ -177,3 +177,9 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 - Unity 6000.5.7f1 배치 컴파일 및 실제 NGO 로컬 호스트 Play Mode 검사에서 `GRASS THORN CHECKS PASS` 확인. 8프레임 로딩/Point 필터/고정 지면 피벗, 전조·찌르기·정지·회수, 기본 최근접3명/타격당19피해/4회 타격, 4번째 대상·사거리 밖 무피해, 기존12개 이펙트/0.64초 공격 지속시간 유지, 0.72초 시각 수명, 0.18초 이후에도 표시 유지, 서버 표시 경과시간 동기화, 표시 연장의 추가 피해 없음, 실제 WorldView 연결, 잔상 부재와 만료 후 렌더러 제거를 확인했다.
 - [실제 게임 적용 화면](grass-thorn-gameplay.png). 캡처 원본은 `Source/문어_유한맵/Build/Validation/GrassThornFrames/frame-00.png`~`frame-07.png` 고정 경로. 검사 상태 `Logs/grass-thorn-check.status`=PASS, 상세 `Logs/grass-thorn-checks.log`, Unity 로그 `Logs/grass-thorn-unity.log`.
 - 재실행: `문어/풀 가시 픽셀 검증` 또는 열린 편집 모드 에디터에 `Logs/grass-thorn-check.request` 파일로 요청. 프로젝트가 닫혀 있을 때는 Unity에 `-batchmode -acceptSoftwareTermsForThisRunOnly -projectPath <프로젝트> -executeMethod OctopusSurvivors.EditorTools.GrassThornChecks.Run -logFile <프로젝트>/Logs/grass-thorn-unity.log` 전달. 통제된 1회 공격 표시·피해 검사이며 두 PC/Relay와 장기 밸런스는 미검증. 기존25바이트 스냅샷 유지. Windows 빌드/ZIP은 생성하지 않았다.
+
+### 물풍선 기본 공격 적용 (2026-10-16)
+
+- Unity WaterBalloonChecks PASS: 5개 준비, 0.22초 순차 투척, 밀집 적 조준, 반경1.9 단발 AOE 및 감속, 프레임률별 동일 피해, 다운/무타겟/만료, 기존 스냅샷을 통한 표시 전환.
+- 실제 게임 촬영: [물풍선 기본 공격 GIF](water-balloon-gameplay.gif). 이전 water-balloon-assets-preview.gif는 게임 외 연출 시안이다.
+- 기본 5개, 물 연속 강화는 +1개. 물 분열/히든 풍선 유지. 별도 Windows 배포 빌드/ZIP 생성 없음.

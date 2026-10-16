@@ -18,8 +18,7 @@ namespace OctopusSurvivors
                     CastFireOrbs(p, dir, l, upgradeMul);
                     break;
                 case ElementId.Water:
-                    var water = Effect(ActorKind.WaterEmitter, p.Pos, p.NextWaterDirection(dir), .1f, l * UpgradeTuning.Data.repeatInterval, 27f * upgradeMul, p, l);
-                    water.Bounces = l;
+                    CastWaterBalloons(p, dir, l, upgradeMul);
                     break;
                 case ElementId.Grass:
                     Effect(ActorKind.ThornEmitter, p.Pos, Vector2.zero, 9f, 4 * .16f, 19f * upgradeMul, p, 3 + (l - 1));
@@ -136,6 +135,7 @@ namespace OctopusSurvivors
 
         bool TickPlannedAbility(SimActor a, float dt)
         {
+            if (WaterBalloonGeometry.Supports(a.Kind)) return TickWaterBalloon(a, dt);
             if (a.Kind < ActorKind.SodaWave || a.Kind > ActorKind.RadialCurrent) return false;
             if (a.Owner == null || !a.Owner.IsSpawned || a.Owner.Downed.Value)
             { a.Dead = true; return true; }

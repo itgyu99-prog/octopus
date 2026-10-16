@@ -228,16 +228,16 @@ namespace OctopusSurvivors
             var cooldowns=(float[])typeof(OctopusPlayer).GetField("attributeCooldowns",Hidden).GetValue(p);
             Array.Clear(cooldowns,0,cooldowns.Length);
             Call(p,"TickAttributeCycle",.01f);
-            foreach(var kind in new[]{ActorKind.FlameAura,ActorKind.WaterEmitter,ActorKind.ThornEmitter,ActorKind.CurrentEmitter})
-                Check(Actors(s).FindAll(a=>a.Kind==kind).Count==1,"all owned attributes cast together: "+kind);
+            foreach(var kind in new[]{ActorKind.FlameAura,ActorKind.WaterBalloonShot,ActorKind.ThornEmitter,ActorKind.CurrentEmitter})
+                Check(Actors(s).FindAll(a=>a.Kind==kind).Count==(kind==ActorKind.WaterBalloonShot?WaterBalloonGeometry.Count:1),"all owned attributes cast together: "+kind);
             int castCount=Actors(s).Count;
             Call(p,"TickAttributeCycle",2.9f);
             Check(Actors(s).Count==castCount,"attributes wait their own three-second cooldown");
             cooldowns[1]=.05f; // A newly ready attribute cannot wait for another slot.
             Call(p,"TickAttributeCycle",.06f);
-            Check(Actors(s).Count==castCount+1&&p.CastElement==ElementId.Water,"staggered water cooldown fires independently");
+            Check(Actors(s).Count==castCount+WaterBalloonGeometry.Count&&p.CastElement==ElementId.Water,"staggered water cooldown fires independently");
             Call(p,"TickAttributeCycle",.05f);
-            Check(Actors(s).Count==castCount+4,"remaining three attributes fire without rotating slots");
+            Check(Actors(s).Count==castCount+WaterBalloonGeometry.Count+3,"remaining three attributes fire without rotating slots");
             Check(Mathf.Abs(p.MoveSpeedValue-4.7f*1.25f)<.0001f,"base movement speed increased 1.25 times");
             p.UpMoveSpeed.Value=10;
             Check(Mathf.Abs(p.MoveSpeedValue-5.875f)<.0001f,"legacy speed picks cannot change fixed movement speed");
@@ -346,18 +346,15 @@ namespace OctopusSurvivors
             for(int level=1;level<=3;level++)
             {
                 ResetField(s);s.CastBasicAbility(p,ElementId.Water,level);
-                var emitter=Actors(s).Find(a=>a.Kind==ActorKind.WaterEmitter);
-                for(int pulse=0;pulse<level;pulse++)
+                var balloons=Actors(s).FindAll(a=>a.Kind==ActorKind.WaterBalloonShot);
+                Check(balloons.Count==WaterBalloonGeometry.CountForLevel(level),"water balloon count at level "+level);
+                for(int i=0;i<balloons.Count;i++)
                 {
-                    Call(s,"TickPlannedAbility",emitter,pulse==0?.001f:GameplayRules.Data.attributeRepeatInterval+.001f);
-                    var shots=Actors(s).FindAll(a=>a.Kind==ActorKind.Droplet);
-                    Check(shots.Count==(pulse+1)*GameplayRules.Data.waterProjectileCount,"water radial volley count at level "+level+" pulse "+pulse);
-                    Vector2 sum=Vector2.zero;
-                    for(int i=0;i<GameplayRules.Data.waterProjectileCount;i++)sum+=shots[shots.Count-1-i].Vel.normalized;
-                    Check(sum.sqrMagnitude<.001f,"water directions evenly cover full circle");
-                    if(pulse>0)Check(Mathf.Abs(Vector2.Angle(shots[shots.Count-2*GameplayRules.Data.waterProjectileCount].Vel,shots[shots.Count-GameplayRules.Data.waterProjectileCount].Vel)-12f)<.01f,"repeat rotates volley by twelve degrees");
+                    Check(Mathf.Abs(balloons[i].Duration-WaterBalloonGeometry.FlightTime-WaterBalloonGeometry.Launch(i))<.0001f,"water launch gap is 0.22 seconds");
+                    Call(s,"TickPlannedAbility",balloons[i],balloons[i].Duration);
+                    Check(balloons[i].Kind==ActorKind.WaterBalloonBurst,"balloon lands once and becomes a water membrane");
                 }
-                Check(emitter.Dead,"water emitter stops after requested volleys");
+                SimActor emitter;
                 ResetField(s);s.CastBasicAbility(p,ElementId.Electric,level);
                 emitter=Actors(s).Find(a=>a.Kind==ActorKind.CurrentEmitter);
                 for(int i=0;i<level;i++)Call(s,"TickPlannedAbility",emitter,GameplayRules.Data.attributeRepeatInterval+.001f);
@@ -401,13 +398,12 @@ namespace OctopusSurvivors
             p.ExtraDash.Value=0;p.DashCharges.Value=1;p.DashRechargeLeft.Value=0;
             p.transform.position=Vector3.zero;p.NetPos.Value=Vector2.zero;
             ResetField(s);s.CastBasicAbility(p,ElementId.Water,1);
-            var water=Actors(s).Find(a=>a.Kind==ActorKind.WaterEmitter);Call(s,"TickPlannedAbility",water,.01f);
-            var shot=Actors(s).Find(a=>a.Kind==ActorKind.Droplet);var enemy=Target(s,shot.Pos+shot.Vel*.01f);Call(s,"TickProjectile",shot,.01f);
-            Check(enemy.Hp<enemy.MaxHp,"water retains projectile damage and collision");
-            Vector2 previousDirection=water.Vel;
-            s.CastBasicAbility(p,ElementId.Water,1);
-            var waterCasts=Actors(s).FindAll(a=>a.Kind==ActorKind.WaterEmitter);
-            Check(Mathf.Abs(Vector2.Angle(previousDirection,waterCasts[waterCasts.Count-1].Vel)-12f)<.01f,"next water cast also changes direction");
+            var water=Actors(s).Find(a=>a.Kind==ActorKind.WaterBalloonShot);
+            var enemy=Target(s,p.Pos+Vector2.right*3f);
+            Call(s,"TickPlannedAbility",water,water.Duration);
+            Check(enemy.Hp<enemy.MaxHp&&water.Kind==ActorKind.WaterBalloonBurst,"water balloon applies landing splash damage");
+            float hp=enemy.Hp;Call(s,"TickPlannedAbility",water,.1f);
+            Check(enemy.Hp==hp,"water burst never reapplies landing damage");
             ResetField(s);
             var vines=new List<SimActor>();for(int i=0;i<5;i++)vines.Add(Target(s,p.Pos+Vector2.right*(1f+i)));
             s.CastBasicAbility(p,ElementId.Grass,1);

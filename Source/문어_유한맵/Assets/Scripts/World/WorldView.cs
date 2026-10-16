@@ -171,6 +171,14 @@ namespace OctopusSurvivors
                 sr.enabled = false;
             }
 
+            if (WaterBalloonGeometry.Supports(kind))
+            {
+                var balloon = sr.GetComponent<WaterBalloonVisual>() ?? sr.gameObject.AddComponent<WaterBalloonVisual>();
+                balloon.Configure(kind, age, duration, extra, id);
+                if (kind == ActorKind.WaterBalloonBurst)
+                { sr.transform.position = pos; _basePositions[id] = pos; }
+                sr.enabled = false;
+            }
             UpdateHpBar(sr, kind == ActorKind.Enemy || kind == ActorKind.Boss, hp, kind == ActorKind.Boss);
             var worldPos = (Vector3)pos;
             if (!_target.ContainsKey(id))
