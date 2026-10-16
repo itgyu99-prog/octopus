@@ -42,7 +42,8 @@
         "../../docs/검증/octopus-character-assets/*-64.png",
         "../../docs/검증/octopus-character-assets/final/*",
         "../../docs/검증/octopus-character-assets/source/walk-*.png",
-        "../../docs/검증/octopus-character-assets/walk-polished*"
+        "../../docs/검증/octopus-character-assets/walk-polished*",
+        "../../docs/검증/octopus-character-assets/source/hit-source.png"
       ]
     },
     "monsters": {

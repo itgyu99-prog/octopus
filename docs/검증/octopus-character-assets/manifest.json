@@ -156,13 +156,13 @@
   },
   {
     "name": "hit",
-    "frames": 4,
+    "frames": 3,
     "cell": [
       64,
       64
     ],
     "atlas": [
-      256,
+      192,
       64
     ],
     "pivot": [
@@ -170,12 +170,75 @@
       0.125
     ],
     "durations_ms": [
-      100,
-      90,
-      140,
-      750
+      50,
+      70,
+      100
     ],
-    "source": "exec-b0062ad4-78e1-4ab5-b04e-a98354671f93.png"
+    "source": "exec-7358698b-8107-43e2-b1a1-2aa77a99edf3.png",
+    "motion": "original-inner-cheek-press-and-opposite-right-pout-hit",
+    "playback": "once_then_idle",
+    "total_duration_ms": 220,
+    "frame_phases": [
+      "impact-compression",
+      "recoil",
+      "recovery"
+    ],
+    "impact_direction": "from-screen-left",
+    "normalization": {
+      "common_scale": 0.07857142857142857,
+      "recovery_height_px": 44,
+      "frame_heights_px": [
+        44,
+        46,
+        44
+      ],
+      "feet_baseline_y": 56,
+      "anchor": "bottom 8 percent alpha-weighted foot center x=32",
+      "source_grid": [
+        3,
+        1
+      ],
+      "source_column_boundaries": [
+        0,
+        758,
+        1461,
+        2172
+      ]
+    },
+    "preview": {
+      "file": "hit-preview.gif",
+      "size": [
+        256,
+        256
+      ],
+      "frames": 4,
+      "duration_ms": 920,
+      "sequence": [
+        {
+          "state": "hit",
+          "frame": 0,
+          "duration_ms": 50
+        },
+        {
+          "state": "hit",
+          "frame": 1,
+          "duration_ms": 70
+        },
+        {
+          "state": "hit",
+          "frame": 2,
+          "duration_ms": 100
+        },
+        {
+          "state": "idle",
+          "frame": 0,
+          "duration_ms": 700
+        }
+      ],
+      "note": "The 700ms idle hold is for preview readability only and is not part of the3-frame hit asset."
+    },
+    "mouth_direction": "screen-right, opposite screen-left cheek impact; normal3-shaped lobes bulge right",
+    "pose": "faithful original hit sketch: round outer head, large curved inner left cheek crease, closed right angular eye, mouth pushed right"
   },
   {
     "name": "victory",
