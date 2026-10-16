@@ -29,12 +29,17 @@
   "style_reference": "source/walk-polished-source.png",
   "motion": "both inner feet sweep forward down-left together, left extends further, right outside arm raised, left eye lower/right eye higher",
   "normalization": {
-    "common_scale": 0.1657250470809793,
+    "common_scale": 0.16417910447761194,
     "height_px": 88,
     "feet_baseline_y": 112,
     "anchor": "bottom8percent alpha-weighted foot center x64; preserves upper-body lean",
     "filter": "nearest",
-    "alpha": "binary128threshold"
+    "alpha": "binary128threshold",
+    "preserved_existing_frames": [
+      0,
+      1
+    ],
+    "preserved_atlas_commit": "3c5d30a7a83489b1eace6f539b8ab8b25e8d111b"
   },
   "suggested_pixels_per_unit": 96,
   "preview": {
@@ -56,7 +61,12 @@
     {
       "purpose": "match overall stop angle using new cropped pose as primary reference",
       "prompt": "Use case: style-transfer.\nPRIMARY POSE TARGET is reference1, the user's cropped pencil stop drawing. Reproduce THIS EXACT overall pose, angle, head/body lean and limb silhouette as128px PIXEL ART. Reference2 is only the previous gray pixel palette/outline style. Its nearly upright body angle is WRONG: do not copy its pose.\nThe user asks \"can you make it at THIS angle?\" Reference1 must dominate all anatomy/position decisions. Trace its silhouette: huge ROUND head tipped toward SCREEN-LEFT, head center lies visibly LEFT of supporting lower-body/feet center; entire round head/body has a real diagonal counterclockwise lean, NOT just rearranged/slanted eyes on an upright body. The whole character should feel about15-20degrees counterclockwise relative to neutral standing. Keep round head round and tipped over the feet. Match ref1 exactly rather than exaggerating.\nFace matches reference1: both eyes squeezed><, LEFT eye visibly LOWER and RIGHT eye HIGHER, eye-line about15degrees rising toward the right. Same small epsilon/vertical3 mouth low on the face, at the same angle/placement as sketch. Do not compound the face into a steeper angle than the reference. No big smile/tears/blush.\nArms EXACT as sketch: SCREEN-RIGHT outside tentacle lifts high diagonally upper-right about40-45degrees, short round tip, rooted to lower-right body. SCREEN-LEFT outside tentacle mostly tucked behind lower-left edge of head, small curled lobe visible. No straight symmetric pair of side arms.\nFeet EXACT as sketch: TWO short rounded INNER feet, BOTH sweep forward/down-left from their roots, left foot extends a little farther forward. Two distinct curved lobes separated by a soft V notch, connected directly to round body. Feet form the same angled braking stance as ref1; do not put both toes straight under a neutral upright blob. Four total appendages only (two arms,two feet), no neck/torso/human legs/shoes/hands.\nOutput EXACTLY3animationframes THREE equal COLUMNS ONE ROW, full figures with generous transparent padding. The MIDDLE frame must be a faithful pixel rendering of the reference1 drawing and its angle. Frame1 is the same already-diagonal double-foot-brace pose just2-3degrees less tilted and eyes just closing; frame2 exact sketch, eyes squeezed; frame3 rebounds only2-3degrees, eyes reopening to tiny dots but feet and raised right arm remain in the same forward-braking pose. Very small pose changes. Do not return upright in frame3. Stable planted-foot pivot and equal character scale; one-shot50/80/70ms=200ms.\nStyle reference2 ONLY: clean small-staircase pixel art, intended128x128cells and character88logicalpixels high, charcoal2logicalpixel connected even outline, opaque light neutral gray#dddddd body, only2tiny clean neutral gray shading clusters. Preserve approved roundness and dot/epsilon face identity. No pencil texture/grain, antialias, painted gradients, glossy3D, dirty pixels or smoothing.\nTRUE transparent RGBA outside, opaque gray inside. Remove all white background and writing from ref1. No black background, checkerboard graphic, labels, floor, cast shadows, captions, text, gridlines, numbers or borders. DO NOT MIRROR. Head leansLEFT, arm raisedRIGHT, feet sweepDOWNLEFT, left eyeLOW/right eyeHIGH.\n"
+    },
+    {
+      "purpose": "keep eyes closed in final frame; preserve previous first two atlas frames exactly",
+      "prompt": "Use case: precise-object-edit.\nEdit this existing3-frame pixel octopus STOP sprite sheet. Change ONLY the EYES in the THIRD / RIGHTMOST frame. Replace its two open black dot eyes with the SAME squeezed shut > < eyes used in the MIDDLE frame. Preserve the exact tilted eye positions: screen-left closed eye lower, screen-right closed eye higher. All3frames must have BOTH EYES CLOSED throughout the stop. No open dot eyes in any frame.\nFrames1 and2 must remain unchanged. In frame3 preserve EVERYTHING except the two eyes: exact head/body contour and diagonal angle, mouth, feet forward down-left, raised right arm, hidden left arm, gray shading, outline, scale, registration, transparent padding and overall3columns1row layout. The existing third-frame head tilt and body pose must remain identical; place closed eyes at the old dot centers, with the same > < style/size as frame2.\nThis is a tiny facial-expression edit ONLY. Do not redraw a new pose, alter the mouth, add eyebrows, change angle, shorten feet, change palette, animate eyelids reopening, add frames or mirror the character.\nKeep clean128px pixel style, charcoal outline, opaque gray body, actual transparent RGBA background. No text, border, gridline, black background, checkerboard, floor, shadow or added elements. Exactly the same3-frame sheet with frame3eyes shut.\n"
     }
   ],
-  "angle_correction": "User cropped stop sketch is primary pose reference; diagonal head/body connection, raised right arm and tucked left arm; both feet forward down-left."
+  "angle_correction": "User cropped stop sketch is primary pose reference; diagonal head/body connection, raised right arm and tucked left arm; both feet forward down-left.",
+  "expression": "both eyes squeezed closed in all3stopframes,including final hold; no reopening within stop"
 }
