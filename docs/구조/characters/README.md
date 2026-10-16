@@ -14,6 +14,14 @@
 
 ## 관련 파일
 
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/walk-source.png`
+
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/walk-reference.png`
+
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/walk-preview.gif`
+
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/walk-64.png`
+
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/idle-64.png`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/idle-preview.gif`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/manifest.json`

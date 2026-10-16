@@ -40,7 +40,8 @@
         "Assets/Resources/Art/Whip.bytes",
         "Assets/Scripts/Core/GameConfig.cs",
         "../../docs/검증/octopus-character-assets/*-64.png",
-        "../../docs/검증/octopus-character-assets/final/*"
+        "../../docs/검증/octopus-character-assets/final/*",
+        "../../docs/검증/octopus-character-assets/source/walk-*.png"
       ]
     },
     "monsters": {
