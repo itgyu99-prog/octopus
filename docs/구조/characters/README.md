@@ -14,6 +14,8 @@
 
 ## 관련 파일
 
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/stop-angle-reference.png`
+
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-polished.json`
 
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-polished-preview.gif`
