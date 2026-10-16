@@ -314,6 +314,7 @@
         "ProjectSettings/EditorBuildSettings.asset",
         "Packages/manifest.json",
         "../../.gitignore",
+        "../../tools/package_release.py",
         "../../tools/balance_simulator.html",
         "../../docs/검증/host-balance-tree-fire.png",
         "../../docs/검증/grass-thorn-gameplay.png",
