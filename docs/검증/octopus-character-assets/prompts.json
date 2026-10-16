@@ -21,6 +21,10 @@
   ],
   "motion_reference_file": "C:/Users/PC19/Documents/oCam/녹화_2026_10_16_15_19_03_217.mp4",
   "motion_reference_note": "Successfully decoded with imageio-ffmpeg 0.6.0 / FFmpeg 7.1. Contact sheet inspected: one flat forearm slowly descends from chest toward waist, then small low accents. Audio track has 88422 mono samples at16kHz, all zero; musical BPM cannot be recovered. This3.2second one-arm loop follows visible pacing, not an exact audio-synced choreography.",
+  "walk_generation_tool": "image_gen built-in",
+  "reference_inputs_walk": [
+    "source/walk-reference.png: exact user-selected first sheet; preserve eight poses and silhouettes, change only pixel rendering"
+  ],
   "generation_steps_idle": [
     {
       "purpose": "user-selected first breathing idle draft; later pose and mouth corrections cancelled",
@@ -31,10 +35,6 @@
     "original user drawing: middle-left idle pose",
     "previous idle-source.png from commit d2c3b94: pixel style reference only"
   ],
-  "reference_inputs_walk": [
-    "source/walk-reference.png: exact user-selected first sheet; preserve eight poses and silhouettes, change only pixel rendering"
-  ],
-  "walk_generation_tool": "image_gen built-in",
   "generation_steps_hit": [
     {
       "purpose": "user correction: faithful original internal cheek crease and mouth pouting opposite impact side",

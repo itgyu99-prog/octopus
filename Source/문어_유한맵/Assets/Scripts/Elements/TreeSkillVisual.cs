@@ -8,6 +8,8 @@ namespace OctopusSurvivors
     {
         const int Columns = 32, Rows = 32;
         static readonly List<TreeSkillVisual> trees = new List<TreeSkillVisual>();
+        struct RainOrigin { public Vector2 root; public float radius, expires; }
+        static readonly Dictionary<byte, RainOrigin> origins = new Dictionary<byte, RainOrigin>();
         static Material treeMaterial;
         static Sprite apple, pixel, leaf;
         readonly Vector3[] vertices = new Vector3[(Columns + 1) * (Rows + 1)];
@@ -25,20 +27,26 @@ namespace OctopusSurvivors
         int shakeIndex, palette = -1;
         float geometryWidth;
         bool initialized, impacted;
+        byte sourceKey;
 
         public static bool Supports(ActorKind kind) => kind == ActorKind.FruitTree || kind == ActorKind.Fruit;
         public bool IsTree => kind == ActorKind.FruitTree;
         public float MaximumLeafOffset { get; private set; }
         public Vector3 FruitPosition => fruit != null ? fruit.transform.position : transform.position;
+        public Vector3 SourcePosition => source;
+        public Vector3 LandingPosition => landing;
         float Width => TreeAbilityTuning.Data.treeVisualScale * .6f;
         float Height => Width * .74f;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void Reset() { trees.Clear(); treeMaterial = null; apple = pixel = leaf = null; }
+        static void Reset() { trees.Clear(); origins.Clear(); treeMaterial = null; apple = pixel = leaf = null; }
 
-        public void Configure(ActorKind value, float serverAge, float life)
+        public void Configure(ActorKind value, float serverAge, float life, byte originKey = 0)
         {
             kind = value; age = serverAge; duration = life;
+            sourceKey = originKey;
+            if (IsTree) origins[sourceKey] = new RainOrigin { root = transform.position,
+                radius = transform.lossyScale.x, expires = Time.time + Mathf.Max(0, life - serverAge) + 2 };
             if (initialized) return;
             initialized = true;
             if (IsTree)
@@ -103,13 +111,9 @@ namespace OctopusSurvivors
         Vector3 ReleasePoint(Vector3 target)
         {
             float scale = Mathf.Max(.001f, transform.lossyScale.x);
-            float u = Mathf.Clamp((target.x - transform.position.x) / (Width * scale) + .5f, .08f, .92f);
-            float edge = Mathf.Abs(u - .5f) * 2f;
-            float bottom = .52f - edge * .11f;
-            float top = .84f - edge * .27f;
-            float v = Mathf.Clamp((target.y - transform.position.y) / (Height * scale) + .06f + .22f, bottom, top);
+            float u = (target.x - transform.position.x) / (Width * scale) + .5f;
             shakes[shakeIndex++ % shakes.Length] = new Vector3(u, age, .28f);
-            return transform.TransformPoint(new Vector3((u - .5f) * Width, (v - .06f) * Height, 0));
+            return TreeRainGeometry.ReleasePoint(transform.position, scale, target);
         }
 
         void BuildFruit()
@@ -121,15 +125,16 @@ namespace OctopusSurvivors
             float distance = float.PositiveInfinity;
             foreach (var tree in trees)
             {
-                if (tree == null || !tree.isActiveAndEnabled) continue;
+                if (tree == null || !tree.isActiveAndEnabled || tree.sourceKey != sourceKey) continue;
                 float d = (tree.transform.position - landing).sqrMagnitude;
                 float radius = tree.transform.lossyScale.x + 1f;
                 if (d > radius * radius || d >= distance) continue;
                 nearest = tree; distance = d;
             }
             if (nearest != null) source = nearest.ReleasePoint(landing);
-            // Off-canopy northern targets still get a readable downward fall.
-            source.y = Mathf.Max(source.y, landing.y + 1.4f);
+            else if (origins.TryGetValue(sourceKey, out var origin) && origin.expires >= Time.time)
+                source = TreeRainGeometry.ReleasePoint(origin.root, origin.radius, landing);
+            source.x = landing.x;
             fruit = Part("Falling red apple", apple, 14);
             shadow = Part("Landing shadow", pixel, 3);
             for (int i = 0; i < trail.Length; i++) trail[i] = Part("Pixel speed dash", pixel, 13);
@@ -182,13 +187,15 @@ namespace OctopusSurvivors
             }
             float tFall = Mathf.Clamp01(age / Mathf.Max(.01f, duration));
             float progress = tFall * tFall; // Accelerating descent instead of uniform floating.
-            Vector3 point = Vector3.Lerp(source, landing, progress);
-            Vector3 direction = (landing - source).normalized;
-            float size = TreeAbilityTuning.Data.treeVisualScale * TreeAbilityTuning.Data.fruitVisualScaleRatio * .045f;
+            float size = TreeRainGeometry.FruitSize;
+            // Damage/shadow stay on the marked ground line; the apple's bottom touches it.
+            Vector3 contact = landing + Vector3.up * (size * .6f);
+            Vector3 point = Vector3.Lerp(source, contact, progress);
+            Vector3 direction = Vector3.down;
             float rootScale = Mathf.Max(.01f, transform.lossyScale.x);
             fruit.transform.position = point;
             fruit.transform.localScale = new Vector3(size * Mathf.Lerp(1, .8f, tFall), size * Mathf.Lerp(1, 1.35f, tFall), 1) / rootScale;
-            fruit.transform.rotation = Quaternion.Euler(0, 0, Mathf.Sin(age * 23 + landing.x) * 8);
+            fruit.transform.rotation = Quaternion.identity;
             shadow.transform.position = landing;
             shadow.transform.localScale = new Vector3(size * 1.15f, size * .22f, 1) / rootScale;
             shadow.color = new Color(.12f, .17f, .10f, .13f + .14f * tFall);
@@ -196,6 +203,7 @@ namespace OctopusSurvivors
             {
                 float a = (1 - i / 5f) * Mathf.Clamp01((tFall - .15f) * 2f);
                 trail[i].transform.position = point - direction * (size * .75f + (i + 1) * (.09f + tFall * .09f));
+                trail[i].enabled = trail[i].transform.position.y <= source.y;
                 trail[i].transform.localScale = new Vector3(.035f, .07f + tFall * .07f, 1) / rootScale;
                 trail[i].color = new Color(1, .65f, .53f, a * .8f);
             }

@@ -6,6 +6,7 @@ namespace OctopusSurvivors
     public sealed class HdSpellVisual : MonoBehaviour
     {
         static readonly Dictionary<string,Sprite[]> sheets=new Dictionary<string,Sprite[]>();
+        static readonly Dictionary<int,Sprite> yellowFrames=new Dictionary<int,Sprite>();
         SpriteRenderer image,echo;
         LineRenderer footprint;
         ActorKind kind;
@@ -13,7 +14,36 @@ namespace OctopusSurvivors
         Vector3 previous;
         bool initialized;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetCache() => sheets.Clear();
+        static void ResetCache() { sheets.Clear(); yellowFrames.Clear(); }
+
+        // Basic electric reads as yellow: the blue/violet atlas frame is recoloured once on the GPU->CPU copy and cached.
+        static Sprite YellowFrame(int index)
+        {
+            if(yellowFrames.TryGetValue(index,out var cached) && cached!=null)return cached;
+            var source=Frame("ElementAtlas",4,index);
+            if(source==null)return null;
+            var texture=source.texture;Rect rect=source.rect;
+            var rt=RenderTexture.GetTemporary(texture.width,texture.height,0,RenderTextureFormat.ARGB32);
+            var previous=RenderTexture.active;
+            Texture2D copy;
+            try
+            {
+                Graphics.Blit(texture,rt);RenderTexture.active=rt;
+                copy=new Texture2D((int)rect.width,(int)rect.height,TextureFormat.RGBA32,false){name="Yellow electric",filterMode=texture.filterMode};
+                copy.ReadPixels(rect,0,0);
+            }
+            finally{RenderTexture.active=previous;RenderTexture.ReleaseTemporary(rt);}
+            var pixels=copy.GetPixels32();
+            for(int i=0;i<pixels.Length;i++)
+            {
+                var c=pixels[i];
+                float v=Mathf.Max(c.r,Mathf.Max(c.g,c.b))/255f,m=Mathf.Min(c.r,Mathf.Min(c.g,c.b))/255f;
+                pixels[i]=new Color32((byte)Mathf.RoundToInt(v*255f),(byte)Mathf.RoundToInt((v*.82f+m*.18f)*255f),(byte)Mathf.RoundToInt(m*.6f*255f),c.a);
+            }
+            copy.SetPixels32(pixels);copy.Apply();
+            var sprite=Sprite.Create(copy,new Rect(0,0,copy.width,copy.height),new Vector2(.5f,.5f),Mathf.Max(texture.width/4f,texture.height/4f));
+            return yellowFrames[index]=sprite;
+        }
 
         public static Sprite Frame(string name,int rows,int index)
         {
@@ -150,6 +180,11 @@ namespace OctopusSurvivors
             if(shortEffect || kind==ActorKind.Fruit || kind==ActorKind.Seed)frame=Mathf.Min(3,(int)(age/Mathf.Max(.01f,duration)*4));
             image.sprite=Frame(name,rows,row*4+frame);
             echo.sprite=Frame(name,rows,row*4+(frame+3)%4);
+            if(kind==ActorKind.RadialCurrent)
+            {
+                image.sprite=YellowFrame(row*4+frame)??image.sprite;
+                echo.sprite=YellowFrame(row*4+(frame+3)%4)??echo.sprite;
+            }
             Vector3 delta=transform.position-previous;previous=transform.position;
             bool directional=ElementEffectVisual.IsDirectional(kind);
             if(!directional && !tree && delta.sqrMagnitude>.00001f)

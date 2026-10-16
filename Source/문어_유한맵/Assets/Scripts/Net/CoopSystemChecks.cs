@@ -448,12 +448,16 @@ namespace OctopusSurvivors
                 foreach (var tree in trees)
                     while (!tree.Dead) Call(s, "TickPlannedAbility", tree, step);
                 var fruits = Actors(s).FindAll(a => a.Kind == ActorKind.Fruit);
-                int expected = (rank == 5 ? 44 : 35) * (rank + 1);
+                int expected = (rank == 5 ? 70 : 56) * (rank + 1);
                 Check(fruits.Count == expected, "fruit budget at mastery " + rank + " step " + step);
-                Check(fruits.TrueForAll(a => a.Pos == target.Pos), "fruit aims at live enemy, not empty ground");
+                Check(fruits.Exists(a => Vector2.Distance(a.Pos, target.Pos) > a.Size), "fruit also falls on empty ground without aiming at enemies");
                 Check(target.Hp == target.MaxHp, "tree itself causes no invisible area damage");
-                foreach (var fruit in fruits) Call(s, "TickPlannedAbility", fruit, fruit.Duration);
-                float damage = expected * (rank == 5 ? 24f : 9f);
+                float damage = 0;
+                foreach (var fruit in fruits)
+                {
+                    if ((fruit.Pos - target.Pos).sqrMagnitude <= fruit.Size * fruit.Size) damage += fruit.Damage;
+                    Call(s, "TickPlannedAbility", fruit, fruit.Duration);
+                }
                 Check(Mathf.Abs(target.MaxHp - target.Hp - damage) < .1f, "fruit landing damage budget " + damage);
             }
             ResetField(s); p.SkillLevels.Value = 0;

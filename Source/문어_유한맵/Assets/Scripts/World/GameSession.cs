@@ -2207,6 +2207,7 @@ namespace OctopusSurvivors
 
         static byte PackFlags(SimActor a)
         {
+            if (a.Kind == ActorKind.Fruit) return a.SkillPhase;
             if (a.Kind == ActorKind.WaterBalloonShot)
                 return (byte)Mathf.RoundToInt(Mathf.Repeat(Mathf.Atan2(a.Vel.y, a.Vel.x) * Mathf.Rad2Deg, 360f) / 360f * 255f);
             if ((a.Kind == ActorKind.GiantSpike || a.Kind == ActorKind.Shockwave || a.Kind == ActorKind.MeleeSlash || a.Kind == ActorKind.BossLane || ElementEffectVisual.IsDirectional(a.Kind)) && a.Vel.sqrMagnitude > 0.0001f)

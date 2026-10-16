@@ -31,7 +31,7 @@ namespace OctopusSurvivors.EditorTools
             };
         }
 
-        [MenuItem("문어/나무 A B C 플레이 영상 및 검증")]
+        [MenuItem("문어/나무 A B C 플레이 영상 및 검증 %&t")]
         public static void Run()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling) return;
@@ -162,7 +162,7 @@ namespace OctopusSurvivors.EditorTools
                     var enemy = Target(session, pos, 36f);
                     enemy.Element = (ElementId)(1 + i % 5); enemy.StunTime = 0;
                 }
-                title.text = new[] { "A  |  FRESH GREEN", "B  |  WARM OLIVE", "C  |  DEEP GREEN" }[variant];
+                title.text = new[] { "A", "B", "C" }[variant] + "  |  VERTICAL RAIN / LEAF EDGE TO GROUND";
                 encoder = NewEncoder(Path.Combine(output, "tree-" + (char)('A' + variant) + "-gameplay.mp4"));
                 captured = 0; recording = true;
                 for (frame = 0; frame < Frames; frame++)
@@ -178,7 +178,13 @@ namespace OctopusSurvivors.EditorTools
                     session.Elapsed.Value = t;
                     Call(session, "RenderLocal");
                     var visuals = UnityEngine.Object.FindObjectsByType<TreeSkillVisual>();
-                    foreach (var visual in visuals) leafMotion = Mathf.Max(leafMotion, visual.MaximumLeafOffset);
+                    foreach (var visual in visuals)
+                    {
+                        leafMotion = Mathf.Max(leafMotion, visual.MaximumLeafOffset);
+                        if (!visual.IsTree && (Mathf.Abs(visual.FruitPosition.x - visual.LandingPosition.x) > .001f ||
+                            Mathf.Abs(visual.SourcePosition.x - visual.LandingPosition.x) > .001f))
+                            throw new InvalidOperationException("Fruit must fall in a fixed vertical column");
+                    }
                     yield return null;
                 }
                 recording = false;
@@ -220,19 +226,28 @@ namespace OctopusSurvivors.EditorTools
                 session.CastPlannedCombo(player, ComboId.Tree);
                 var trees = Actors(session).FindAll(a => a.Kind == ActorKind.FruitTree);
                 Check(trees.Count == rank + 1, "tree count " + trees.Count + " at rank " + rank);
+                var shotIds = new HashSet<ushort>();
+                float allocatedDamage = 0;
                 for (float time = 0; time < 5; time += dt)
                 {
                     foreach (var tree in trees) if (!tree.Dead) Call(session, "TickPlannedAbility", tree, dt);
                     var fruits = Actors(session).FindAll(a => a.Kind == ActorKind.Fruit && !a.Dead);
-                    foreach (var fruit in fruits) Call(session, "TickPlannedAbility", fruit, dt);
+                    foreach (var fruit in fruits)
+                    {
+                        if (shotIds.Add(fruit.Id)) allocatedDamage += fruit.Damage;
+                        Call(session, "TickPlannedAbility", fruit, dt);
+                    }
                     Actors(session).RemoveAll(a => a.Dead);
                 }
                 int shots = 0; foreach (var tree in trees) shots += tree.Mark;
-                int expected = (rank == 5 ? 88 : 70) * (rank + 1);
+                int expected = (rank == 5 ? 70 : 56) * (rank + 1);
                 float expectedDamage = expected * trees[0].Damage;
                 Check(shots == expected, "frame-independent fruit budget " + expected + " at dt=" + dt);
-                Check(Mathf.Abs(target.MaxHp - target.Hp - expectedDamage) < .2f, "all fruit land once at rank " + rank);
+                Check(shotIds.Count == expected && Mathf.Abs(allocatedDamage - expectedDamage) < .2f,
+                    "all distributed fruit created without actor-cap losses at rank " + rank);
+                Check(target.MaxHp - target.Hp <= expectedDamage + .2f, "landing damage cannot exceed fruit budget");
             }
+            ValidateDistribution(session);
             ResetField(session); player.SkillLevels.Value = 0;
             var inside = Target(session, Vector2.zero, 1000);
             var outside = Target(session, new Vector2(1.2f, 0), 1000);
@@ -242,6 +257,36 @@ namespace OctopusSurvivors.EditorTools
             Call(session, "TickPlannedAbility", fruitActor, .31f);
             Call(session, "TickPlannedAbility", fruitActor, .1f);
             Check(inside.Hp == 991 && outside.Hp == 1000, "one landing hit inside fruit radius, no invisible whole-tree damage");
+        }
+
+        static void ValidateDistribution(GameSession session)
+        {
+            ResetField(session);
+            var tree = new SimActor { Kind = ActorKind.FruitTree, Pos = Vector2.zero, Size = 6,
+                SkillPoint = new Vector2(.123f, .456f) };
+            var points = new Vector2[56];
+            int[] strips = new int[4];
+            float halfWidth = TreeRainGeometry.HalfLandingWidth(tree.Size);
+            float height = TreeRainGeometry.Height(tree.Size);
+            for (int i = 0; i < points.Length; i++)
+            {
+                tree.Mark = i + 1;
+                var point = (Vector2)Call(session, "TreeRainLandingPoint", tree); points[i] = point;
+                Check(Mathf.Abs(point.x) <= halfWidth + .001f && point.y >= -height * .047f - .001f && point.y <= -height * .035f + .001f,
+                    "fruit landing stays on marked lower ground strip " + i);
+                strips[Mathf.Clamp((int)((point.x + halfWidth) / (halfWidth * 2) * 4), 0, 3)]++;
+                Vector3 release = TreeRainGeometry.ReleasePoint(tree.Pos, tree.Size, point);
+                Check(Mathf.Abs(release.x - point.x) < .0001f && release.y > point.y + 1,
+                    "release is on lower foliage and directly above landing " + i);
+            }
+            Check(Array.TrueForAll(strips, count => count >= 12 && count <= 16),
+                "even left-to-right coverage inside marked side boundaries: " + string.Join(",", strips));
+            var enemy = Target(session, new Vector2(1, 0), 1000);
+            for (int i = 0; i < points.Length; i++)
+            {
+                tree.Mark = i + 1; enemy.Pos = new Vector2(i % 5 - 2, i % 7 - 3);
+                Check((Vector2)Call(session, "TreeRainLandingPoint", tree) == points[i], "enemy presence and movement cannot steer fruit " + i);
+            }
         }
 
         static MediaEncoder NewEncoder(string path) => new MediaEncoder(path,
@@ -285,6 +330,11 @@ namespace OctopusSurvivors.EditorTools
                     if (!encoder.AddFrame(frameTexture) || !comparison.AddFrame(frameTexture)) throw new IOException("MP4 frame encoder rejected frame");
                     if (captured == 50 || captured == 88)
                         File.WriteAllBytes(Path.Combine(output, "tree-" + (char)('A' + variant) + "-" + captured + ".png"), frameTexture.EncodeToPNG());
+                    if (variant == 0 && captured % 2 == 0)
+                    {
+                        string framesDirectory = Path.Combine(output, "GifFrames"); Directory.CreateDirectory(framesDirectory);
+                        File.WriteAllBytes(Path.Combine(framesDirectory, "frame-" + (captured / 2).ToString("D3") + ".png"), frameTexture.EncodeToPNG());
+                    }
                     captured++;
                 }
                 finally

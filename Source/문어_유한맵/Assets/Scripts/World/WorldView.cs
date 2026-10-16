@@ -149,7 +149,7 @@ namespace OctopusSurvivors
             if (TreeSkillVisual.Supports(kind))
             {
                 var tree = sr.GetComponent<TreeSkillVisual>() ?? sr.gameObject.AddComponent<TreeSkillVisual>();
-                tree.Configure(kind, age, duration);
+                tree.Configure(kind, age, duration, kind == ActorKind.FruitTree ? unchecked((byte)id) : extra);
                 sr.enabled = false;
             }
             else if (kind == ActorKind.SodaWave)
@@ -160,6 +160,8 @@ namespace OctopusSurvivors
             }
             else if (HdSpellVisual.Supports(kind))
             {
+                if (kind == ActorKind.RadialCurrent && age < .1f && !_target.ContainsKey(id))
+                    ElectricSparkBurst.Spawn(pos, size);
                 var hd = sr.GetComponent<HdSpellVisual>() ?? sr.gameObject.AddComponent<HdSpellVisual>();
                 hd.Configure(kind, age, duration);
                 sr.enabled = false;

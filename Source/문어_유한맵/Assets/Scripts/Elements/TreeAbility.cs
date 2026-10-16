@@ -8,7 +8,7 @@ namespace OctopusSurvivors
         {
             var tuning = GameplayRules.Tuning(ComboId.Tree);
             var treeTuning = TreeAbilityTuning.Data;
-            float fruitDamage = damage * (rank == 5
+            float fruitDamage = damage * rank( == 5
                 ? treeTuning.masterFruitDamageMultiplier
                 : treeTuning.fruitDamageMultiplier);
 
@@ -38,13 +38,6 @@ namespace OctopusSurvivors
                 Effect(ActorKind.Fruit, landing, Vector2.zero, tuning.fruitRadius,
                     tuning.fruitFallSeconds, tree.Damage, tree.Owner, tree.EffectLevel);
             }
-        }
-
-        void LandTreeFruit(SimActor fruit)
-        {
-            if (fruit.Life > 0f || fruit.Dead) return;
-            DamageCircle(fruit.Pos, fruit.Size, fruit.Damage, StatusMask.None, 0f, 0f);
-            fruit.Dead = true;
         }
 
         Vector2 TreeLandingPoint(SimActor tree, float fruitRadius)

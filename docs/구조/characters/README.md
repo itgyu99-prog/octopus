@@ -14,50 +14,35 @@
 
 ## 관련 파일
 
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/stop-angle-reference.png`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-polished.json`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-polished-preview.gif`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-polished-128.png`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/stop-polished-source.png`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/walk-128.png`
-
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/hit-64.png`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/hit-preview.gif`
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/hit-source.png`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished.json`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished-preview.gif`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished-comparison.gif`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished-128.png`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/walk-polished-source.png`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/walk-source.png`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/walk-reference.png`
-
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/walk-preview.gif`
-
-
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/idle-64.png`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/idle-preview.gif`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/manifest.json`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/README.md`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/victory-64.png`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/victory-preview.gif`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/walk-128.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/walk-preview.gif`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/hit-64.png`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/idle-64.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/hit-source.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/stop-angle-reference.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/stop-polished-source.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/stop-source.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/walk-polished-source.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/walk-reference.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/walk-source.png`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-64.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-polished-128.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-polished-preview.gif`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-polished.json`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/victory-64.png`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-64.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished-128.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished-comparison.gif`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished-preview.gif`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished.json`
 - `Source/문어_유한맵/Assets/Resources/Art/Attack.bytes`
 - `Source/문어_유한맵/Assets/Resources/Art/Basic.bytes`
 - `Source/문어_유한맵/Assets/Resources/Art/Whip.bytes`

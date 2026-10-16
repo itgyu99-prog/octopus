@@ -87,95 +87,6 @@
       "preview_file": "idle-preview.gif"
     },
     {
-      "name": "victory",
-      "frames": 16,
-      "cell": [
-        64,
-        64
-      ],
-      "atlas": [
-        1024,
-        64
-      ],
-      "pivot": [
-        0.5,
-        0.125
-      ],
-      "durations_ms": [
-        200,
-        200,
-        200,
-        200,
-        200,
-        200,
-        200,
-        200,
-        200,
-        200,
-        200,
-        200,
-        200,
-        200,
-        200,
-        200
-      ],
-      "source": "exec-676e83c5-608e-4cea-bd1b-48d994480b2b.png",
-      "motion": "slow-one-arm-lower-and-raise",
-      "frame_phases": [
-        "high",
-        "high-turnaround",
-        "start-lowering",
-        "lowering",
-        "mid-lower",
-        "lowering",
-        "near-low",
-        "low",
-        "low-turnaround",
-        "low",
-        "start-rising",
-        "rising",
-        "mid-rise",
-        "rising",
-        "near-high",
-        "high"
-      ],
-      "normalization": {
-        "common_scale": 0.19213973799126638,
-        "median_height_px": 44,
-        "feet_baseline_y": 56,
-        "anchor": "upper 45 percent head contour center x=32; feet baseline y=56",
-        "source_grid": [
-          4,
-          4
-        ],
-        "source_column_boundaries": [
-          0,
-          430,
-          724,
-          1018,
-          1448
-        ],
-        "source_row_boundaries": [
-          0,
-          290,
-          549,
-          808,
-          1086
-        ]
-      },
-      "pose": "fresh from original lower-left victory drawing; fixed head, feet and opposite arm; one chest-height tentacle slowly lowers and returns",
-      "timing_reference": {
-        "file": "녹화_2026_10_16_15_19_03_217.mp4",
-        "video_duration_sec": 5.53,
-        "video_fps": 30,
-        "decoded_audio_peak_int16": 0,
-        "method": "visual pacing only: recording audio is entirely silent; 3.2 second slow loop is an interpretation, no measured music BPM",
-        "loop_ms": 3200
-      },
-      "atlas_file": "victory-64.png",
-      "preview_file": "victory-preview.gif"
-    },
-    {
       "tool": "image_gen built-in",
       "frames": 8,
       "cell": [
@@ -306,6 +217,95 @@
       "pose": "faithful original hit sketch: round outer head, large curved inner left cheek crease, closed right angular eye, mouth pushed right",
       "atlas_file": "hit-64.png",
       "preview_file": "hit-preview.gif"
+    },
+    {
+      "name": "victory",
+      "frames": 16,
+      "cell": [
+        64,
+        64
+      ],
+      "atlas": [
+        1024,
+        64
+      ],
+      "pivot": [
+        0.5,
+        0.125
+      ],
+      "durations_ms": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "source": "exec-676e83c5-608e-4cea-bd1b-48d994480b2b.png",
+      "motion": "slow-one-arm-lower-and-raise",
+      "frame_phases": [
+        "high",
+        "high-turnaround",
+        "start-lowering",
+        "lowering",
+        "mid-lower",
+        "lowering",
+        "near-low",
+        "low",
+        "low-turnaround",
+        "low",
+        "start-rising",
+        "rising",
+        "mid-rise",
+        "rising",
+        "near-high",
+        "high"
+      ],
+      "normalization": {
+        "common_scale": 0.19213973799126638,
+        "median_height_px": 44,
+        "feet_baseline_y": 56,
+        "anchor": "upper 45 percent head contour center x=32; feet baseline y=56",
+        "source_grid": [
+          4,
+          4
+        ],
+        "source_column_boundaries": [
+          0,
+          430,
+          724,
+          1018,
+          1448
+        ],
+        "source_row_boundaries": [
+          0,
+          290,
+          549,
+          808,
+          1086
+        ]
+      },
+      "pose": "fresh from original lower-left victory drawing; fixed head, feet and opposite arm; one chest-height tentacle slowly lowers and returns",
+      "timing_reference": {
+        "file": "녹화_2026_10_16_15_19_03_217.mp4",
+        "video_duration_sec": 5.53,
+        "video_fps": 30,
+        "decoded_audio_peak_int16": 0,
+        "method": "visual pacing only: recording audio is entirely silent; 3.2 second slow loop is an interpretation, no measured music BPM",
+        "loop_ms": 3200
+      },
+      "atlas_file": "victory-64.png",
+      "preview_file": "victory-preview.gif"
     }
   ],
   "cell_size_policy": "Default64x64; per-asset cell field overrides. Approved walk uses128x128 with suggestedPPU96."

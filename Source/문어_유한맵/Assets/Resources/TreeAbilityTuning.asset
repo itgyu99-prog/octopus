@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: TreeAbilityTuning
   m_EditorClassIdentifier:
   treeVisualScale: 3
-  fruitVisualScaleRatio: 2.5
+  fruitVisualScaleRatio: 3.75
   palette: 0
   leafShake: 0.055
-  fruitInterval: 0.05
-  masterFruitInterval: 0.04
+  fruitInterval: 0.0625
+  masterFruitInterval: 0.05
   fruitDamageMultiplier: 0.2
   masterFruitDamageMultiplier: 0.53333336
   fruitRadius: 0.5

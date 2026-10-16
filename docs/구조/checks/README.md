@@ -10,11 +10,13 @@ Unity 에디터 검사, 협동 검사, 빌드·배포 설정
 - `Source/문어_유한맵/Assets/Editor/BuildTool.cs`
 - `Source/문어_유한맵/Assets/Editor/CharacterVisualChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/CombatVisualChecks.cs`
+- `Source/문어_유한맵/Assets/Editor/ElectricSparkChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/ElementEffectChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/FiniteMapChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/FireOrbChecks.cs`
-- `Source/문어_유한맵/Assets/Editor/GrassThornChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/GiantMonsterSetup.cs`
+- `Source/문어_유한맵/Assets/Editor/GrassThornChecks.cs`
+- `Source/문어_유한맵/Assets/Editor/SodaChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/SystemDataChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/TreeSkillChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/WaterAlternativesChecks.cs`
@@ -25,14 +27,12 @@ Unity 에디터 검사, 협동 검사, 빌드·배포 설정
 ## 관련 파일
 
 - `Source/문어_유한맵/../../.gitignore`
+- `Source/문어_유한맵/../../docs/검증/grass-thorn-gameplay.png`
 - `Source/문어_유한맵/../../docs/검증/host-balance-exit-confirmation.png`
 - `Source/문어_유한맵/../../docs/검증/host-balance-tree-fire.png`
-- `Source/문어_유한맵/../../docs/검증/grass-thorn-gameplay.png`
 - `Source/문어_유한맵/../../tools/balance_simulator.html`
 - `Source/문어_유한맵/../../tools/package_release.py`
 - `Source/문어_유한맵/Assets/Editor/TreeSkillChecks.cs`
-- `Source/문어_유한맵/Assets/Editor/WaterAlternativesChecks.cs`
-- `Source/문어_유한맵/Assets/Editor/WaterBalloonChecks.cs`
 - `Source/문어_유한맵/Packages/manifest.json`
 - `Source/문어_유한맵/ProjectSettings/EditorBuildSettings.asset`
 - `Source/문어_유한맵/ProjectSettings/ProjectVersion.txt`
@@ -45,8 +45,3 @@ python tools/project_index.py --category checks --find "검색어"
 ```
 
 이 파일은 자동 생성된다. 수동 작업 메모는 같은 폴더의 `NOTES.md`에 기록한다.
-
-
-### 탄산수 관련 파일
-
-- `Source/문어_유한맵/Assets/Editor/SodaChecks.cs`

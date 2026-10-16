@@ -8,17 +8,21 @@
 
 - `Source/문어_유한맵/Assets/Scripts/Elements/AbilityRunner.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/BlueFlameVisual.cs`
-- `Source/문어_유한맵/Assets/Scripts/Elements/FireOrbAbility.cs`
-- `Source/문어_유한맵/Assets/Scripts/Elements/FireOrbVisual.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/ElectricSparkBurst.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementEffects.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementEffectVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementRules.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/FireOrbAbility.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/FireOrbVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/GrassThornVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/HdSpellVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/PlannedAbilities.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/SodaAbility.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/SodaVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/SpecialAbilities.cs`
-- `Source/문어_유한맵/Assets/Scripts/Elements/TreeAbility.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/TreeAbilityTuning.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/TreeRainAbility.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/TreeRainGeometry.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/TreeSkillVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/UpgradeAbilities.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/WaterBalloonAbility.cs`
@@ -40,7 +44,6 @@
 - `Source/문어_유한맵/Assets/Resources/GameplayRules.json`
 - `Source/문어_유한맵/Assets/Resources/TreeAbilityTuning.asset`
 - `Source/문어_유한맵/Assets/Resources/UpgradeTuning.asset`
-- `Source/문어_유한맵/Assets/Resources/Vfx/FireOrbPixel.bytes`
 - `Source/문어_유한맵/Assets/Resources/Vfx/BlueFlameGlow.shader`
 - `Source/문어_유한맵/Assets/Resources/Vfx/BlueFlameGlow.shader.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ComboAtlas.png`
@@ -49,10 +52,16 @@
 - `Source/문어_유한맵/Assets/Resources/Vfx/DetailAtlas.png.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ElementAtlas.png`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ElementAtlas.png.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/FireOrbPixel.bytes`
+- `Source/문어_유한맵/Assets/Resources/Vfx/FireOrbPixel.bytes.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/GrassThornPixel.bytes`
 - `Source/문어_유한맵/Assets/Resources/Vfx/GrassThornPixel.bytes.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/LegacyAtlas.png`
 - `Source/문어_유한맵/Assets/Resources/Vfx/LegacyAtlas.png.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/SodaFlow.shader`
+- `Source/문어_유한맵/Assets/Resources/Vfx/SodaFlow.shader.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/SodaGlass.bytes`
+- `Source/문어_유한맵/Assets/Resources/Vfx/SodaGlass.bytes.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/TreeVariants.png`
 - `Source/문어_유한맵/Assets/Resources/Vfx/TreeVariants.png.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/WaterAtlas.png`
@@ -79,22 +88,22 @@
 
 ## `Assets/Scripts/Player/OctopusPlayer.cs` 진입 함수
 
-- `GrantElement` — 510행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `GrantElement` — 511행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `TickAttributeCycle` — 380행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CanCombine` — 521행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ServerCombine` — 538행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CanCombine` — 522행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ServerCombine` — 539행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/PlannedAbilities.cs` 진입 함수
 
 - `CastBasicAbility` — 9행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CastPlannedCombo` — 60행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickPlannedAbility` — 140행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TrackedFireDirection` — 248행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TurnFireDirection` — 265행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CastChain` — 274행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `StrikeBlueFlameLink` — 314행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `InsideBlueFlameCorridor` — 335행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ShowBlueFlameArc` — 342행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CastPlannedCombo` — 56행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickPlannedAbility` — 136행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TrackedFireDirection` — 227행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TurnFireDirection` — 244행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CastChain` — 253행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `StrikeBlueFlameLink` — 293행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `InsideBlueFlameCorridor` — 314행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ShowBlueFlameArc` — 321행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/GrassThornVisual.cs` 진입 함수
 
@@ -102,11 +111,17 @@
 - `FrameIndex` — 17행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `RenderAt` — 62행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
-
 ## `Assets/Scripts/Elements/HdSpellVisual.cs` 진입 함수
 
-- `Configure` — 83행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `LateUpdate` — 130행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `Configure` — 113행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `LateUpdate` — 172행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+## `Assets/Scripts/Elements/ElectricSparkBurst.cs` 진입 함수
+
+- `Spawn` — 48행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `Begin` — 109행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `Draw` — 166행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `DrawBolts` — 218행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/BlueFlameVisual.cs` 진입 함수
 
@@ -115,37 +130,21 @@
 
 ## `Assets/Scripts/Elements/TreeSkillVisual.cs` 진입 함수
 
-- `Configure` — 39행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ReleasePoint` — 103행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `RenderAt` — 148행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `Configure` — 44행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ReleasePoint` — 111행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `RenderAt` — 153행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
-## `Assets/Scripts/Elements/TreeAbility.cs` 진입 함수
+## `Assets/Scripts/Elements/TreeRainGeometry.cs` 진입 함수
 
-- `CastTreeAbility` — 7행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickTreeAbility` — 26행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `LandTreeFruit` — 43행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TreeLandingPoint` — 50행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `LandingPoint` — 14행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ReleasePoint` — 22행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
-## `Assets/Scripts/Elements/WaterBalloonAbility.cs` 진입 함수
+## `Assets/Scripts/Elements/TreeRainAbility.cs` 진입 함수
 
-- `CastWaterBalloons` — 27행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `WaterBalloonTarget` — 39행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickWaterBalloon` — 74행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-
-## `Assets/Scripts/Elements/WaterBalloonVisual.cs` 진입 함수
-
-- `Configure` — 73행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `LateUpdate` — 90행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-
-## 범위 검색
-
-```powershell
-python tools/project_index.py --category abilities
-python tools/project_index.py --category abilities --find "검색어"
-```
-
-이 파일은 자동 생성된다. 수동 작업 메모는 같은 폴더의 `NOTES.md`에 기록한다.
-
+- `CastTreeRain` — 7행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickTreeRain` — 21행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `LandTreeRain` — 34행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TreeRainLandingPoint` — 41행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/FireOrbAbility.cs` 진입 함수
 
@@ -160,17 +159,16 @@ python tools/project_index.py --category abilities --find "검색어"
 - `Configure` — 25행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `LateUpdate` — 70행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
+## `Assets/Scripts/Elements/WaterBalloonAbility.cs` 진입 함수
 
-### 탄산수 관련 파일
+- `CastWaterBalloons` — 27행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `WaterBalloonTarget` — 39행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickWaterBalloon` — 74행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
-- `Source/문어_유한맵/Assets/Scripts/Elements/SodaAbility.cs`
-- `Source/문어_유한맵/Assets/Scripts/Elements/SodaVisual.cs`
-- `Source/문어_유한맵/Assets/Resources/Vfx/SodaFlow.shader`
-- `Source/문어_유한맵/Assets/Resources/Vfx/SodaFlow.shader.meta`
-- `Source/문어_유한맵/Assets/Resources/Vfx/SodaGlass.bytes`
-- `Source/문어_유한맵/Assets/Resources/Vfx/SodaGlass.bytes.meta`
-- `TickSoda` — 22행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `DamageSodaTrail` — 55행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+## `Assets/Scripts/Elements/WaterBalloonVisual.cs` 진입 함수
+
+- `Configure` — 73행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `LateUpdate` — 90행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/SodaAbility.cs` 진입 함수
 
@@ -182,3 +180,12 @@ python tools/project_index.py --category abilities --find "검색어"
 - `Configure` — 27행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `Quad` — 98행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `AnimateBubbles` — 133행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+## 범위 검색
+
+```powershell
+python tools/project_index.py --category abilities
+python tools/project_index.py --category abilities --find "검색어"
+```
+
+이 파일은 자동 생성된다. 수동 작업 메모는 같은 폴더의 `NOTES.md`에 기록한다.

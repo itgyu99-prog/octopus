@@ -87,7 +87,7 @@ namespace OctopusSurvivors
                                 t.range * UpgradeTuning.Data.masterSizeMultiplier, t.duration, damage, p, l);
                     break;
                 case ComboId.Tree:
-                    CastTreeAbility(p, rank, l, damage, dir);
+                    CastTreeRain(p, rank, l, damage, dir);
                     break;
                 case ComboId.Soda:
                     for (int i = 0; i < 5 + rank + (rank == 5 ? 1 : 0); i++)
@@ -190,10 +190,10 @@ namespace OctopusSurvivors
                     StepEffectProjectile(a, dt, false);
                     break;
                 case ActorKind.FruitTree:
-                    TickTreeAbility(a);
+                    TickTreeRain(a);
                     break;
                 case ActorKind.Fruit:
-                    LandTreeFruit(a);
+                    LandTreeRain(a);
                     break;
                 case ActorKind.ChainEmitter:
                     a.Pos = a.Owner.Pos;

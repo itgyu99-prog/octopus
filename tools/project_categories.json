@@ -41,9 +41,9 @@
         "Assets/Scripts/Core/GameConfig.cs",
         "../../docs/검증/octopus-character-assets/*-64.png",
         "../../docs/검증/octopus-character-assets/final/*",
+        "../../docs/검증/octopus-character-assets/source/hit-source.png",
         "../../docs/검증/octopus-character-assets/source/walk-*.png",
         "../../docs/검증/octopus-character-assets/walk-polished*",
-        "../../docs/검증/octopus-character-assets/source/hit-source.png",
         "../../docs/검증/octopus-character-assets/stop-polished*",
         "../../docs/검증/octopus-character-assets/source/stop-*.png"
       ]
@@ -166,6 +166,12 @@
           "Configure",
           "LateUpdate"
         ],
+        "Assets/Scripts/Elements/ElectricSparkBurst.cs": [
+          "Spawn",
+          "Begin",
+          "Draw",
+          "DrawBolts"
+        ],
         "Assets/Scripts/Elements/BlueFlameVisual.cs": [
           "Configure",
           "RenderAt"
@@ -175,11 +181,15 @@
           "ReleasePoint",
           "RenderAt"
         ],
-        "Assets/Scripts/Elements/TreeAbility.cs": [
-          "CastTreeAbility",
-          "TickTreeAbility",
-          "LandTreeFruit",
-          "TreeLandingPoint"
+        "Assets/Scripts/Elements/TreeRainGeometry.cs": [
+          "LandingPoint",
+          "ReleasePoint"
+        ],
+        "Assets/Scripts/Elements/TreeRainAbility.cs": [
+          "CastTreeRain",
+          "TickTreeRain",
+          "LandTreeRain",
+          "TreeRainLandingPoint"
         ],
         "Assets/Scripts/Elements/FireOrbAbility.cs": [
           "CastFireOrbs",
