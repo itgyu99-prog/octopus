@@ -45,6 +45,11 @@
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished.json`
 - `Source/문어_유한맵/Assets/Resources/Art/Attack.bytes`
 - `Source/문어_유한맵/Assets/Resources/Art/Basic.bytes`
+- `Source/문어_유한맵/Assets/Resources/Art/CharacterHit.bytes`
+- `Source/문어_유한맵/Assets/Resources/Art/CharacterIdle.bytes`
+- `Source/문어_유한맵/Assets/Resources/Art/CharacterMove.bytes`
+- `Source/문어_유한맵/Assets/Resources/Art/CharacterStop.bytes`
+- `Source/문어_유한맵/Assets/Resources/Art/CharacterVictory.bytes`
 - `Source/문어_유한맵/Assets/Resources/Art/Whip.bytes`
 - `Source/문어_유한맵/Assets/Resources/OctopusArmStretch.shader`
 - `Source/문어_유한맵/Assets/Resources/OctopusWalk.bytes`

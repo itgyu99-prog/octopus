@@ -9,6 +9,22 @@ namespace OctopusSurvivors.EditorTools
         [MenuItem("문어/캐릭터 및 진주 표시 검증")]
         public static void Verify()
         {
+            var animations = new[] { OctopusAnim.Idle, OctopusAnim.Move, OctopusAnim.Stop, OctopusAnim.Hit, OctopusAnim.Victory };
+            var counts = new[] { 12, 8, 3, 3, 16 };
+            for (int a = 0; a < animations.Length; a++)
+            {
+                if (OctopusSheet.FrameCount(animations[a]) != counts[a]) throw new Exception("Character frame count mismatch");
+                for (int i = 0; i < counts[a]; i++)
+                {
+                    var sprite = OctopusSheet.Frame(animations[a], i);
+                    if (sprite == null || sprite.bounds.size.y < 1f) throw new Exception("Invalid character frame");
+                    if (sprite.texture.GetPixel(0, 0).a != 0f) throw new Exception("Character padding missing");
+                }
+            }
+            if (System.Array.IndexOf(GameplayRules.BasicElements, ElementId.Electric) < 0 ||
+                Resources.Load<TextAsset>("Art/Element_Electric") == null || RuntimeArt.ElementIcon(ElementId.Electric) == null)
+                throw new Exception("Electric selection/HUD asset missing");
+            Debug.Log("CHARACTER_ASSETS_PASSED: 42 supplied frames and electric UI resources loaded.");
             CheckSheet("Basic", 6, (r, c) => RuntimeArt.Basic(r, c));
             Vector2[] directions = { Vector2.down, Vector2.left, Vector2.right, Vector2.up };
             CheckSheet("Attack", 4, (r, c) => RuntimeArt.Attack(directions[r], c));

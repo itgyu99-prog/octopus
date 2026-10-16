@@ -8,7 +8,7 @@ namespace OctopusSurvivors
         {
             var tuning = GameplayRules.Tuning(ComboId.Tree);
             var treeTuning = TreeAbilityTuning.Data;
-            float fruitDamage = damage * rank( == 5
+            float fruitDamage = damage * (rank == 5
                 ? treeTuning.masterFruitDamageMultiplier
                 : treeTuning.fruitDamageMultiplier);
 

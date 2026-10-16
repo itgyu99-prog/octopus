@@ -184,3 +184,10 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 - Unity WaterBalloonChecks PASS: 5개 준비, 0.22초 순차 투척, 밀집 적 조준, 반경1.9 단발 AOE 및 감속, 프레임률별 동일 피해, 다운/무타겟/만료, 기존 스냅샷을 통한 표시 전환.
 - 실제 게임 촬영: [물풍선 기본 공격 GIF](water-balloon-gameplay.gif), [4배 확대·0.67배속 GIF](water-balloon-surface-detail.gif). 기본 카메라 크기11에서 캡처. 대기와 비행의 청록색·투명도를 통일하고 큰 흰 반사를 줄임. 둥근 물덩이의 두께를 유지한 곡선 발사체와 지연되어 흔들리는 후면, 물 표면의 이동 파동/내부 흐름/분리 액적, 얇은 파열막으로 재작업 후 WaterBalloonChecks 재검사 PASS. 이전 water-balloon-assets-preview.gif는 게임 외 연출 시안이다.
 - 기본 5개, 물 연속 강화는 +1개. 물 분열/히든 풍선 유지. 별도 Windows 배포 빌드/ZIP 생성 없음.
+
+## 2026-10-16 캐릭터 5종 적용 및 전기 UI 포함 확인
+
+- 기존 Unity 생성 Assembly-CSharp-Editor.csproj를 `dotnet build --no-restore --verbosity quiet`로 검증: 게임/에디터 코드 컴파일 통과(오류 0, 기존 deprecated API 경고 22). 원격 main TreeAbility.cs의 CS1525도 함께 수정.
+- 첨부 5개 PNG와 Resources bytes의 바이트 일치, 42프레임 개수·원본 내 좌표·유효 알파 여백, 기본 공격 입력/서버 타격 경로 제거 정적 검사 통과. CharacterVisualChecks에 42프레임 로딩 및 전기 선택/HUD 리소스 검사 추가.
+- 전기 선택 목록·대기실 버튼·HUD 아이콘 연결·아이콘 bytes/meta가 origin/main에도 있음을 확인. 팀원 PC 화면 및 네트워크 실행은 미검증.
+- 프로젝트가 이미 Unity에서 열려 있어 별도 배치 검사는 실행 불가(Logs/character-assets-check.log 및 character-assets-retry.log). 이번 작업에서 실제 Play Mode/시각 검사는 실행하지 못했다. Windows 배포/ZIP은 생성하지 않음.

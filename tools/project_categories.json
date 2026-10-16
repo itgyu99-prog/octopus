@@ -45,7 +45,8 @@
         "../../docs/검증/octopus-character-assets/source/walk-*.png",
         "../../docs/검증/octopus-character-assets/walk-polished*",
         "../../docs/검증/octopus-character-assets/stop-polished*",
-        "../../docs/검증/octopus-character-assets/source/stop-*.png"
+        "../../docs/검증/octopus-character-assets/source/stop-*.png",
+        "Assets/Resources/Art/Character*.bytes"
       ]
     },
     "monsters": {

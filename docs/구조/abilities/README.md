@@ -20,6 +20,7 @@
 - `Source/문어_유한맵/Assets/Scripts/Elements/SodaAbility.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/SodaVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/SpecialAbilities.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/TreeAbility.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/TreeAbilityTuning.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/TreeRainAbility.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/TreeRainGeometry.cs`
@@ -88,10 +89,10 @@
 
 ## `Assets/Scripts/Player/OctopusPlayer.cs` 진입 함수
 
-- `GrantElement` — 511행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickAttributeCycle` — 380행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CanCombine` — 522행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ServerCombine` — 539행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `GrantElement` — 462행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickAttributeCycle` — 348행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CanCombine` — 473행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ServerCombine` — 490행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Elements/PlannedAbilities.cs` 진입 함수
 

@@ -120,7 +120,7 @@ namespace OctopusSurvivors
             krt.anchorMin = krt.anchorMax = new Vector2(0f, 0f);
             krt.pivot = new Vector2(0f, 0f);
             krt.anchoredPosition = new Vector2(40f, 24f);
-            _keys.text = "이동 방향키   근접 Left Ctrl   획득 E   합성창 F   변신 Space   능력 선택 1 2 3   닫기/나가기 Esc";
+            _keys.text = "이동 방향키   획득 E   합성창 F   변신 Space   능력 선택 1 2 3   닫기/나가기 Esc";
 
             _over = UiUtil.Label(_root.transform, Vector2.zero, new Vector2(520, 120), 40, new Color(1f, 0.45f, 0.4f), TextAnchor.MiddleCenter);
             var ort = _over.rectTransform;

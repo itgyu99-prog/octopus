@@ -71,14 +71,14 @@ namespace OctopusSurvivors
         public int CastLevel;
 
         float _hurtLeft;
-        float _walkClock;
+        bool _wasMoving;
+        float _stopLeft;
+        OctopusAnim _visualPose = OctopusAnim.Idle;
+        float _poseClock;
         Vector3 _bodyBaseScale = Vector3.one;
         float _bodyGroundOffset;
         Material _armMat;
-        readonly HashSet<ushort> _whipHits = new HashSet<ushort>();
-        readonly List<Vector2> _whipPoints = new List<Vector2>(96);
         float _downedClock;
-        float _meleeCd;
         float _hitIFrame;
         public readonly NetworkVariable<byte> ExtraDash = new NetworkVariable<byte>(0);
         public readonly NetworkVariable<byte> DashCharges = new NetworkVariable<byte>(1);
@@ -94,7 +94,6 @@ namespace OctopusSurvivors
         SpriteRenderer _bodySr;
         SpriteRenderer _ringSr;
         SpriteRenderer _auraSr;
-        SpriteRenderer _slashSr;
         Color _baseColor;
 
         public override void OnNetworkSpawn()
@@ -191,8 +190,6 @@ namespace OctopusSurvivors
             _ringSr = CreateSprite("FireRing", SpriteFactory.Ring(Color.white), 1f, 10);
             _ringSr.color = new Color(1f, 0.4f, 0.1f, 0f);
 
-            _slashSr = CreateSprite("MeleeSlash", RuntimeArt.Whip(0), 2.4f, 14);
-            _slashSr.color = new Color(1f, 1f, 1f, 0f);
         }
 
         SpriteRenderer CreateSprite(string childName, Sprite sprite, float worldSize, int order)
@@ -235,8 +232,6 @@ namespace OctopusSurvivors
 
                 if (_input.DashPressed && !LanLobby.IsVisible)
                     DashServerRpc(_input.Move);
-                if (_input.AttackPressed)
-                    PressServerRpc(1);
                 if (_input.InteractPressed)
                     PressServerRpc(2);
                 if (_input.CombinePressed)
@@ -267,7 +262,6 @@ namespace OctopusSurvivors
             InSteam.Value = GameSession.Instance != null && GameSession.Instance.InSteamField(Pos);
             Charging.Value = GameSession.Instance != null && GameSession.Instance.IsMicrowaveCharging(this);
             _hitIFrame -= dt;
-            _meleeCd -= dt;
             if (SpecialCd.Value > 0f)
                 SpecialCd.Value = Mathf.Max(0f, SpecialCd.Value - dt);
 
@@ -319,33 +313,7 @@ namespace OctopusSurvivors
                 TickComboCycle(dt);
             }
 
-            TickWhip(dt);
-        }
-
-        void TickWhip(float dt)
-        {
-            if (AttackLeft.Value <= 0f || GameSession.Instance == null)
-                return;
-
-            int frame = AttackFrame(AttackLeft.Value);
-            AttackLeft.Value = Mathf.Max(0f, AttackLeft.Value - dt);
-            if (!OctopusSheet.AttackHits(frame))
-                return;
-
-            float range = Mathf.Max(1f, MeleeRange());
-            Vector2 dir = Facing.Value.sqrMagnitude > 0.01f ? Facing.Value.normalized : Vector2.right;
-            _whipPoints.Clear();
-            const int samples = 28;
-            for (int i = 0; i < samples; i++)
-            {
-                float t = i / (samples - 1f);
-                float angle = Mathf.Lerp(-90f, 90f, t) * Mathf.Deg2Rad;
-                Vector2 local = new Vector2(0.9f + 0.45f * Mathf.Cos(angle), 0.35f * Mathf.Sin(angle)) * range;
-                Vector2 swept = new Vector2(dir.x * local.x - dir.y * local.y,
-                    dir.y * local.x + dir.x * local.y);
-                _whipPoints.Add(Pos + swept);
-            }
-            GameSession.Instance.StrikeWhip(this, _whipPoints, 0.18f, MeleeDamageValue, _whipHits);
+            AttackLeft.Value = 0f;
         }
 
         public void StopCombat()
@@ -414,7 +382,7 @@ namespace OctopusSurvivors
 
             switch (action)
             {
-                case 1: DoMelee(); break;
+                case 1: break; // Retired manual attack RPC: ignore older clients.
                 case 2: TryPickup(); break;
                 case 3: break; // F opens the local recipe picker; selection uses an ownership-checked RPC.
                 case 4: ToggleTransform(); break;
@@ -433,23 +401,6 @@ namespace OctopusSurvivors
             _dashLeft = GameConfig.DashDuration;
             if (DashCharges.Value == MaxDashCharges) DashRechargeLeft.Value = GameConfig.DashRecharge;
             DashCharges.Value--;
-        }
-
-        void DoMelee()
-        {
-            if (_meleeCd > 0f || AttackLeft.Value > 0f || GameSession.Instance == null)
-                return;
-            if (Facing.Value.sqrMagnitude < 0.01f)
-                Facing.Value = Vector2.right;
-            _whipHits.Clear();
-            AttackLeft.Value = GameConfig.AttackDuration;
-            _meleeCd = GameConfig.MeleeInterval;
-        }
-
-        static int AttackFrame(float left)
-        {
-            float t = 1f - Mathf.Clamp01(left / GameConfig.AttackDuration);
-            return Mathf.Clamp(Mathf.FloorToInt(t * OctopusSheet.Columns), 0, OctopusSheet.Columns - 1);
         }
 
         public void Revive()
@@ -794,9 +745,8 @@ namespace OctopusSurvivors
             return mask;
         }
 
-        Sprite PoseSprite(bool moving, int attackFrame)
+        Sprite PoseSprite(bool moving)
         {
-            int frame = (int)(_walkClock * 10f) % OctopusSheet.Columns;
             if (Downed.Value)
             {
                 if (ReviveProgress.Value > 0.01f)
@@ -809,13 +759,17 @@ namespace OctopusSurvivors
                 return OctopusSheet.Frame(OctopusAnim.Death, death);
             }
 
-            if (attackFrame >= 0)
-                return OctopusSheet.AttackFrame(Facing.Value, attackFrame);
-            if (_hurtLeft > 0f)
-                return OctopusSheet.Frame(OctopusAnim.Hit, frame);
-            if (moving)
-                return OctopusSheet.Frame(OctopusAnim.Move, frame);
-            return OctopusSheet.Frame(OctopusAnim.Idle, frame);
+            var session = GameSession.Instance;
+            bool victory = session != null && session.IsPlaying && !session.GameOver.Value &&
+                session.StageFlow.Value != (byte)StageState.Combat;
+            OctopusAnim pose = _hurtLeft > 0f ? OctopusAnim.Hit : victory ? OctopusAnim.Victory :
+                moving ? OctopusAnim.Move : _stopLeft > 0f ? OctopusAnim.Stop : OctopusAnim.Idle;
+            if (pose != _visualPose) { _visualPose = pose; _poseClock = 0f; }
+            else _poseClock += Time.deltaTime;
+            int count = OctopusSheet.FrameCount(pose);
+            int index = (int)(_poseClock * 10f);
+            index = pose == OctopusAnim.Hit || pose == OctopusAnim.Stop ? Mathf.Min(index, count - 1) : index % count;
+            return OctopusSheet.Frame(pose, index);
         }
 
         public void SetFireRing(float radius)
@@ -844,7 +798,6 @@ namespace OctopusSurvivors
                 _downedClock += Time.deltaTime;
             else
                 _downedClock = 0f;
-            int attackFrame = AttackLeft.Value > 0f ? AttackFrame(AttackLeft.Value) : -1;
             float s = 1f + z * 0.12f;
             _body.localScale = new Vector3(_bodyBaseScale.x * s, _bodyBaseScale.y * s, 1f);
             if (_armMat != null)
@@ -852,23 +805,22 @@ namespace OctopusSurvivors
             if (_bodySr != null)
             {
                 bool moving = MoveInput.Value.sqrMagnitude > 0.01f && !Downed.Value;
-                _walkClock += Time.deltaTime;
-                _bodySr.sprite = PoseSprite(moving, attackFrame);
+                if (_wasMoving && !moving && !Downed.Value) _stopLeft = .3f;
+                if (moving || Downed.Value) _stopLeft = 0f;
+                _wasMoving = moving;
+                _bodySr.sprite = PoseSprite(moving);
+                _stopLeft = Mathf.Max(0f, _stopLeft - Time.deltaTime);
+                // Each source has a different resolution; preserve world size and the foot baseline.
+                var sprite = _bodySr.sprite;
+                float sourceHeight = Downed.Value
+                    ? OctopusSheet.Frame(OctopusAnim.Death, 0).bounds.size.y
+                    : 1f;
+                float scale = _bodyBaseScale.y * s / sourceHeight;
+                _body.localScale = new Vector3(scale, scale, 1f);
+                _body.localPosition = new Vector3(0f,
+                    (sprite.bounds.extents.y - 8f / sprite.pixelsPerUnit) * scale
+                    - GameConfig.PlayerRadius * .5f + z * .35f, 0f);
                 _bodySr.flipX = false;
-            }
-
-            if (_slashSr != null)
-            {
-                bool visible = attackFrame >= 0 && OctopusSheet.AttackHits(attackFrame) && !Downed.Value;
-                _slashSr.sprite = RuntimeArt.Whip(Mathf.Max(0, attackFrame));
-                _slashSr.color = visible ? Color.white : new Color(1f, 1f, 1f, 0f);
-                Vector2 facing = Facing.Value.sqrMagnitude > 0.01f ? Facing.Value.normalized : Vector2.right;
-                float range = Mathf.Max(1f, MeleeRange());
-                _slashSr.transform.localPosition = (Vector3)(facing * (range * 1.125f));
-                _slashSr.transform.localRotation = Quaternion.Euler(0f, 0f,
-                    Mathf.Atan2(facing.y, facing.x) * Mathf.Rad2Deg);
-                Vector2 bounds = _slashSr.sprite.bounds.size;
-                _slashSr.transform.localScale = new Vector3(range * 0.45f / bounds.x, range * 0.7f / bounds.y, 1f);
             }
 
             if (_bodySr != null)
