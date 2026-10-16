@@ -125,6 +125,7 @@
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
+          "SpawnTransient",
           "SpawnAllySpirit",
           "SpawnPiercingMeteor",
           "CastBlackFlame",

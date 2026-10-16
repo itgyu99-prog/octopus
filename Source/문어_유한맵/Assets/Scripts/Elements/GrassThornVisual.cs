@@ -2,12 +2,12 @@ using UnityEngine;
 
 namespace OctopusSurvivors
 {
-    // Presentation only: each server-side strike keeps its original damage and lifetime.
+    // Presentation only: damage and strike cadence stay independent of this longer animation.
     public sealed class GrassThornVisual : MonoBehaviour
     {
-        public const float DefaultLifetime = .18f;
+        public const float DefaultLifetime = .72f;
         static Sprite[] frames;
-        static readonly float[] FrameEnds = { 160f, 320f, 340f, 400f, 500f, 540f, 600f, 690f };
+        static readonly float[] FrameEnds = { 80f, 160f, 260f, 380f, 580f, 640f, 690f, 720f };
         SpriteRenderer body;
         float age, duration;
 
@@ -16,7 +16,7 @@ namespace OctopusSurvivors
 
         public static int FrameIndex(float progress)
         {
-            float time = Mathf.Clamp01(progress) * 690f;
+            float time = Mathf.Clamp01(progress) * 720f;
             for (int i = 0; i < FrameEnds.Length - 1; i++)
                 if (time < FrameEnds[i]) return i;
             return 7;

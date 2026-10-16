@@ -17,6 +17,21 @@ namespace OctopusSurvivors.EditorTools
         const string Key = "Octopus.GrassThornCheck";
         static GrassThornChecks()
         {
+            double nextPoll = 0;
+            EditorApplication.update += () =>
+            {
+                if (EditorApplication.timeSinceStartup < nextPoll) return;
+                nextPoll = EditorApplication.timeSinceStartup + .5;
+                if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || EditorApplication.isUpdating) return;
+                const string request = "Logs/grass-thorn-check.request";
+                if (File.Exists(request))
+                {
+                    File.Delete(request); SessionState.SetBool(Key + ".Pending", true);
+                    AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport); return;
+                }
+                if (!SessionState.GetBool(Key + ".Pending", false)) return;
+                SessionState.SetBool(Key + ".Pending", false); Run();
+            };
             EditorApplication.playModeStateChanged += state =>
             {
                 if (state == PlayModeStateChange.EnteredPlayMode && SessionState.GetBool(Key, false))
@@ -119,9 +134,10 @@ namespace OctopusSurvivors.EditorTools
                     frame.rect.height == 544 && Mathf.Abs(frame.pivot.y - 44) < .01f,
                     "approved frame " + i + " loads with point sampling and fixed ground pivot");
             }
-            Check(GrassThornVisual.FrameIndex(.4f) <= 1 && GrassThornVisual.FrameIndex(.5f) == 3 &&
-                GrassThornVisual.FrameIndex(.72f) == 4 && GrassThornVisual.FrameIndex(1) == 7,
-                "peeking anticipation, rapid stab, hit stop and sand-only ending");
+            Check(GrassThornVisual.FrameIndex(.15f) == 1 && GrassThornVisual.FrameIndex(.3f) == 2 &&
+                GrassThornVisual.FrameIndex(.5f) == 3 && GrassThornVisual.FrameIndex(.75f) == 4 &&
+                GrassThornVisual.FrameIndex(1) == 7,
+                "readable anticipation, slower growth, extended full plant and sand-only ending");
             var enemies = new[] { Target(s, new Vector2(-1.8f, .2f)), Target(s, new Vector2(0, .4f)), Target(s, new Vector2(1.8f, .2f)) };
             var fourth = Target(s, new Vector2(0, 4));
             var outside = Target(s, new Vector2(12, 0));
@@ -134,8 +150,9 @@ namespace OctopusSurvivors.EditorTools
                 fourth.Hp == 10000 && outside.Hp == 10000, "four strikes preserve damage, target count and range");
             emitter.Dead = true;
             var vines = Actors(s).FindAll(a => a.Kind == ActorKind.Vine && !a.Dead);
-            Check(vines.Count == 12 && vines.TrueForAll(a => Mathf.Approximately(a.Life, .18f)),
-                "original transient count and .18-second lifetime unchanged");
+            Check(vines.Count == 12 && vines.TrueForAll(a => Mathf.Approximately(a.Life, .72f) &&
+                Mathf.Approximately(a.Duration, .72f)) && Mathf.Approximately(emitter.Duration, .64f),
+                "plant visuals last .72 seconds while original .64-second attack duration stays unchanged");
             // Capture a single strike per target, instead of stacking the four test strikes.
             for (int i = 3; i < vines.Count; i++) vines[i].Dead = true;
             Call(s, "RenderLocal"); yield return null;
@@ -146,18 +163,17 @@ namespace OctopusSurvivors.EditorTools
                 v.enabled = false;
                 Check(v.GetComponentsInChildren<SpriteRenderer>().Length == 2 &&
                     v.transform.Find("Textured afterglow") == null, "legacy atlas and glow are absent");
-                v.RenderAt(.10f);
+                v.Configure(.45f, .72f);
                 var child = v.transform.Find("Matte pixel thorn strike").GetComponent<SpriteRenderer>();
                 var selected = child.sprite;
                 v.Configure(0, 0);
-                v.RenderAt(.10f);
                 Check(child.sprite == selected, "zero-age snapshots preserve selected frame and fixed registration");
             }
             var camera = Camera.main;
             var follow = camera.GetComponent<PlayerCameraFollow>(); if (follow != null) follow.enabled = false;
             camera.orthographicSize = 3.7f; camera.aspect = 16f / 9; camera.transform.position = new Vector3(0, .6f, -10);
             string folder = Path.GetFullPath("Build/Validation/GrassThornFrames"); Directory.CreateDirectory(folder);
-            float[] times = { 0, .04f, .085f, .095f, .125f, .137f, .15f, .17f };
+            float[] times = { 0, .12f, .21f, .32f, .48f, .61f, .67f, .71f };
             for (int i = 0; i < times.Length; i++)
             {
                 foreach (var v in visuals) v.RenderAt(times[i]);
@@ -165,6 +181,12 @@ namespace OctopusSurvivors.EditorTools
                 Capture(camera, Path.Combine(folder, "frame-" + i.ToString("D2") + ".png"));
             }
             Call(s, "TickActors", .2f); Call(s, "RenderLocal"); yield return null;
+            Check(vines[0].Age >= .2f && !vines[0].Dead &&
+                UnityEngine.Object.FindObjectsByType<GrassThornVisual>(FindObjectsSortMode.None).Length == 3,
+                "plant survives former .18-second cutoff and synchronizes presentation age");
+            Check(Array.TrueForAll(enemies, e => Mathf.Abs(e.Hp - (10000 - 19 * 4)) < .01f),
+                "longer plant display applies no additional damage");
+            Call(s, "TickActors", .53f); Call(s, "RenderLocal"); yield return null;
             Check(UnityEngine.Object.FindObjectsByType<GrassThornVisual>(FindObjectsSortMode.None).Length == 0,
                 "expired transient actors remove all pixel renderers");
             GrassThornChecks.Log("GRASS THORN CHECKS PASS");

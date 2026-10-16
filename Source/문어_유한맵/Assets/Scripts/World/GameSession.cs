@@ -694,6 +694,7 @@ namespace OctopusSurvivors
                         if (ElementRules.IsAttributePickup(a.Kind) || ElementRules.IsSpecialPickup(a.Kind))
                             break;
 
+                        if (a.Kind == ActorKind.Vine) a.Age += dt;
                         a.Life -= dt;
                         if (a.Kind == ActorKind.Fish && a.Life < 0.55f && !a.Fallen)
                         {
@@ -1068,7 +1069,10 @@ namespace OctopusSurvivors
         public SimActor SpawnTransient(ActorKind kind, Vector2 pos, float size, float life)
         {
             var a = Create(kind, pos, size);
-            a.Life = life;
+            // Vine actors only display a strike whose damage was already applied.
+            // Give the plant time to read without slowing the .16-second damage pulses.
+            a.Life = kind == ActorKind.Vine ? GrassThornVisual.DefaultLifetime : life;
+            if (kind == ActorKind.Vine) a.Duration = a.Life;
             return a;
         }
 

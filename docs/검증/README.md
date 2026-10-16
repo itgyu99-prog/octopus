@@ -173,7 +173,7 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 
 ## 2026-10-16 풀 가시 픽셀 공격 적용
 
-- 사용자 최종 승인 8프레임을 게임의 기본 풀 공격(Vine)에 연결했다. 무광 초록색과 초록 가시, 중앙을 향한 뾰족한 끝, 밝은 모래색 흙을 유지한다. 큰 발광/기존 고해상도 덩굴/잔상은 기본 풀 공격에서 제거했다. 선택 GIF의 삐죽한 전조→급상승→정지→회수 비율을 기존 0.18초 타격 수명에 맞춰 재생한다.
-- Unity 6000.5.7f1 배치 컴파일 및 실제 NGO 로컬 호스트 Play Mode 검사에서 `GRASS THORN CHECKS PASS` 확인. 8프레임 로딩/Point 필터/고정 지면 피벗, 전조·찌르기·정지·회수, 기본 최근접3명/타격당19피해/4회 타격, 4번째 대상·사거리 밖 무피해, 기존12개 이펙트/0.18초 수명, 실제 WorldView 연결, 잔상 부재와 만료 후 렌더러 제거를 확인했다.
+- 사용자 최종 승인 8프레임을 게임의 기본 풀 공격(Vine)에 연결했다. 무광 초록색과 초록 가시, 중앙을 향한 뾰족한 끝, 밝은 모래색 흙을 유지한다. 큰 발광/기존 고해상도 덩굴/잔상은 기본 풀 공격에서 제거했다. 빠른 표시로 풀 공격을 구별하기 어렵다는 피드백을 반영해 표시 수명만 0.18→0.72초로 늘렸다. 전조0.16초·성장0.10초·완전히 솟은 모습0.32초·회수0.14초로, 식물 형태를 충분히 보여준 뒤 사라진다. 공격 발동 주기와 피해 발생 시점은 기존대로다.
+- Unity 6000.5.7f1 배치 컴파일 및 실제 NGO 로컬 호스트 Play Mode 검사에서 `GRASS THORN CHECKS PASS` 확인. 8프레임 로딩/Point 필터/고정 지면 피벗, 전조·찌르기·정지·회수, 기본 최근접3명/타격당19피해/4회 타격, 4번째 대상·사거리 밖 무피해, 기존12개 이펙트/0.64초 공격 지속시간 유지, 0.72초 시각 수명, 0.18초 이후에도 표시 유지, 서버 표시 경과시간 동기화, 표시 연장의 추가 피해 없음, 실제 WorldView 연결, 잔상 부재와 만료 후 렌더러 제거를 확인했다.
 - [실제 게임 적용 화면](grass-thorn-gameplay.png). 캡처 원본은 `Source/문어_유한맵/Build/Validation/GrassThornFrames/frame-00.png`~`frame-07.png` 고정 경로. 검사 상태 `Logs/grass-thorn-check.status`=PASS, 상세 `Logs/grass-thorn-checks.log`, Unity 로그 `Logs/grass-thorn-unity.log`.
-- 재실행: `문어/풀 가시 픽셀 검증` 또는 Unity에 `-batchmode -acceptSoftwareTermsForThisRunOnly -projectPath <프로젝트> -executeMethod OctopusSurvivors.EditorTools.GrassThornChecks.Run -logFile <프로젝트>/Logs/grass-thorn-unity.log` 전달. 통제된 1회 공격 표시·피해 검사이며 두 PC/Relay와 장기 밸런스는 미검증. 기존25바이트 스냅샷 유지. Windows 빌드/ZIP은 생성하지 않았다.
+- 재실행: `문어/풀 가시 픽셀 검증` 또는 열린 편집 모드 에디터에 `Logs/grass-thorn-check.request` 파일로 요청. 프로젝트가 닫혀 있을 때는 Unity에 `-batchmode -acceptSoftwareTermsForThisRunOnly -projectPath <프로젝트> -executeMethod OctopusSurvivors.EditorTools.GrassThornChecks.Run -logFile <프로젝트>/Logs/grass-thorn-unity.log` 전달. 통제된 1회 공격 표시·피해 검사이며 두 PC/Relay와 장기 밸런스는 미검증. 기존25바이트 스냅샷 유지. Windows 빌드/ZIP은 생성하지 않았다.
