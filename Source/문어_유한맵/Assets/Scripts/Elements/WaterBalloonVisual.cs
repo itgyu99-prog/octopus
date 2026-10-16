@@ -47,8 +47,8 @@ namespace OctopusSurvivors
             if (quad == null)
             {
                 quad = new Mesh { name = "Water balloon surface quad" };
-                quad.vertices = new[] { new Vector3(-.825f,-.825f), new Vector3(.825f,-.825f), new Vector3(.825f,.825f), new Vector3(-.825f,.825f) };
-                quad.uv = new[] { new Vector2(-1.65f,-1.65f), new Vector2(1.65f,-1.65f), new Vector2(1.65f,1.65f), new Vector2(-1.65f,1.65f) };
+                quad.vertices = new[] { new Vector3(-.95f,-.95f), new Vector3(.95f,-.95f), new Vector3(.95f,.95f), new Vector3(-.95f,.95f) };
+                quad.uv = new[] { new Vector2(-1.9f,-1.9f), new Vector2(1.9f,-1.9f), new Vector2(1.9f,1.9f), new Vector2(-1.9f,1.9f) };
                 quad.triangles = new[] { 0,1,2,0,2,3 }; quad.RecalculateBounds();
             }
             if (sharedMaterial != null) return;
@@ -106,7 +106,7 @@ namespace OctopusSurvivors
         {
             for (int j=Mathf.Min(samples,17);j>0;j--) { history[j]=history[j-1]; historyTimes[j]=historyTimes[j-1]; }
             history[0]=transform.position; historyTimes[0]=Time.time; samples=Mathf.Min(18,samples+1);
-            while(samples>1 && Time.time-historyTimes[samples-1]>.19f) samples--;
+            while(samples>1 && Time.time-historyTimes[samples-1]>.065f) samples--;
             if(samples<2) { trail.enabled=false; return; }
             for(int j=0;j<18;j++)
             {
@@ -114,7 +114,7 @@ namespace OctopusSurvivors
                 Vector3 tangent = history[Mathf.Max(0,sample-1)] - history[Mathf.Min(samples-1,sample+1)];
                 Vector3 normal = new Vector3(-tangent.y,tangent.x).normalized;
                 Vector3 point = history[sample]+normal*((Mathf.Sin(age*13-u*8)*.07f+Mathf.Sin(age*9+u*14)*.025f)*u);
-                float width = (.16f*Mathf.Pow(1-u,1.1f)+.006f)*transform.lossyScale.x/WaterBalloonGeometry.Diameter;
+                float width = (.055f*Mathf.Pow(1-u,1.1f)+.003f)*transform.lossyScale.x/WaterBalloonGeometry.Diameter;
                 vertices[j*2]=transform.InverseTransformPoint(point+normal*width);
                 vertices[j*2+1]=transform.InverseTransformPoint(point-normal*width);
                 uvs[j*2]=new Vector2(u,-1); uvs[j*2+1]=new Vector2(u,1);

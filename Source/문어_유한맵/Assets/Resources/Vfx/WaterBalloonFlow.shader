@@ -23,6 +23,66 @@ Shader "Octopus/WaterBalloonFlow"
             struct v2f { float4 vertex:SV_POSITION; float2 uv:TEXCOORD0; };
             v2f vert(appdata v) { v2f o; o.vertex=UnityObjectToClipPos(v.vertex); o.uv=v.uv; return o; }
             float hash(float x) { return frac(sin(x*127.1+17.9)*43758.5453); }
+            // A swept crescent of water, not a spherical projectile with an attached ribbon.
+            float4 FlyingWater(float2 p,float t)
+            {
+                float clock=t*10+_Phase;
+                float nearest=100,along=0,cross=0;
+                for(int j=0;j<=24;j++)
+                {
+                    float u=j/24.0,one=1-u;
+                    float2 a=float2(-1.15,-1.0);
+                    float2 b=float2(-1.15,1.35+.08*sin(clock));
+                    float2 c=float2(.68,.32+.07*sin(clock+1.4));
+                    float2 center=one*one*a+2*one*u*b+u*u*c;
+                    center.y+=sin(u*8-clock)*.055*sin(u*3.14159);
+                    float2 tangent=normalize(2*one*(b-a)+2*u*(c-b));
+                    float2 normal=float2(-tangent.y,tangent.x);
+                    // Keep a round, balloon-sized leading mass; taper only its trailing surface.
+                    float width=.018+.90*pow(u,2.5);
+                    width*=1+.035*sin(u*10-clock);
+                    float2 delta=p-center;
+                    float angle=atan2(delta.y,delta.x);
+                    float ripple=1+u*(.08*sin(angle*3-clock*.8)+.04*cos(angle*5+clock));
+                    float distance=length(delta)/(width*ripple);
+                    if(distance<nearest)
+                    {nearest=distance;along=u;cross=dot(delta,normal)/width;}
+                }
+                // Fine inner prong sweeps out from the same tip, leaving a clear concave cutout.
+                float fork=100;
+                for(int k=0;k<=12;k++)
+                {
+                    float u=k/12.0,one=1-u;
+                    float2 center=one*one*float2(-1.15,-1.0)
+                        +2*one*u*float2(-.94,-.10)+u*u*float2(-.36,-.12+.05*sin(clock));
+                    fork=min(fork,length(p-center)/(.012+.085*sin(u*2.1)));
+                }
+                float coverage=step(min(nearest,fork),1);
+                float3 color=float3(.12,.47,.69);
+                color=lerp(color,float3(.16,.64,.83),step(nearest,.86));
+                color=lerp(color,float3(.34,.78,.91),step(nearest,.65));
+                float stream=step(.22,cross)*step(cross,.63)*step(nearest,.84);
+                color=lerp(color,float3(.76,.95,.99),stream);
+                float core=step(.80,along)*step(nearest,.55)*step(-.05,cross);
+                color=lerp(color,float3(.88,.98,1),core*.9);
+                float moving=step(.87,sin(along*17-clock*1.3))*step(nearest,.64);
+                color=lerp(color,float3(.63,.89,.97),moving*.6);
+                if(fork<nearest)color=lerp(float3(.16,.57,.78),float3(.63,.89,.96),step(fork,.55));
+                float alpha=coverage*.94;
+                // Detached flecks follow the crest rather than orbiting like idle satellites.
+                for(int d=0;d<3;d++)
+                {
+                    float f=frac(t*1.7+d*.33+_Phase*.1);
+                    float2 center=float2(-.8+f*1.45,.95+.23*sin(f*3.14159)+d*.035);
+                    float2 delta=p-center;
+                    delta.x+=delta.y*.55;
+                    float drop=step(length(delta*float2(.8,1.5)),.055+d*.012);
+                    color=lerp(color,float3(.53,.84,.94),drop);
+                    alpha=max(alpha,drop*.9);
+                }
+                if(alpha<.01)discard;
+                return float4(color,alpha);
+            }
             fixed4 frag(v2f i):SV_Target
             {
                 float t=_Clock;
@@ -36,6 +96,7 @@ Shader "Octopus/WaterBalloonFlow"
                     return float4(lerp(float3(.20,.61,.77),float3(.57,.86,.92),flow),alpha);
                 }
                 float2 p=floor(i.uv*22+.5)/22;
+                if(_Mode<.5 && _Flight>.5)return FlyingWater(p,t);
                 if(_Mode<.5)
                 {
                     // Travelling capillary waves: the bulges circulate around the surface,
