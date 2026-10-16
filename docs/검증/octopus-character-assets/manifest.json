@@ -116,8 +116,8 @@
       130,
       180
     ],
-    "source": "exec-42ccfaae-adbc-4911-bf32-b6499471e024.png",
-    "motion": "subtle-chest-pop-with-synchronized-front-tentacle",
+    "source": "exec-36de4c1f-c1d4-4e4d-90fb-1360b7733907.png",
+    "motion": "three-quarter-body-twist-with-subtle-chest-pop-and-front-tentacle",
     "frame_phases": [
       "relaxed",
       "anticipation",
@@ -129,10 +129,11 @@
       "settle"
     ],
     "normalization": {
-      "common_scale": 0.13435114503816795,
+      "common_scale": 0.13056379821958458,
       "median_height_px": 44,
       "feet_baseline_y": 56,
       "anchor": "bottom 8 percent alpha-weighted foot center"
-    }
+    },
+    "pose": "screen-right three-quarter body; slight counter-turn of face; short far tentacle; small extra twist at pop peak"
   }
 ]
