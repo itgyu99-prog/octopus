@@ -93,13 +93,13 @@
   },
   {
     "name": "victory",
-    "frames": 8,
+    "frames": 16,
     "cell": [
       64,
       64
     ],
     "atlas": [
-      512,
+      1024,
       64
     ],
     "pivot": [
@@ -107,33 +107,75 @@
       0.125
     ],
     "durations_ms": [
-      240,
-      70,
-      40,
-      60,
-      90,
-      90,
-      100,
-      190
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200
     ],
-    "source": "exec-50871c3b-3cfb-47c6-89af-2cb667544397.png",
-    "motion": "two-arm-tentacle-accents-with-small-chest-pulse",
+    "source": "exec-676e83c5-608e-4cea-bd1b-48d994480b2b.png",
+    "motion": "slow-one-arm-lower-and-raise",
     "frame_phases": [
-      "rest-arms-across-chest",
-      "bend-and-open",
-      "quick-chest-beat-arms-open",
-      "arm-recoil",
-      "opposite-arm-cross",
-      "small-second-arm-accent",
-      "fold-and-settle",
-      "return"
+      "high",
+      "high-turnaround",
+      "start-lowering",
+      "lowering",
+      "mid-lower",
+      "lowering",
+      "near-low",
+      "low",
+      "low-turnaround",
+      "low",
+      "start-rising",
+      "rising",
+      "mid-rise",
+      "rising",
+      "near-high",
+      "high"
     ],
     "normalization": {
-      "common_scale": 0.12589413447782546,
+      "common_scale": 0.19213973799126638,
       "median_height_px": 44,
       "feet_baseline_y": 56,
-      "anchor": "upper central head contour center x=32; crown y=12"
+      "anchor": "upper 45 percent head contour center x=32; feet baseline y=56",
+      "source_grid": [
+        4,
+        4
+      ],
+      "source_column_boundaries": [
+        0,
+        430,
+        724,
+        1018,
+        1448
+      ],
+      "source_row_boundaries": [
+        0,
+        290,
+        549,
+        808,
+        1086
+      ]
     },
-    "pose": "fixed three-quarter stance; outer arms articulate in distinct compact gestures; chest pulse remains subtle"
+    "pose": "fresh from original lower-left victory drawing; fixed head, feet and opposite arm; one chest-height tentacle slowly lowers and returns",
+    "timing_reference": {
+      "file": "녹화_2026_10_16_15_19_03_217.mp4",
+      "video_duration_sec": 5.53,
+      "video_fps": 30,
+      "decoded_audio_peak_int16": 0,
+      "method": "visual pacing only: recording audio is entirely silent; 3.2 second slow loop is an interpretation, no measured music BPM",
+      "loop_ms": 3200
+    }
   }
 ]
