@@ -14,6 +14,16 @@
 
 ## 관련 파일
 
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished.json`
+
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished-preview.gif`
+
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished-comparison.gif`
+
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-polished-128.png`
+
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/walk-polished-source.png`
+
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/walk-source.png`
 
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/walk-reference.png`
