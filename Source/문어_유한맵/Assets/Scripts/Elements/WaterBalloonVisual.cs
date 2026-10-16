@@ -84,7 +84,7 @@ namespace OctopusSurvivors
             }
             if (type != kind) { samples = 0; wasFlying = false; }
             kind = type; snapshotAge = age; snapshotTime = Time.time; duration = life;
-            heading = angle / 255f * 360f; phase = id % 5 * .31f;
+            heading = angle / 255f * 360f; phase = Mathf.Repeat(id * 2.399963f, Mathf.PI * 2);
         }
 
         void LateUpdate()
@@ -106,15 +106,15 @@ namespace OctopusSurvivors
         {
             for (int j=Mathf.Min(samples,17);j>0;j--) { history[j]=history[j-1]; historyTimes[j]=historyTimes[j-1]; }
             history[0]=transform.position; historyTimes[0]=Time.time; samples=Mathf.Min(18,samples+1);
-            while(samples>1 && Time.time-historyTimes[samples-1]>.13f) samples--;
+            while(samples>1 && Time.time-historyTimes[samples-1]>.19f) samples--;
             if(samples<2) { trail.enabled=false; return; }
             for(int j=0;j<18;j++)
             {
                 int sample=Mathf.Min(j,samples-1); float u=sample/(float)(samples-1);
                 Vector3 tangent = history[Mathf.Max(0,sample-1)] - history[Mathf.Min(samples-1,sample+1)];
                 Vector3 normal = new Vector3(-tangent.y,tangent.x).normalized;
-                Vector3 point = history[sample]+normal*(Mathf.Sin(age*7-u*6)*u*.055f);
-                float width = (.11f*Mathf.Pow(1-u,1.4f)+.008f)*transform.lossyScale.x/WaterBalloonGeometry.Diameter;
+                Vector3 point = history[sample]+normal*((Mathf.Sin(age*13-u*8)*.07f+Mathf.Sin(age*9+u*14)*.025f)*u);
+                float width = (.16f*Mathf.Pow(1-u,1.1f)+.006f)*transform.lossyScale.x/WaterBalloonGeometry.Diameter;
                 vertices[j*2]=transform.InverseTransformPoint(point+normal*width);
                 vertices[j*2+1]=transform.InverseTransformPoint(point-normal*width);
                 uvs[j*2]=new Vector2(u,-1); uvs[j*2+1]=new Vector2(u,1);

@@ -102,7 +102,7 @@ namespace OctopusSurvivors.EditorTools
             p.Slot0.Value=p.Slot1.Value=p.Slot2.Value=p.Slot3.Value=0;
             Validate(s,p);
             var camera=Camera.main;var follow=camera.GetComponent<PlayerCameraFollow>();if(follow!=null)follow.enabled=false;
-            camera.orthographicSize=5.8f;camera.aspect=16f/9;camera.transform.position=new Vector3(0,0,-10);
+            camera.orthographicSize=11f;camera.aspect=16f/9;camera.transform.position=new Vector3(0,0,-10);
             var canvasGo=new GameObject("Water balloon live gameplay label");var cv=canvasGo.AddComponent<Canvas>();
             cv.renderMode=RenderMode.ScreenSpaceOverlay;cv.sortingOrder=500;
             var sc=canvasGo.AddComponent<CanvasScaler>();sc.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;sc.referenceResolution=new Vector2(960,540);
@@ -118,7 +118,7 @@ namespace OctopusSurvivors.EditorTools
             {var enemy=Target(s,new Vector2(3.7f+x*.8f,y*.75f));enemy.Hp=enemy.MaxHp=320;}
             s.CastBasicAbility(p,ElementId.Water,1);
             string output=Path.GetFullPath("Build/Validation/WaterBalloonFrames");Directory.CreateDirectory(output);
-            label.text="WATER BALLOONS  |  5 SHOTS / 0.22s / SPLASH 1.9";
+            label.text="LIVING WATER  |  5 SHOTS / 0.22s / SPLASH 1.9";
             for(int frame=0;frame<120;frame++)
             {
                 foreach(var actor in Actors(s).ToArray())
