@@ -116,24 +116,24 @@
       100,
       190
     ],
-    "source": "exec-a6af8765-f975-4a80-b88d-12c127c20ab4.png",
-    "motion": "isolated-local-chest-pulse-with-small-front-tentacle-accent",
+    "source": "exec-50871c3b-3cfb-47c6-89af-2cb667544397.png",
+    "motion": "two-arm-tentacle-accents-with-small-chest-pulse",
     "frame_phases": [
-      "still",
-      "local-draw-in",
-      "local-pulse-peak",
-      "quick-release",
-      "relax",
-      "tiny-inward-release",
-      "recover",
-      "still"
+      "rest-arms-across-chest",
+      "bend-and-open",
+      "quick-chest-beat-arms-open",
+      "arm-recoil",
+      "opposite-arm-cross",
+      "small-second-arm-accent",
+      "fold-and-settle",
+      "return"
     ],
     "normalization": {
-      "common_scale": 0.1282798833819242,
+      "common_scale": 0.12589413447782546,
       "median_height_px": 44,
       "feet_baseline_y": 56,
-      "anchor": "upper 45 percent head contour center x=32; feet baseline y=56"
+      "anchor": "upper central head contour center x=32; crown y=12"
     },
-    "pose": "fixed screen-right three-quarter stance; no animated body yaw or sway; quick lower-chest contraction and release"
+    "pose": "fixed three-quarter stance; outer arms articulate in distinct compact gestures; chest pulse remains subtle"
   }
 ]
