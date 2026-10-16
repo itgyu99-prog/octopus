@@ -83,6 +83,12 @@ namespace OctopusSurvivors
         public void Configure(ActorKind value,float serverAge,float life)
         {
             kind=value;duration=life;
+            if (kind == ActorKind.Vine)
+            {
+                var thorns = GetComponent<GrassThornVisual>() ?? gameObject.AddComponent<GrassThornVisual>();
+                thorns.Configure(serverAge, life);
+                return;
+            }
             if (kind == ActorKind.FlameAura)
             {
                 var orb = GetComponent<FireOrbVisual>() ?? gameObject.AddComponent<FireOrbVisual>();

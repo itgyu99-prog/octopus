@@ -13,6 +13,7 @@
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementEffects.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementEffectVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/ElementRules.cs`
+- `Source/문어_유한맵/Assets/Scripts/Elements/GrassThornVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/HdSpellVisual.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/PlannedAbilities.cs`
 - `Source/문어_유한맵/Assets/Scripts/Elements/SpecialAbilities.cs`
@@ -46,6 +47,8 @@
 - `Source/문어_유한맵/Assets/Resources/Vfx/DetailAtlas.png.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ElementAtlas.png`
 - `Source/문어_유한맵/Assets/Resources/Vfx/ElementAtlas.png.meta`
+- `Source/문어_유한맵/Assets/Resources/Vfx/GrassThornPixel.bytes`
+- `Source/문어_유한맵/Assets/Resources/Vfx/GrassThornPixel.bytes.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/LegacyAtlas.png`
 - `Source/문어_유한맵/Assets/Resources/Vfx/LegacyAtlas.png.meta`
 - `Source/문어_유한맵/Assets/Resources/Vfx/TreeVariants.png`
@@ -83,6 +86,13 @@
 - `StrikeBlueFlameLink` — 314행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `InsideBlueFlameCorridor` — 335행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `ShowBlueFlameArc` — 342행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+## `Assets/Scripts/Elements/GrassThornVisual.cs` 진입 함수
+
+- `Configure` — 44행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `FrameIndex` — 17행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `RenderAt` — 62행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
 
 ## `Assets/Scripts/Elements/HdSpellVisual.cs` 진입 함수
 

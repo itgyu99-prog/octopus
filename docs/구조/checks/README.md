@@ -13,6 +13,7 @@ Unity 에디터 검사, 협동 검사, 빌드·배포 설정
 - `Source/문어_유한맵/Assets/Editor/ElementEffectChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/FiniteMapChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/FireOrbChecks.cs`
+- `Source/문어_유한맵/Assets/Editor/GrassThornChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/GiantMonsterSetup.cs`
 - `Source/문어_유한맵/Assets/Editor/SystemDataChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/TreeSkillChecks.cs`
@@ -25,6 +26,7 @@ Unity 에디터 검사, 협동 검사, 빌드·배포 설정
 - `Source/문어_유한맵/../../.gitignore`
 - `Source/문어_유한맵/../../docs/검증/host-balance-exit-confirmation.png`
 - `Source/문어_유한맵/../../docs/검증/host-balance-tree-fire.png`
+- `Source/문어_유한맵/../../docs/검증/grass-thorn-gameplay.png`
 - `Source/문어_유한맵/../../tools/balance_simulator.html`
 - `Source/문어_유한맵/Assets/Editor/TreeSkillChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/WaterAlternativesChecks.cs`

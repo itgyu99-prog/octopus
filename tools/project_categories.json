@@ -147,6 +147,11 @@
           "InsideBlueFlameCorridor",
           "ShowBlueFlameArc"
         ],
+        "Assets/Scripts/Elements/GrassThornVisual.cs": [
+          "Configure",
+          "FrameIndex",
+          "RenderAt"
+        ],
         "Assets/Scripts/Elements/HdSpellVisual.cs": [
           "Configure",
           "LateUpdate"
@@ -310,6 +315,7 @@
         "../../.gitignore",
         "../../tools/balance_simulator.html",
         "../../docs/검증/host-balance-tree-fire.png",
+        "../../docs/검증/grass-thorn-gameplay.png",
         "Assets/Editor/TreeSkillChecks.cs",
         "../../docs/검증/host-balance-exit-confirmation.png"
       ]

@@ -170,3 +170,10 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 - 5개 GIF는 실제 게임의 배경·문어·몬스터·체력바·UI를 Unity 카메라로 촬영했다. 각 영상은 입구 근접 화면에서 시작해 전투 시야로 넓어지며4초 공격과 종료 후 소멸을 담는다. 비교를 위해 적 위치를 고정하고 기본5병 중1병만 촬영했으며 시뮬레이션을1/30초씩 직접 진행한 통제 검증이다. 일반 플레이는 기존5병을 유지한다. 두 PC/Relay·중도 참가·장기 밸런스는 이번 검사에 포함하지 않았다.
 - [1안 미세 탄산](soda-foam-1-gameplay.gif), [2안 큰 기포](soda-foam-2-gameplay.gif), [3안 풍성한 흰 거품](soda-foam-3-gameplay.gif), [4안 두 갈래 거품](soda-foam-4-gameplay.gif), [5안 가벼운 발포](soda-foam-5-gameplay.gif). 960×540, 78프레임, 5.2초 반복. 동일한 시드와 피해 판정을 사용하고 표시만 바꾼 비교이며 게임 기본 표시는1안이다.
 - 최신 상태 `Source/문어_유한맵/Logs/soda-check.status`=PASS. 발췌 로그 `Logs/soda-checks.log`, 원본 Unity 로그는 로컬 에디터의 `Editor.log`. 캡처 프레임은 `Build/Validation/SodaFrames/foam-1`~`foam-5` 고정 경로를 덮어쓴다. `Logs/soda-check.request` 파일로 에디터의 최신 소스 가져오기·컴파일 후 동일 검사를 요청할 수 있다. Windows 배포/ZIP은 생성하지 않았다.
+
+## 2026-10-16 풀 가시 픽셀 공격 적용
+
+- 사용자 최종 승인 8프레임을 게임의 기본 풀 공격(Vine)에 연결했다. 무광 초록색과 초록 가시, 중앙을 향한 뾰족한 끝, 밝은 모래색 흙을 유지한다. 큰 발광/기존 고해상도 덩굴/잔상은 기본 풀 공격에서 제거했다. 선택 GIF의 삐죽한 전조→급상승→정지→회수 비율을 기존 0.18초 타격 수명에 맞춰 재생한다.
+- Unity 6000.5.7f1 배치 컴파일 및 실제 NGO 로컬 호스트 Play Mode 검사에서 `GRASS THORN CHECKS PASS` 확인. 8프레임 로딩/Point 필터/고정 지면 피벗, 전조·찌르기·정지·회수, 기본 최근접3명/타격당19피해/4회 타격, 4번째 대상·사거리 밖 무피해, 기존12개 이펙트/0.18초 수명, 실제 WorldView 연결, 잔상 부재와 만료 후 렌더러 제거를 확인했다.
+- [실제 게임 적용 화면](grass-thorn-gameplay.png). 캡처 원본은 `Source/문어_유한맵/Build/Validation/GrassThornFrames/frame-00.png`~`frame-07.png` 고정 경로. 검사 상태 `Logs/grass-thorn-check.status`=PASS, 상세 `Logs/grass-thorn-checks.log`, Unity 로그 `Logs/grass-thorn-unity.log`.
+- 재실행: `문어/풀 가시 픽셀 검증` 또는 Unity에 `-batchmode -acceptSoftwareTermsForThisRunOnly -projectPath <프로젝트> -executeMethod OctopusSurvivors.EditorTools.GrassThornChecks.Run -logFile <프로젝트>/Logs/grass-thorn-unity.log` 전달. 통제된 1회 공격 표시·피해 검사이며 두 PC/Relay와 장기 밸런스는 미검증. 기존25바이트 스냅샷 유지. Windows 빌드/ZIP은 생성하지 않았다.
