@@ -14,6 +14,16 @@
 
 ## 관련 파일
 
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-polished.json`
+
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-polished-preview.gif`
+
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-polished-128.png`
+
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/stop-polished-source.png`
+
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/walk-128.png`
+
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/hit-64.png`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/hit-preview.gif`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/source/hit-source.png`
@@ -34,7 +44,6 @@
 
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/walk-preview.gif`
 
-- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/walk-64.png`
 
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/idle-64.png`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/idle-preview.gif`
