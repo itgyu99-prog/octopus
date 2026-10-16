@@ -9,3 +9,5 @@
 - 2026-10-14: CombatVisualChecks/GiantCombatChecks 추가. 고정 combat-*.log와 Build/Validation에서 거대 5종 서버 전투·스폰·2인 표시 및 고해상도 VFX 검증. 최종 결과/에셋 설정은 docs/검증/README.md.
 
 - 2026-10-16: 기본 물 공격 비교용 WaterAlternativesChecks 추가. 기본 방사 물방울은 유지하고, 연속 물줄기·파도·나선·물기둥을 같은 Unity 로컬 호스트 전투에서 144프레임씩 촬영. 네 안의 실제 피해 감소 확인(PASS). GIF는 docs/검증/water-option-1-gameplay.gif~4. 최종 선택 및 밸런스 확정 전의 에디터 전용 프로토타입이다.
+
+- 2026-10-16: 물 스킬 연출 재설계 GIF 4종(water-redesign-1.gif~4) 추가. 해일·고압 수룡포·만조 폭발·폭포 강타. 별도 도트 애니메이션 프로토타입으로 게임 실행 결과가 아니며, 체력·밀림·피격 숫자는 연출 시뮬레이션이다. 960×540, 3초, 무한 반복과 전체 프레임 디코딩 확인. 기존 기본 물 공격 및 Unity 런타임은 변경하지 않았다.
