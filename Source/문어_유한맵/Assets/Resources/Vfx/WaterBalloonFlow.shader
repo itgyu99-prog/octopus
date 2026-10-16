@@ -23,19 +23,28 @@ Shader "Octopus/WaterBalloonFlow"
             struct v2f { float4 vertex:SV_POSITION; float2 uv:TEXCOORD0; };
             v2f vert(appdata v) { v2f o; o.vertex=UnityObjectToClipPos(v.vertex); o.uv=v.uv; return o; }
             float hash(float x) { return frac(sin(x*127.1+17.9)*43758.5453); }
+            // Idle and flight share the exact same body palette.
+            float3 WaterPalette(float band)
+            {
+                float3 color=float3(.12,.48,.66);
+                color=lerp(color,float3(.20,.64,.80),step(.24,band));
+                color=lerp(color,float3(.36,.77,.88),step(.47,band));
+                return lerp(color,float3(.59,.87,.93),step(.72,band));
+            }
             // A swept crescent of water, not a spherical projectile with an attached ribbon.
             float4 FlyingWater(float2 p,float t)
             {
                 float clock=t*10+_Phase;
                 float nearest=100,along=0,cross=0;
+                float2 tail=float2(-1.15+.08*sin(clock-1.1),-1+.10*sin(clock-2.0));
                 for(int j=0;j<=24;j++)
                 {
                     float u=j/24.0,one=1-u;
-                    float2 a=float2(-1.15,-1.0);
+                    float2 a=tail;
                     float2 b=float2(-1.15,1.35+.08*sin(clock));
                     float2 c=float2(.68,.32+.07*sin(clock+1.4));
                     float2 center=one*one*a+2*one*u*b+u*u*c;
-                    center.y+=sin(u*8-clock)*.055*sin(u*3.14159);
+                    center.y+=sin(u*8-clock)*.075*sin(u*3.14159);
                     float2 tangent=normalize(2*one*(b-a)+2*u*(c-b));
                     float2 normal=float2(-tangent.y,tangent.x);
                     // Keep a round, balloon-sized leading mass; taper only its trailing surface.
@@ -53,22 +62,26 @@ Shader "Octopus/WaterBalloonFlow"
                 for(int k=0;k<=12;k++)
                 {
                     float u=k/12.0,one=1-u;
-                    float2 center=one*one*float2(-1.15,-1.0)
+                    float2 center=one*one*tail
                         +2*one*u*float2(-.94,-.10)+u*u*float2(-.36,-.12+.05*sin(clock));
                     fork=min(fork,length(p-center)/(.012+.085*sin(u*2.1)));
                 }
                 float coverage=step(min(nearest,fork),1);
-                float3 color=float3(.12,.47,.69);
-                color=lerp(color,float3(.16,.64,.83),step(nearest,.86));
-                color=lerp(color,float3(.34,.78,.91),step(nearest,.65));
-                float stream=step(.22,cross)*step(cross,.63)*step(nearest,.84);
-                color=lerp(color,float3(.76,.95,.99),stream);
-                float core=step(.80,along)*step(nearest,.55)*step(-.05,cross);
-                color=lerp(color,float3(.88,.98,1),core*.9);
-                float moving=step(.87,sin(along*17-clock*1.3))*step(nearest,.64);
-                color=lerp(color,float3(.63,.89,.97),moving*.6);
-                if(fork<nearest)color=lerp(float3(.16,.57,.78),float3(.63,.89,.96),step(fork,.55));
-                float alpha=coverage*.94;
+                // The head retains idle cyan and translucency; white is only a broken surface glint.
+                float colorClock=t*5.6+_Phase;
+                float2 q=p-float2(.30,.24);
+                float flow=sin(q.x*4.2+q.y*2.8-colorClock*.82)
+                    +.55*sin(q.y*6-q.x*2+colorClock*1.17);
+                float band=saturate(.48-q.x*.20+q.y*.13+flow*.13);
+                float3 color=WaterPalette(band);
+                color=lerp(color,float3(.12,.45,.62),step(.90,nearest)*.72);
+                float glint=step(.74,nearest)*step(nearest,.89)*step(.22,cross)
+                    *step(.32,sin(along*13-colorClock*.55));
+                color=lerp(color,float3(.80,.96,.96),glint*.83);
+                float moving=step(.95,sin(q.x*5+q.y*3-colorClock*.9))*step(nearest,.72);
+                color=lerp(color,float3(.65,.90,.94),moving*.42);
+                if(fork<nearest)color=lerp(float3(.20,.64,.80),float3(.43,.80,.90),step(fork,.55));
+                float alpha=coverage*(.80+step(.87,nearest)*.12);
                 // Detached flecks follow the crest rather than orbiting like idle satellites.
                 for(int d=0;d<3;d++)
                 {
@@ -77,7 +90,7 @@ Shader "Octopus/WaterBalloonFlow"
                     float2 delta=p-center;
                     delta.x+=delta.y*.55;
                     float drop=step(length(delta*float2(.8,1.5)),.055+d*.012);
-                    color=lerp(color,float3(.53,.84,.94),drop);
+                    color=lerp(color,float3(.43,.80,.90),drop);
                     alpha=max(alpha,drop*.9);
                 }
                 if(alpha<.01)discard;
@@ -117,10 +130,7 @@ Shader "Octopus/WaterBalloonFlow"
                     float flow=sin(q.x*4.2+q.y*2.8-clock*.82)
                         +.55*sin(q.y*6-q.x*2+clock*1.17);
                     float band=saturate(.48-q.x*.20+q.y*.13+flow*.13);
-                    float3 color=float3(.12,.48,.66);
-                    color=lerp(color,float3(.20,.64,.80),step(.24,band));
-                    color=lerp(color,float3(.36,.77,.88),step(.47,band));
-                    color=lerp(color,float3(.59,.87,.93),step(.72,band));
+                    float3 color=WaterPalette(band);
                     // A restrained dark rim and broken travelling reflection, no glossy orb hotspot.
                     color=lerp(color,float3(.12,.45,.62),step(.90,r)*.72);
                     float reflection=step(.74,r)*step(r,.89)*step(.32,sin(theta*3+clock*.55))

@@ -181,5 +181,5 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 ### 물풍선 기본 공격 적용 (2026-10-16)
 
 - Unity WaterBalloonChecks PASS: 5개 준비, 0.22초 순차 투척, 밀집 적 조준, 반경1.9 단발 AOE 및 감속, 프레임률별 동일 피해, 다운/무타겟/만료, 기존 스냅샷을 통한 표시 전환.
-- 실제 게임 촬영: [물풍선 기본 공격 GIF](water-balloon-gameplay.gif), [4배 확대·0.67배속 GIF](water-balloon-surface-detail.gif). 기본 카메라 크기11에서 캡처. 둥근 물덩이의 두께를 유지한 곡선 발사체와 가늘게 휘는 후면, 물 표면의 이동 파동/내부 흐름/분리 액적, 얇은 파열막으로 재작업 후 WaterBalloonChecks 재검사 PASS. 이전 water-balloon-assets-preview.gif는 게임 외 연출 시안이다.
+- 실제 게임 촬영: [물풍선 기본 공격 GIF](water-balloon-gameplay.gif), [4배 확대·0.67배속 GIF](water-balloon-surface-detail.gif). 기본 카메라 크기11에서 캡처. 대기와 비행의 청록색·투명도를 통일하고 큰 흰 반사를 줄임. 둥근 물덩이의 두께를 유지한 곡선 발사체와 지연되어 흔들리는 후면, 물 표면의 이동 파동/내부 흐름/분리 액적, 얇은 파열막으로 재작업 후 WaterBalloonChecks 재검사 PASS. 이전 water-balloon-assets-preview.gif는 게임 외 연출 시안이다.
 - 기본 5개, 물 연속 강화는 +1개. 물 분열/히든 풍선 유지. 별도 Windows 배포 빌드/ZIP 생성 없음.
