@@ -1,0 +1,121 @@
+[
+  {
+    "name": "idle",
+    "frames": 4,
+    "cell": [
+      64,
+      64
+    ],
+    "atlas": [
+      256,
+      64
+    ],
+    "pivot": [
+      0.5,
+      0.125
+    ],
+    "durations_ms": [
+      350,
+      200,
+      90,
+      350
+    ],
+    "source": "exec-f33f7c59-6480-4d9c-b3e7-d642d8e45d10.png"
+  },
+  {
+    "name": "walk",
+    "frames": 4,
+    "cell": [
+      64,
+      64
+    ],
+    "atlas": [
+      256,
+      64
+    ],
+    "pivot": [
+      0.5,
+      0.125
+    ],
+    "durations_ms": [
+      130,
+      130,
+      130,
+      130
+    ],
+    "source": "exec-573d0ae8-6f20-42d6-8324-45069d09baf6.png"
+  },
+  {
+    "name": "stop",
+    "frames": 4,
+    "cell": [
+      64,
+      64
+    ],
+    "atlas": [
+      256,
+      64
+    ],
+    "pivot": [
+      0.5,
+      0.125
+    ],
+    "durations_ms": [
+      100,
+      90,
+      120,
+      650
+    ],
+    "source": "exec-8f8ad8e2-6bb1-479c-989c-46222c51c17e.png"
+  },
+  {
+    "name": "hit",
+    "frames": 4,
+    "cell": [
+      64,
+      64
+    ],
+    "atlas": [
+      256,
+      64
+    ],
+    "pivot": [
+      0.5,
+      0.125
+    ],
+    "durations_ms": [
+      100,
+      90,
+      140,
+      750
+    ],
+    "source": "exec-b0062ad4-78e1-4ab5-b04e-a98354671f93.png"
+  },
+  {
+    "name": "victory",
+    "frames": 8,
+    "cell": [
+      64,
+      64
+    ],
+    "atlas": [
+      512,
+      64
+    ],
+    "pivot": [
+      0.5,
+      0.125
+    ],
+    "durations_ms": [
+      150,
+      120,
+      170,
+      120,
+      130,
+      120,
+      150,
+      280
+    ],
+    "source": "exec-c0b19287-6239-409e-a302-15f956e164b0.png"
+  }
+]

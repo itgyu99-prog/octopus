@@ -38,7 +38,8 @@
         "Assets/Resources/Art/Basic.bytes",
         "Assets/Resources/Art/Attack.bytes",
         "Assets/Resources/Art/Whip.bytes",
-        "Assets/Scripts/Core/GameConfig.cs"
+        "Assets/Scripts/Core/GameConfig.cs",
+        "../../docs/검증/octopus-character-assets/*-64.png"
       ]
     },
     "monsters": {

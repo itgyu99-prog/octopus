@@ -14,6 +14,11 @@
 
 ## 관련 파일
 
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/hit-64.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/idle-64.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-64.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/victory-64.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/walk-64.png`
 - `Source/문어_유한맵/Assets/Resources/Art/Attack.bytes`
 - `Source/문어_유한맵/Assets/Resources/Art/Basic.bytes`
 - `Source/문어_유한맵/Assets/Resources/Art/Whip.bytes`
