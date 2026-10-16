@@ -1,0 +1,14 @@
+# 일괄 적용용 최종 에셋
+
+사용자가 선택한 동작을 모아두는 고정 폴더다. 게임에는 아직 적용하지 않았으며, 요청 시 이 폴더의 에셋을 한꺼번에 가져온다. 새 동작이 완성되면 같은 폴더를 갱신한다.
+
+| 동작 | 투명 PNG 아틀라스 | 미리보기 | 프레임·시간 |
+|---|---|---|---|
+| 대기 | [idle-64.png](idle-64.png) | [idle-preview.gif](idle-preview.gif) | 12프레임·각250ms·3초 |
+| 승리 | [victory-64.png](victory-64.png) | [victory-preview.gif](victory-preview.gif) | 16프레임·각200ms·3.2초 |
+
+대기는 사용자가 선택한 첫 시안 그대로의 호흡, 승리는 원본 승리 그림에서 만든 느린 한쪽 팔 왕복이다. 추가 동작도 이 폴더에 보관한다.
+
+공통 가져오기: 64×64 셀의 가로 RGBA 시트, Sprite Multiple, Point 필터, Compression None, Mip Maps 끔, 발 피벗(0.5,0.125). Pixels Per Unit은48을 시작점으로 게임 크기에 맞춘다. 개별 프레임 수·시간·파일명은 [manifest.json](manifest.json)에 있다. 원본 생성 시트와 프롬프트는 상위 폴더의 source/ 및 prompts.json에 보관한다.
+
+GIF는256×256 nearest-neighbor 확대 미리보기이며 게임 원본은 PNG다. 승리 참고 녹화는 무음이므로3.2초 타이밍은 보이는 움직임에 따른 해석이다.

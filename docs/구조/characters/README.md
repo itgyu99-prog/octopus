@@ -14,6 +14,12 @@
 
 ## 관련 파일
 
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/idle-64.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/idle-preview.gif`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/manifest.json`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/README.md`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/victory-64.png`
+- `Source/문어_유한맵/../../docs/검증/octopus-character-assets/final/victory-preview.gif`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/hit-64.png`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/idle-64.png`
 - `Source/문어_유한맵/../../docs/검증/octopus-character-assets/stop-64.png`
