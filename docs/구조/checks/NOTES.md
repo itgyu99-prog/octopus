@@ -7,3 +7,5 @@
 - 최종 결과: 1인·LAN 2인·실제 Relay 2인 통과. 개발/일반 Windows 빌드, 데이터·맵 검사 통과. 일반 빌드의 게임 로직 DLL은 갱신됐으며 자동 검사 코드는 일반 빌드에서 제외된다.
 
 - 2026-10-14: CombatVisualChecks/GiantCombatChecks 추가. 고정 combat-*.log와 Build/Validation에서 거대 5종 서버 전투·스폰·2인 표시 및 고해상도 VFX 검증. 최종 결과/에셋 설정은 docs/검증/README.md.
+
+- 2026-10-16: 기본 물 공격 비교용 WaterAlternativesChecks 추가. 기본 방사 물방울은 유지하고, 연속 물줄기·파도·나선·물기둥을 같은 Unity 로컬 호스트 전투에서 144프레임씩 촬영. 네 안의 실제 피해 감소 확인(PASS). GIF는 docs/검증/water-option-1-gameplay.gif~4. 최종 선택 및 밸런스 확정 전의 에디터 전용 프로토타입이다.

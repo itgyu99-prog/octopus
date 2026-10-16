@@ -300,7 +300,8 @@
         "Assets/Editor/GiantMonsterSetup.cs",
         "Assets/Scripts/Net/GiantCombatChecks.cs",
         "Assets/Editor/FireOrbChecks.cs",
-        "Assets/Editor/SodaChecks.cs"
+        "Assets/Editor/SodaChecks.cs",
+        "Assets/Editor/WaterAlternativesChecks.cs"
       ],
       "related": [
         "ProjectSettings/ProjectVersion.txt",
