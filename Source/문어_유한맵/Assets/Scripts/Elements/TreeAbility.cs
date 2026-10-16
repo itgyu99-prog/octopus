@@ -40,6 +40,13 @@ namespace OctopusSurvivors
             }
         }
 
+        void LandTreeFruit(SimActor fruit)
+        {
+            if (fruit.Life > 0f || fruit.Dead) return;
+            DamageCircle(fruit.Pos, fruit.Size, fruit.Damage, StatusMask.None, 0f, 0f);
+            fruit.Dead = true;
+        }
+
         Vector2 TreeLandingPoint(SimActor tree, float fruitRadius)
         {
             // Reservoir sampling chooses a live target without allocating a list per fruit.
