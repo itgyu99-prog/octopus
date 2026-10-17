@@ -70,7 +70,7 @@ namespace OctopusSurvivors
         }
 
         // 위쪽 가운데를 기준으로 위에서부터 잰 y에 배치한다. Panel/Label/Button/Field 모두 같은 방식으로 맞춘다.
-        static void Place(RectTransform rt, float centerX, float top, float width, float height)
+        internal static void Place(RectTransform rt, float centerX, float top, float width, float height)
         {
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
             rt.pivot = new Vector2(0.5f, 1f);
@@ -78,13 +78,13 @@ namespace OctopusSurvivors
             rt.sizeDelta = new Vector2(width, height);
         }
 
-        static Text MakeLabel(Transform parent, float width, float height, int size, Color color, TextAnchor align)
+        internal static Text MakeLabel(Transform parent, float width, float height, int size, Color color, TextAnchor align)
         {
             return UiUtil.Label(parent, Vector2.zero, new Vector2(width, height), size, color, align);
         }
 
         // 마우스를 올리면 밝아지도록, 기본은 살짝 어둡게 두고 올렸을 때 흰색(원래 색)이 된다.
-        static void Style(Button button, Color color, int fontSize)
+        internal static void Style(Button button, Color color, int fontSize)
         {
             button.GetComponent<Image>().color = color;
             var colors = button.colors;
@@ -92,6 +92,7 @@ namespace OctopusSurvivors
             colors.highlightedColor = Color.white;
             colors.selectedColor = new Color(0.86f, 0.86f, 0.86f, 1f);
             colors.pressedColor = new Color(0.68f, 0.68f, 0.68f, 1f);
+            colors.disabledColor = Color.white;
             button.colors = colors;
             button.GetComponentInChildren<Text>().fontSize = fontSize;
         }
@@ -210,7 +211,7 @@ namespace OctopusSurvivors
             SetDevOpen(false);
         }
 
-        static void Stretch(RectTransform rt)
+        internal static void Stretch(RectTransform rt)
         {
             rt.anchorMin = Vector2.zero;
             rt.anchorMax = Vector2.one;
@@ -313,7 +314,7 @@ namespace OctopusSurvivors
         }
 
         // 코드로 만든 세로 그라데이션. 텍스처 아래쪽이 화면 아래다.
-        static Sprite BackgroundSprite()
+        internal static Sprite BackgroundSprite()
         {
             if (_backgroundSprite != null)
                 return _backgroundSprite;
@@ -359,7 +360,7 @@ namespace OctopusSurvivors
         }
 
         // 모서리가 둥근 9-슬라이스 패널용 Sprite.
-        static Sprite PanelSprite()
+        internal static Sprite PanelSprite()
         {
             if (_panelSprite != null)
                 return _panelSprite;
