@@ -38,7 +38,8 @@ namespace OctopusSurvivors
         {
             NetworkPrefabFactory.Ensure();
             BuildNetworkManager();
-            LanLobby.Show($"이 PC IP: {LanLobby.LocalIPv4()}   포트 {GameConfig.Port}\n다른 집과 할 때는 [인터넷] 방 만들기 / 참가 코드를 쓰세요.\n방향키 이동 / Left Ctrl 근접 / E 획득 / F 요소결합 / Space 변신 / Esc 로비");
+            // IP 안내는 로비의 접힌 "개발용 (LAN)" 영역, 조작 설명은 로비 맨 아래 줄로 옮겼다.
+            LanLobby.Show();
         }
 
         void BuildNetworkManager()

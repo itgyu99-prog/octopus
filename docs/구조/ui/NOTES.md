@@ -19,3 +19,13 @@
 
 - origin/main(수정 전 772c006)에도 GameplayRules.BasicElements의 Electric, WaitingRoom의 4개 속성 버튼, GameHud의 4슬롯 아이콘 연결, Art/Element_Electric.bytes와 meta가 추적되어 있었다. 누락 아님.
 - 원격 TreeAbility.cs의 `damage * rank( == 5` 문법 오류가 전체 스크립트 컴파일을 막고 있어 `damage * (rank == 5`로 수정. 팀원은 main을 pull하고 Source/문어_유한맵을 열어 컴파일 완료 후 실행해야 한다. 팀원 PC의 실제 프로젝트/브랜치는 미확인.
+
+## 2026-10-17 시작 화면 정리
+
+- `LanLobby.Build`를 재배치하고 모양을 꾸몄다. 큰 버튼은 혼자 하기(StartHost) / 방 만들기(StartRelayHost) / 참가 코드칸+참가(StartRelayClient) 3개이며 동작은 그대로다.
+- 배경은 코드로 만든 세로 그라데이션(위 깊은 바다색 → 아래 청록, 맨 아래 모래 띠) 전체 화면 Sprite, 가운데는 내용 높이에 맞춰 늘어나는 어두운 남색 둥근 패널(불투명도 약 85%, 9-슬라이스 Sprite를 코드로 생성)이다. 이미지 파일은 추가하지 않았다.
+- 제목 72pt 흰색+외곽선/그림자, 설명 28pt 하늘색, 버튼 높이 96px/38pt, 마우스를 올리면 밝아진다. `OctopusSheet.Frame(Idle, 0)`로 제목 위에 문어를 작게 보여주며 불러오지 못하면 건너뛴다. SpriteFactory에는 둥근 사각형이 없어 버튼은 네모 그대로다.
+- Host IP칸·Join(LAN 테스트)·이 PC IP 안내는 접힌 "개발용 (LAN)" 영역, 조작 설명은 맨 아래 한 줄이며 게임 HUD(`GameHud` _keys)와 같은 문구다. 상태/에러 문구는 버튼 아래에 나오고 비어 있으면 자리를 차지하지 않는다. 로비 캔버스는 화면 높이 기준(match=1)으로 크기를 맞춘다.
+- `GameBootstrap.Setup`의 첫 로비 문구(IP+조작 설명)는 위 두 위치로 분리되어 `LanLobby.Show()`만 호출한다. Unity 실행 확인 전.
+
+- 2026-10-17 대기실(`WaitingRoom`) 모양 정리: 시작 화면과 같은 바다 배경·남색 패널(`LanLobby`의 배경/패널 함수를 공용으로 사용), 플레이어 칸 2개, 속성 카드 4개(고른 속성은 흰 테두리), 준비(청록)/시작(주황, 불가 시 회색) 버튼, 못 누르는 이유는 버튼 아래 한 줄, 참가 코드는 위쪽·LAN IP는 아래쪽, 단축키는 한 줄. 준비/시작 조건과 동작은 그대로다. Unity 실행 확인 전.
