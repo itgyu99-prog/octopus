@@ -72,6 +72,7 @@ namespace OctopusSurvivors
 
         float _hurtLeft;
         bool _wasMoving;
+        bool _facingLeft;
         float _stopLeft;
         OctopusAnim _visualPose = OctopusAnim.Idle;
         float _poseClock;
@@ -761,7 +762,10 @@ namespace OctopusSurvivors
 
             var session = GameSession.Instance;
             bool victory = session != null && session.IsPlaying && !session.GameOver.Value &&
-                session.StageFlow.Value != (byte)StageState.Combat;
+                session.Stage.Value > 0 && session.Stage.Value % GameConfig.BossEvery == 0 &&
+                !session.BossAlive.Value &&
+                (session.StageFlow.Value == (byte)StageState.Choosing ||
+                 session.StageFlow.Value == (byte)StageState.Countdown);
             OctopusAnim pose = _hurtLeft > 0f ? OctopusAnim.Hit : victory ? OctopusAnim.Victory :
                 moving ? OctopusAnim.Move : _stopLeft > 0f ? OctopusAnim.Stop : OctopusAnim.Idle;
             if (pose != _visualPose) { _visualPose = pose; _poseClock = 0f; }
@@ -784,6 +788,15 @@ namespace OctopusSurvivors
 
             _ringSr.color = new Color(1f, 0.4f, 0.1f, 0.55f);
             _ringSr.transform.localScale = Vector3.one * (radius * 2.1f);
+        }
+
+        void UpdateSpriteFacing()
+        {
+            // Facing is replicated by the server, including dash direction.
+            // Retain the last horizontal direction when moving vertically or stopping.
+            if (!Downed.Value && Mathf.Abs(Facing.Value.x) > .01f)
+                _facingLeft = Facing.Value.x < 0f;
+            _bodySr.flipX = _facingLeft;
         }
 
         void UpdateVisuals()
@@ -820,7 +833,7 @@ namespace OctopusSurvivors
                 _body.localPosition = new Vector3(0f,
                     (sprite.bounds.extents.y - 8f / sprite.pixelsPerUnit) * scale
                     - GameConfig.PlayerRadius * .5f + z * .35f, 0f);
-                _bodySr.flipX = false;
+                UpdateSpriteFacing();
             }
 
             if (_bodySr != null)
