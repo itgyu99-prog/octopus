@@ -796,7 +796,8 @@ namespace OctopusSurvivors
             // Retain the last horizontal direction when moving vertically or stopping.
             if (!Downed.Value && Mathf.Abs(Facing.Value.x) > .01f)
                 _facingLeft = Facing.Value.x < 0f;
-            _bodySr.flipX = _facingLeft;
+            // The supplied character art faces left before mirroring.
+            _bodySr.flipX = !_facingLeft;
         }
 
         void UpdateVisuals()

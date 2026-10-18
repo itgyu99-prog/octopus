@@ -94,7 +94,7 @@ namespace OctopusSurvivors.EditorTools
                 if ((OctopusAnim)visualPose.GetValue(player) != OctopusAnim.Move)
                     throw new Exception("Ordinary stage clear must allow walking");
                 Vector2[] directions = { Vector2.left, Vector2.up, Vector2.zero, Vector2.right, Vector2.down };
-                bool[] flipped = { true, true, true, false, false };
+                bool[] flipped = { false, false, false, true, true };
                 for (int i = 0; i < directions.Length; i++)
                 {
                     player.Facing.Value = directions[i];
