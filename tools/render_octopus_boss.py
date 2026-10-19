@@ -417,9 +417,51 @@ def sheets():
     manifest['half_arena']={'order':['top','bottom','left','right'],'cycle_seconds':6.6,'barrage_seconds':3,'arm_count':6,'barrage_axis':'vertical down','per_arm_cycle_seconds':0.4,'roots_fixed_during_barrage':True,'root_changes':'only while fully occluded below ground'}
     (asset/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
 
+def pixel_poses_gif():
+    """Review the nine generated key poses in order, without inventing inbetweens."""
+    source=Image.open(OUT/'assets/tentacle-pixel-nine-poses.png').convert('RGBA')
+    # Coordinates refer to the saved 1328x1184 design sheet, excluding its labels.
+    assert source.size==(1328,1184), 'Recheck crop bounds if the source sheet changes'
+    boxes=[(185,65,452,430),(534,85,801,430),(875,65,1142,430),
+           (185,495,452,765),(534,530,801,765),(875,505,1142,765),
+           (185,820,452,1145),(534,820,801,1145),(875,820,1142,1080)]
+    captions=['솟기 / 기본','휘기','S곡선','웅크리기','접기 / 잠복 준비',
+              '앞으로 접기','아래로 뻗기','내려찍기','회수']
+    frames=[]
+    for i,(box,caption) in enumerate(zip(boxes,captions)):
+        frame=Image.new('RGB',(560,560),'#241923')
+        sprite=source.crop(box)
+        # Upright poses share their ground line; downward poses share the upper socket.
+        origin=((560-sprite.width)//2,455-sprite.height if i<6 else 132)
+        frame.paste(sprite,origin,sprite)
+        draw=ImageDraw.Draw(frame)
+        draw.text((28,22),'문어 보스 · 다리 도트 자세',font=FONT,fill='#ffd9e3')
+        draw.text((28,57),f'{i+1} / 9   {caption}',font=FONT,fill='#e7bdcb')
+        draw.text((28,504),'9가지 정지 자세 순차 미리보기',font=SMALL,fill='#d4b9c3')
+        for j in range(9):
+            x=28+j*55
+            draw.rectangle((x,539,x+43,544),fill='#fa94b1' if i==j else '#59404d')
+        frames.append(frame)
+    palette=Image.new('RGB',(560,560*9))
+    for i,frame in enumerate(frames):palette.paste(frame,(0,i*560))
+    palette=palette.quantize(colors=256)
+    frames=[f.quantize(palette=palette,dither=Image.Dither.NONE) for f in frames]
+    path=OUT/'tentacle-pixel-nine-poses.gif'
+    frames[0].save(path,save_all=True,append_images=frames[1:],
+                   duration=650,loop=0,optimize=False,disposal=2)
+    with Image.open(path) as decoded:
+        assert decoded.n_frames==9
+        duration=0
+        for i in range(decoded.n_frames):
+            decoded.seek(i);duration+=decoded.info['duration']
+        assert duration==5850
+    print(f'{path}: 9 frames, 560x560, {duration} ms, infinite loop')
+
+
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--pattern',type=int);parser.add_argument('--sheets',action='store_true');parser.add_argument('--verify',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--pattern',type=int);parser.add_argument('--sheets',action='store_true');parser.add_argument('--verify',action='store_true');parser.add_argument('--pixel-poses',action='store_true');args=parser.parse_args()
     OUT.mkdir(exist_ok=True,parents=True)
+    if args.pixel_poses:pixel_poses_gif();return
     if args.verify:
         report={'gif':{},'alpha':{},'counts_per_arm':[sum(e['arm']==i for e in EVENTS30) for i in range(6)],'rock_releases':len(EVENTS8)}
         for path in sorted(OUT.glob('0*.gif')):

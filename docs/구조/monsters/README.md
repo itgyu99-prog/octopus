@@ -52,6 +52,7 @@
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-ground-detail.jpg`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-report.json`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/README.md`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/tentacle-pixel-nine-poses.gif`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/video-reference.jpg`
 - `Source/문어_유한맵/../../tools/render_octopus_boss.py`
 - `Source/문어_유한맵/Assets/Editor/GiantMonsterSetup.cs`
