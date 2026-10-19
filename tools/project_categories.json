@@ -55,7 +55,10 @@
       "primary": [
         "Assets/Scripts/World/GiantMonsterDefinition.cs",
         "Assets/Scripts/World/GiantMonsters.cs",
-        "Assets/Scripts/World/GiantMonsterVisual.cs"
+        "Assets/Scripts/World/GiantMonsterVisual.cs",
+        "Assets/Scripts/World/OctopusBoss.cs",
+        "Assets/Scripts/World/OctopusBossPattern.cs",
+        "Assets/Scripts/World/OctopusBossVisual.cs"
       ],
       "related": [
         "Assets/Scripts/Core/GameConfig.cs",
@@ -63,7 +66,9 @@
         "Assets/Scripts/World/WorldView.cs",
         "Assets/Scripts/Core/RuntimeArt.cs",
         "Assets/Resources/Monsters/*",
-        "Assets/Editor/GiantMonsterSetup.cs"
+        "Assets/Editor/GiantMonsterSetup.cs",
+        "Assets/Resources/OctopusBoss/*.bytes",
+        "Assets/Editor/OctopusBossChecks.cs"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
@@ -337,7 +342,8 @@
         "Assets/Editor/FireOrbChecks.cs",
         "Assets/Editor/SodaChecks.cs",
         "Assets/Editor/WaterAlternativesChecks.cs",
-        "Assets/Editor/WaterBalloonChecks.cs"
+        "Assets/Editor/WaterBalloonChecks.cs",
+        "Assets/Editor/OctopusBossChecks.cs"
       ],
       "related": [
         "ProjectSettings/ProjectVersion.txt",

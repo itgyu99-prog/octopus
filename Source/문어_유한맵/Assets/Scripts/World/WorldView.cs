@@ -123,6 +123,12 @@ namespace OctopusSurvivors
                 _hasBoss = true;
                 _bossId = id;
                 _bossPos = pos;
+                if (Mathf.Approximately(duration, OctopusBossPattern.VisualMarker))
+                {
+                    var octopus = sr.GetComponent<OctopusBossVisual>() ?? sr.gameObject.AddComponent<OctopusBossVisual>();
+                    octopus.Configure(extra);
+                    sr.enabled = false;
+                }
             }
 
             if (kind != ActorKind.SodaWave && !TreeSkillVisual.Supports(kind) && !HdSpellVisual.Supports(kind) && (ElementEffectVisual.Supports(kind) || kind == ActorKind.Enemy || kind == ActorKind.Boss))

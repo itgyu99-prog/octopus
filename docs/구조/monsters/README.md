@@ -9,10 +9,14 @@
 - `Source/문어_유한맵/Assets/Scripts/World/GiantMonsterDefinition.cs`
 - `Source/문어_유한맵/Assets/Scripts/World/GiantMonsters.cs`
 - `Source/문어_유한맵/Assets/Scripts/World/GiantMonsterVisual.cs`
+- `Source/문어_유한맵/Assets/Scripts/World/OctopusBoss.cs`
+- `Source/문어_유한맵/Assets/Scripts/World/OctopusBossPattern.cs`
+- `Source/문어_유한맵/Assets/Scripts/World/OctopusBossVisual.cs`
 
 ## 관련 파일
 
 - `Source/문어_유한맵/Assets/Editor/GiantMonsterSetup.cs`
+- `Source/문어_유한맵/Assets/Editor/OctopusBossChecks.cs`
 - `Source/문어_유한맵/Assets/Resources/Monsters/Giant1.asset`
 - `Source/문어_유한맵/Assets/Resources/Monsters/Giant1.asset.meta`
 - `Source/문어_유한맵/Assets/Resources/Monsters/Giant1.prefab`
@@ -35,6 +39,12 @@
 - `Source/문어_유한맵/Assets/Resources/Monsters/Giant5.prefab.meta`
 - `Source/문어_유한맵/Assets/Resources/Monsters/GiantAtlas.png`
 - `Source/문어_유한맵/Assets/Resources/Monsters/GiantAtlas.png.meta`
+- `Source/문어_유한맵/Assets/Resources/OctopusBoss/Body.bytes`
+- `Source/문어_유한맵/Assets/Resources/OctopusBoss/Burrow.bytes`
+- `Source/문어_유한맵/Assets/Resources/OctopusBoss/Contact.bytes`
+- `Source/문어_유한맵/Assets/Resources/OctopusBoss/Idle.bytes`
+- `Source/문어_유한맵/Assets/Resources/OctopusBoss/Slam.bytes`
+- `Source/문어_유한맵/Assets/Resources/OctopusBoss/Whip.bytes`
 - `Source/문어_유한맵/Assets/Scripts/Core/GameConfig.cs`
 - `Source/문어_유한맵/Assets/Scripts/Core/GameTypes.cs`
 - `Source/문어_유한맵/Assets/Scripts/Core/RuntimeArt.cs`
@@ -42,19 +52,19 @@
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `TickEnemy` — 827행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `EnemyContact` — 904행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnWave` — 984행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnBoss` — 1001행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickEnemy` — 828행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `EnemyContact` — 905행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnWave` — 985행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnBoss` — 1002행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 - `ClearLiveBosses` — 374행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `OnBossDefeated` — 1011행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `KillEnemy` — 1453행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickBossPattern` — 1554행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ChaseBoss` — 1570행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickChargeBoss` — 1580행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickBulletBoss` — 1644행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickAreaBoss` — 1665행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickBossBullet` — 1732행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `OnBossDefeated` — 1013행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `KillEnemy` — 1457행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickBossPattern` — 1558행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ChaseBoss` — 1574행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickChargeBoss` — 1584행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickBulletBoss` — 1648행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickAreaBoss` — 1669행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickBossBullet` — 1736행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

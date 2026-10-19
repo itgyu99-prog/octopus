@@ -373,6 +373,7 @@ namespace OctopusSurvivors
 
         void ClearLiveBosses()
         {
+            OctopusBoss.Value = default;
             for (int i = 0; i < _actors.Count; i++)
             {
                 if (!_actors[i].Dead && _actors[i].Kind == ActorKind.Boss)
@@ -1006,6 +1007,7 @@ namespace OctopusSurvivors
             boss.Hp = boss.MaxHp = GameConfig.BossHp(Elapsed.Value) * scale;
             BossAlive.Value = true;
             BossHpRatio.Value = 1f;
+            if (stage == 5) StartOctopusBoss(boss);
         }
 
         void OnBossDefeated(Vector2 pos)
@@ -1017,6 +1019,8 @@ namespace OctopusSurvivors
 
             if (stage == 5)
             {
+                OctopusBoss.Value = default;
+                pos = GameConfig.ClampToMap(new Vector2(0, OctopusBossPattern.Arena.yMax - 3), 1f);
                 SpecialUnlocked.Value = true;
                 DropBossSpecial(pos);
             }
@@ -1554,7 +1558,7 @@ namespace OctopusSurvivors
         void TickBossPattern(SimActor boss, float dt, float speed)
         {
             if (_bossStage == 5)
-                TickChargeBoss(boss, dt, speed);
+                TickOctopusBoss(boss, dt);
             else if (_bossStage == 10)
                 TickBulletBoss(boss, dt, speed);
             else if (_bossStage == 15)
@@ -1562,7 +1566,7 @@ namespace OctopusSurvivors
             else
                 ChaseBoss(boss, dt, speed);
 
-            boss.Pos = GameConfig.ClampToMap(boss.Pos, GameConfig.EnemyRadius);
+            if (_bossStage != 5) boss.Pos = GameConfig.ClampToMap(boss.Pos, GameConfig.EnemyRadius);
             boss.ContactCooldown -= dt;
             BossHpRatio.Value = Mathf.Clamp01(boss.Hp / Mathf.Max(1f, boss.MaxHp));
         }

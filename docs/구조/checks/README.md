@@ -16,6 +16,7 @@ Unity 에디터 검사, 협동 검사, 빌드·배포 설정
 - `Source/문어_유한맵/Assets/Editor/FireOrbChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/GiantMonsterSetup.cs`
 - `Source/문어_유한맵/Assets/Editor/GrassThornChecks.cs`
+- `Source/문어_유한맵/Assets/Editor/OctopusBossChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/SodaChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/SystemDataChecks.cs`
 - `Source/문어_유한맵/Assets/Editor/TreeSkillChecks.cs`

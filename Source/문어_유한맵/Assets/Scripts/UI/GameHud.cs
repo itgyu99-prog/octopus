@@ -25,6 +25,8 @@ namespace OctopusSurvivors
         Text _stage;
         Image _bossFill;
         GameObject _bossRoot;
+        Text _bossLabel;
+        Text _octopusCounts;
         Image _hpFill;
         Image _slot0Icon;
         Image _slot1Icon;
@@ -112,6 +114,9 @@ namespace OctopusSurvivors
             brt.sizeDelta = new Vector2(640f, 60f);
             UiUtil.Bar(_bossRoot.transform, new Vector2(0f, -26f), new Vector2(640, 22), new Color(0.2f, 0.05f, 0.12f, 0.85f), new Color(0.85f, 0.15f, 0.55f), out _bossFill);
             var bossLabel = UiUtil.Label(_bossRoot.transform, new Vector2(0f, 0f), new Vector2(640, 26), 20, new Color(1f, 0.7f, 0.85f), TextAnchor.MiddleCenter);
+            _bossLabel = bossLabel;
+            _octopusCounts = UiUtil.Label(_bossRoot.transform, new Vector2(0f, -51f), new Vector2(640, 24), 16,
+                new Color(1f, .83f, .87f), TextAnchor.MiddleCenter);
             bossLabel.text = "보스";
             _bossRoot.SetActive(false);
 
@@ -390,7 +395,17 @@ namespace OctopusSurvivors
                 if (_bossRoot.activeSelf != bossOn)
                     _bossRoot.SetActive(bossOn);
                 if (bossOn)
+                {
                     _bossFill.fillAmount = session.BossHpRatio.Value;
+                    if (session.OctopusBossActive)
+                    {
+                        var octopus = session.OctopusBoss.Value;
+                        _bossLabel.text = octopus.Pattern == 2 ? $"문어 보스 · 무작위 난타  {octopus.Contacts} / 30" :
+                            $"문어 보스 · {OctopusBossPattern.HalfName(octopus.Half)}쪽 반구역 난타";
+                        _octopusCounts.text = octopus.Pattern == 2 ? OctopusBossPattern.ContactLabel(octopus.Contacts) : "";
+                    }
+                    else { _bossLabel.text = "보스"; _octopusCounts.text = ""; }
+                }
             }
 
             UpdateRadar(p, session);

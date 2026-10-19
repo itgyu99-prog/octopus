@@ -40,6 +40,17 @@ namespace OctopusSurvivors
                 _camera.rect = new Rect(0, (1-h)*.5f, 1, h);
             }
             _camera.aspect = FiniteBeach.Aspect;
+            var session = GameSession.Instance;
+            bool octopusBattle = session != null && session.OctopusBossActive;
+            float zoom = octopusBattle ? OctopusBossPattern.OverviewSize : GameConfig.CameraSize;
+            _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, zoom, 1f - Mathf.Exp(-5f * Time.deltaTime));
+            if (octopusBattle)
+            {
+                var center = OctopusBossPattern.OverviewCenter;
+                var overview = new Vector3(center.x, center.y, transform.position.z);
+                transform.position = Vector3.Lerp(transform.position, overview, 1f - Mathf.Exp(-5f * Time.deltaTime));
+                return;
+            }
             if (Target == null)
                 return;
 
