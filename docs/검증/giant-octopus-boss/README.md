@@ -9,7 +9,7 @@
 
 ### 사용자 9자세 스케치의 도트 시안
 
-역동적 내려치기: [tentacle-pixel-slam.gif](tentacle-pixel-slam.gif). 768×480, 25fps, 60프레임, 2.4초 반복. 0.8초 주기로 3번 연속 내려친다. 정지 컷 유지 없이 웅크림→치켜들기→0.12초 가속 타격→반동→회수를 연결했다. 기존 분홍 팔레트·빨판·모래 출입구를 참고해 매 프레임 곡선 윤곽과 피부 위치별 빨판을 새로 그리는 절차적 도트 시안이며, 생성된 9자세 PNG를 변형한 것은 아니다. 논리 해상도 256×160을 최근접 3배 확대했다. 잔상·속도선·접촉 섬광·균열·충격파·탄도 흙덩이·짧은 화면 흔들림 추가. 저장 GIF의 60프레임·40ms 간격·2.4초 길이, 고정 뿌리와 촉수 경계, 접촉 전후 12프레임을 확인했다. Unity 미적용. 재생성: `python tools/render_octopus_boss.py --pixel-slam`.
+역동적 내려치기: [tentacle-pixel-slam.gif](tentacle-pixel-slam.gif). 사용자 재첨부 원본 ssets/tentacle-pixel-user-reference.png의 1번 다리와 모래 테두리를 직접 사용한다. 피부와 빨판을 새로 그리지 않고 원본 픽셀을 곡선에 최근접 매핑해 웅크림→치켜들기→빠른 내려찍기→반동을 연결했다. 기존 별도 절차적 촉수 버전은 이 원본 기반 버전으로 교체했다. 640×480, 25fps, 60프레임, 2.4초, 정지 유지 없이 3연타 반복. 속도선·타격 섬광·흙 튐·충격파·짧은 흔들림 포함. 저장 GIF 프레임 수·40ms 간격·총 길이와 준비/접촉/회수 컷을 확인했다. Unity 미적용. 재생성: python tools/render_octopus_boss.py --pixel-slam (Pillow와 NumPy 필요).
 
 움짤: [tentacle-pixel-nine-poses.gif](tentacle-pixel-nine-poses.gif). 생성 시트에서 번호를 제외한 각 자세를 잘라 1~9 순서로 650ms씩 표시한다. 560×560, 9프레임, 총 5.85초, 무한 반복. 솟은 자세는 바닥, 아래 방향 자세는 위쪽 출입구를 기준으로 배치했다. 연결 작화를 추가한 스킬 애니메이션이 아닌 정지 자세 순차 미리보기다. 저장 GIF를 다시 열어 프레임 수·총 길이를 확인하고 9프레임의 잘림을 육안 검토했다. 재생성: `python tools/render_octopus_boss.py --pixel-poses`.
 
