@@ -459,24 +459,47 @@ def pixel_poses_gif():
 
 
 def asset_pixel_slam_gif():
-    """Fast cel playback: crop and translate the supplied sprites, no deformation."""
+    """Fast source-cel playback, with the requested 1.5x vertical body length."""
     source=Image.open(OUT/'assets/tentacle-pixel-user-reference.png').convert('RGBA')
     assert source.size==(1328,1184)
     boxes=[(185,65,452,430),(534,85,801,430),(875,65,1142,430),
            (185,500,452,765),(534,533,801,765),(875,515,1142,765),
            (185,829,452,1145),(534,829,801,1145),(875,829,1142,1080)]
     sprites=[source.crop(box) for box in boxes]
+    long_sprites=[]
+    for i,sprite in enumerate(sprites):
+        # Keep the sand socket's original proportions; lengthen only the body.
+        socket_height=45 if i<6 else 55
+        if i<6:
+            body=sprite.crop((0,0,sprite.width,sprite.height-socket_height))
+            socket=sprite.crop((0,sprite.height-socket_height,sprite.width,sprite.height))
+        else:
+            socket=sprite.crop((0,0,sprite.width,socket_height))
+            body=sprite.crop((0,socket_height,sprite.width,sprite.height))
+        body=body.resize((body.width,round(body.height*1.5)),Image.Resampling.NEAREST)
+        tall=Image.new('RGBA',(sprite.width,body.height+socket.height))
+        if i<6:
+            tall.alpha_composite(body);tall.alpha_composite(socket,(0,body.height))
+        else:
+            tall.alpha_composite(socket);tall.alpha_composite(body,(0,socket.height))
+        long_sprites.append(tall)
+    sprites=long_sprites
+    sheet=Image.new('RGBA',(960,1800))
+    for i,sprite in enumerate(sprites):
+        x=(i%3)*320+(320-sprite.width)//2;y=(i//3)*600+580-sprite.height
+        sheet.alpha_composite(sprite,(x,y))
+        ImageDraw.Draw(sheet).text(((i%3)*320+150,(i//3)*600+10),str(i+1),font=FONT,fill=INK)
+    sheet.save(OUT/'assets/tentacle-pixel-tall-sheet.png')
     # Preparation, extension, strike and recoil. Every source pose is used.
     order=[4,3,2,1,6,9,7,8,9,6,5]
     frames=[]
     for number in order:
         sprite=sprites[number-1]
-        frame=Image.new('RGBA',(560,560),'#ecd0a7')
-        # Native source dimensions; cropping and integer translation only.
-        frame.alpha_composite(sprite,((560-sprite.width)//2,465-sprite.height))
+        frame=Image.new('RGBA',(560,720),'#ecd0a7')
+        frame.alpha_composite(sprite,((560-sprite.width)//2,625-sprite.height))
         frames.append(frame.convert('RGB'))
-    sample=Image.new('RGB',(560,560*len(frames)))
-    for i,frame in enumerate(frames):sample.paste(frame,(0,i*560))
+    sample=Image.new('RGB',(560,720*len(frames)))
+    for i,frame in enumerate(frames):sample.paste(frame,(0,i*720))
     palette=sample.quantize(colors=256)
     quantized=[f.quantize(palette=palette,dither=Image.Dither.NONE) for f in frames]
     path=OUT/'tentacle-pixel-slam.gif'
@@ -487,7 +510,8 @@ def asset_pixel_slam_gif():
         times=[]
         for j in range(gif.n_frames):gif.seek(j);times.append(gif.info['duration'])
         assert times==[50]*len(order)
-    print(f'Unmodified source assets: {order}; 11 cels, 50ms each, 550ms loop; no scaling, warping or rotation')
+    assert max(s.height for s in sprites)<625
+    print(f'Tall source assets: {order}; body height 1.5x, original width and sand; 11 cels, 50ms each, 550ms loop')
 
 
 def main():

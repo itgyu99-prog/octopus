@@ -9,7 +9,7 @@
 
 ### 사용자 9자세 스케치의 도트 시안
 
-원본 에셋 빠른 재생: [tentacle-pixel-slam.gif](tentacle-pixel-slam.gif). assets/tentacle-pixel-user-reference.png의 9자세를 원래 크기로 잘라 위치만 배치한다. 순서 4→3→2→1→6→9→7→8→9→6→5, 각 50ms, 11컷, 총 0.55초 무한 반복. 변형·확대·회전·새 촉수 작화·추가 이펙트 없이 원본 자세만 전환한다. 이전 픽셀 곡선 변형 버전을 교체했다. 560×560, 재디코딩해 11프레임과 전 컷 50ms, 잘림을 확인했다. Unity 미적용. 재생성: python tools/render_octopus_boss.py --pixel-slam (Pillow 필요).
+세로로 긴 에셋 재생: [tentacle-pixel-slam.gif](tentacle-pixel-slam.gif). 사용자 요청으로 원본 9자세의 다리 몸체 높이만 1.5배로 늘리고 폭과 모래 테두리 비율은 유지했다. 최근접 보간으로 도트 경계를 보존한다. 긴 투명 에셋 시트: assets/tentacle-pixel-tall-sheet.png (960×1800, 3×3). 원본 PNG는 유지했다. 재생 순서 4→3→2→1→6→9→7→8→9→6→5, 각 50ms, 11컷, 0.55초 반복은 동일하다. GIF 560×720, 세로 길이와 프레임 수·시간, 잘림을 확인했다. 재생성: python tools/render_octopus_boss.py --pixel-slam.
 
 움짤: [tentacle-pixel-nine-poses.gif](tentacle-pixel-nine-poses.gif). 생성 시트에서 번호를 제외한 각 자세를 잘라 1~9 순서로 650ms씩 표시한다. 560×560, 9프레임, 총 5.85초, 무한 반복. 솟은 자세는 바닥, 아래 방향 자세는 위쪽 출입구를 기준으로 배치했다. 연결 작화를 추가한 스킬 애니메이션이 아닌 정지 자세 순차 미리보기다. 저장 GIF를 다시 열어 프레임 수·총 길이를 확인하고 9프레임의 잘림을 육안 검토했다. 재생성: `python tools/render_octopus_boss.py --pixel-poses`.
 
