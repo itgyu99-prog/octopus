@@ -38,7 +38,9 @@
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-2-consecutive.jpg`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-3-consecutive.jpg`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-4-consecutive.jpg`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-barrage-directions.jpg`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-detail.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-ground-detail.jpg`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-report.json`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/README.md`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/video-reference.jpg`

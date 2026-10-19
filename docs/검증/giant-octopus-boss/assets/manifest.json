@@ -420,6 +420,9 @@
     "cycle_seconds": 6.6,
     "barrage_seconds": 3,
     "arm_count": 6,
+    "barrage_axis": "vertical down",
+    "per_arm_cycle_seconds": 0.4,
+    "roots_fixed_during_barrage": true,
     "root_changes": "only while fully occluded below ground"
   }
 }

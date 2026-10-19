@@ -68,6 +68,17 @@ def strike(root,side,target,age,duration=1.16):
         (.84,pose(root,side,'rebound',target)),(1,pose(root,side,'idle'))]
     return interpolate(ks,u)
 
+def vertical_slam(root,side,target,age,duration=.48):
+    """A fixed socket winds up, lifts, and drives a broad tip straight down."""
+    x,y=root; tx,ty=target; s=side; u=max(0,min(1,age/duration))
+    idle=pose(root,side,'idle')
+    coil=[(x,y+14),(x-22*s,y-24),(x+8*s,y-92),(x+24*s,y-76)]
+    raised=[(x,y+14),(x+10*s,y-70),(tx-8*s,ty-148),(tx,ty-118)]
+    falling=[(x,y+14),(x+8*s,y-28),(tx-5*s,ty-40),(tx,ty)]
+    rebound=[(x,y+14),(x+8*s,y-36),(tx-15*s,ty-68),(tx-6*s,ty-46)]
+    keys=[(0,idle),(.18,coil),(.37,raised),(.56,falling),(.67,falling),(.80,rebound),(1,idle)]
+    return interpolate(keys,u)
+
 def arm(im,p,visibility=1,flat=0,ground_y=None):
     """Draw a new outline each frame; never stretch a flattened sprite."""
     pts=curve(p); left=[]; right=[]; normals=[]
@@ -95,8 +106,8 @@ def arm(im,p,visibility=1,flat=0,ground_y=None):
             x,y=pts[j]; nx,ny=normals[j]; x+=nx*7; y+=ny*7
             ell(d,(x-5,y-3.8,x+5,y+3.8),LIGHT,INK,1); last=distance
     if flat:
-        x,y=p[-1]; ell(d,(x-30,y-14,x+30,y+15),PINK,INK,3)
-        for dx in (-19,-6,7,20): ell(d,(x+dx-4,y-1,x+dx+4,y+5),LIGHT,INK)
+        x,y=p[-1]; ell(d,(x-39,y-14,x+39,y+15),PINK,INK,3)
+        for dx in (-29,-14,1,16,29): ell(d,(x+dx-4,y-1,x+dx+4,y+5),LIGHT,INK)
     layer=layer.resize((bw,bh),Image.Resampling.LANCZOS)
     if visibility<1:
         # Occlusion plane, not alpha fading: entire curve descends below ground.
@@ -109,14 +120,26 @@ def arm(im,p,visibility=1,flat=0,ground_y=None):
 def hole(im,r,front=False,activity=0):
     x,y=r; d=ImageDraw.Draw(im)
     if not front:
-        ell(d,(x-34,y-9,x+34,y+14),'#79503f', '#a77a51',4)
-        ell(d,(x-26,y-5,x+26,y+10),'#362d31')
+        # Recess, sand bevel, then the dark opening. The arm is drawn over this
+        # layer and the near lip is restored afterward to establish depth.
+        ell(d,(x-47,y-15,x+47,y+19),'#76523e')
+        ell(d,(x-43,y-15,x+43,y+17),'#bd925d','#79533d',2)
+        ell(d,(x-35,y-11,x+35,y+13),'#30272e','#63423b',3)
+        ell(d,(x-27,y-8,x+27,y+9),'#3d3035')
+        d.arc((x-40,y-14,x+40,y+16),190,350,fill='#e1b878',width=3)
     else:
-        d.pieslice((x-37,y-13,x+37,y+20),0,180,fill='#b68a59',outline='#74513d',width=2)
-        d.arc((x-37,y-13,x+37,y+20),0,180,fill='#edc68c',width=5)
-        for dx,dy,rr in [(-29,7,5),(22,12,4),(34,3,3),(-18,13,3)]:
+        d.pieslice((x-46,y-16,x+46,y+25),0,180,fill='#b68a59',outline='#74513d',width=2)
+        d.arc((x-46,y-16,x+46,y+25),0,180,fill='#edc68c',width=5)
+        for dx,dy,rr in [(-37,8,5),(30,13,5),(41,3,3),(-23,16,4),(-3,19,3)]:
             ell(d,(x+dx-rr,y+dy-rr,x+dx+rr,y+dy+rr),'#caa575','#846448',1)
     if activity>0:
+        # Small foreground clods rise from the lip, keeping the socket embedded
+        # in the field instead of reading as a flat overlay.
+        for j in range(4):
+            a=j*math.tau/4+0.4; rr=31+activity*12
+            xx=x+math.cos(a)*rr; yy=y+math.sin(a)*rr*.22-activity*13
+            sz=3+(j%2)*2
+            ell(d,(xx-sz,yy-sz*.6,xx+sz,yy+sz*.6),'#aa8054','#76543e',1)
         for j in range(7):
             a=j*2.399; rr=12+activity*26+j%3*4
             xx=x+math.cos(a)*rr; yy=y+math.sin(a)*rr*.35-activity*14
@@ -124,7 +147,7 @@ def hole(im,r,front=False,activity=0):
 
 def impact(im,pos,age,wide=False):
     if not 0<=age<.40:return
-    x,y=pos; u=age/.4; d=ImageDraw.Draw(im); rx=(64 if wide else 24)+u*43
+    x,y=pos; u=age/.4; d=ImageDraw.Draw(im); rx=(94 if wide=='barrage' else 64 if wide else 24)+u*(58 if wide=='barrage' else 43)
     d.ellipse((x-rx,y-rx*.28,x+rx,y+rx*.28),outline='#fff0c2',width=max(1,round(5*(1-u))))
     for j in range(9):
         a=j*2.399; r=(15+u*55)*(1+j%3*.15); xx=x+math.cos(a)*r; yy=y+math.sin(a)*r*.45-math.sin(u*math.pi)*16
@@ -242,7 +265,12 @@ class Renderer:
             d.text((810,15),labels[cycle],font=FONT,fill='#ffccdc')
             if .25<=u<4.9:warning(im,box,min(1,(u-.25)*2))
             b0,b1,b2,b3=box
-            emerged=[(lerp(b0+40,b2-40,(i%3)/2),lerp(b1+50,b3-13,i//3)) for i in range(6)]
+            if b2-b0 > b3-b1:
+                # A broad top/bottom zone gets six distinct vertical lanes.
+                emerged=[(lerp(b0+24,b2-24,i/5),b1+17) for i in range(6)]
+            else:
+                # A narrow left/right zone gets two columns by three rows.
+                emerged=[(lerp(b0+38,b2-38,i%2),lerp(b1+30,b3-65,i//2/2)) for i in range(6)]
             for i,r in enumerate(ROOTS):
                 s=1 if i<3 else -1
                 if u<.8:
@@ -253,16 +281,21 @@ class Renderer:
                     roots[i]=emerged[i];dep=180*(1-smooth((u-1.1)/.6));ps[i]=ground_pose(roots[i],s,dep);visibility[i]=.5;dust[i]=math.sin(math.pi*(u-1.1)/.6)
                 elif u<4.7:
                     roots[i]=emerged[i]
-                    beat=.48; offset=i*.072; age=(u-1.7+offset)%beat; n=int((u-1.7+offset)/beat)
-                    # Three columns and two staggered rows physically cover the half.
-                    tx=lerp(b0+32,b2-32,1-(i%3)/2)+math.sin(n*2.4+i)*12
-                    if i%3==1:tx=b0+65 if n%2 else b2-65
-                    ty=lerp(b1+30,b3-20,i//3)+math.cos(n*2+i)*12
-                    target=(tx,ty);ps[i]=strike(roots[i],s,target,age,beat)
+                    beat=.40; offset=i*.055; phase=u-1.7+offset; age=phase%beat; n=int(phase/beat)
+                    # Every root stays planted; each arm winds up and drops into
+                    # a neighboring vertical lane so the middle is struck too.
+                    rx,ry=roots[i]
+                    if b2-b0 > b3-b1:
+                        tx=max(b0+24,min(b2-24,rx+math.sin(n*1.8+i)*9))
+                        ty=b3-20
+                    else:
+                        tx=max(b0+28,min(b2-28,rx+math.sin(n*1.8+i)*8))
+                        ty=min(b3-18,ry+72+math.cos(n+i)*8)
+                    target=(tx,ty);ps[i]=vertical_slam(roots[i],s,target,age,beat)
                     if u<1.9:ps[i]=[mix(a,b,smooth((u-1.7)/.2)) for a,b in zip(pose(roots[i],s,'idle'),ps[i])]
-                    if .52<age/beat<.77:trails.append(strike(roots[i],s,target,max(0,age-.035),beat))
-                    flats[i]=.66<=age/beat<=.77
-                    effects.append((target,age-.68*beat,True))
+                    if .52<age/beat<.77:trails.append(vertical_slam(roots[i],s,target,max(0,age-.035),beat))
+                    flats[i]=.56<=age/beat<=.70
+                    effects.append((target,age-.60*beat,'barrage'))
                 elif u<5.3:
                     roots[i]=emerged[i];ps[i]=ground_pose(roots[i],s,180*smooth((u-4.7)/.6));visibility[i]=.5;dust[i]=math.sin(math.pi*(u-4.7)/.6)
                 elif u<5.6:
@@ -318,13 +351,18 @@ def sheets():
                 throw=[r,(100,140),(170,70),(210,100)]
                 p=interpolate([(0,pose(r,s,'idle')),(.24,low),(.46,low),(.82,load),(1.08,load),(1.24,throw),(1.50,pose(r,s,'approach',(280,220))),(1.92,pose(r,s,'idle'))],t)
             else:p=func(t)
-            hole(cell,(70,235) if name!='ground' else (170,235));arm(cell,p,.5 if name=='ground' else 1, name=='slam' and .68<=t/1.16<=.74,235)
+            activity=0
+            if name=='ground':
+                phase=(t if t<1.2 else t-1.2)/1.2
+                activity=math.sin(math.pi*phase)
+            hole(cell,(70,235) if name!='ground' else (170,235),activity=activity)
+            arm(cell,p,.5 if name=='ground' else 1, name=='slam' and .68<=t/1.16<=.74,235)
             if name=='grip-throw':
                 if t<.24:rock(cell,(145,220))
                 elif t<1.24:grip(cell,p[-1],1)
                 elif t<1.92:
                     u=(t-1.24)/.88;pt=mix(throw[-1],(300,220),u);rock(cell,(pt[0],pt[1]-math.sin(math.pi*u)*60),23,u*4)
-            hole(cell,(170,235) if name=='ground' else (70,235),True)
+            hole(cell,(170,235) if name=='ground' else (70,235),True,activity if name=='ground' else 0)
             crop=cell.crop((0,0,384,288));sheet.alpha_composite(crop,((j%8)*384,(j//8)*288))
             if j==0:crop.save(asset/f'{name}-first.png')
             if name=='grip-throw' and j==20:crop.save(asset/'rock-held.png')
@@ -346,7 +384,7 @@ def sheets():
     layer=Image.new('RGBA',(96,96));rock(layer,(48,48));layer.save(asset/'rock.png')
     manifest['mirroring']={'right_arm':'flip horizontally inside a 384x288 cell','right_root_pivot_px':[314,235]}
     manifest['durations']={'01-pattern.gif':5.6,'02-pattern.gif':6.8,'03-pattern.gif':9.2,'04-pattern.gif':26.4}
-    manifest['half_arena']={'order':['top','bottom','left','right'],'cycle_seconds':6.6,'barrage_seconds':3,'arm_count':6,'root_changes':'only while fully occluded below ground'}
+    manifest['half_arena']={'order':['top','bottom','left','right'],'cycle_seconds':6.6,'barrage_seconds':3,'arm_count':6,'barrage_axis':'vertical down','per_arm_cycle_seconds':0.4,'roots_fixed_during_barrage':True,'root_changes':'only while fully occluded below ground'}
     (asset/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
 
 def main():
