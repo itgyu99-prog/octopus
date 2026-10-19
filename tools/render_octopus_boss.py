@@ -1,6 +1,6 @@
 """Offline boss animation authoring. Does not import or launch Unity.
 
-Requires Pillow, plus NumPy for --pixel-slam. Key poses are resampled as volume-preserving curved ribbons;
+Requires Pillow. Key poses are resampled as volume-preserving curved ribbons;
 the generated body art is separate from these procedural animation drawings.
 """
 from pathlib import Path
@@ -458,102 +458,42 @@ def pixel_poses_gif():
     print(f'{path}: 9 frames, 560x560, {duration} ms, infinite loop')
 
 
-def source_pixel_slam_gif():
-    """Deform the user's actual first sprite; never redraw its skin or suckers."""
-    import numpy as np
+def asset_pixel_slam_gif():
+    """Fast cel playback: crop and translate the supplied sprites, no deformation."""
     source=Image.open(OUT/'assets/tentacle-pixel-user-reference.png').convert('RGBA')
-    texture=np.asarray(source.crop((252,73,387,392)))
-    socket=source.crop((204,370,446,428))
-    root=(145,365);duration=.8
-    idle=[root,(140,285),(141,180),(145,110)]
-    wind=[root,(94,309),(100,210),(130,187)]
-    raised=[root,(95,235),(220,105),(291,103)]
-    def pose_at(t):
-        n=math.floor(t/duration);u=(t/duration)%1;tx=[466,490,476][n%3]
-        hit=[root,(241,257),(tx-65,354),(tx,365)]
-        recoil=[root,(220,230),(tx-77,245),(tx-22,290)]
-        return interpolate([(0,idle),(.22,wind),(.39,raised),(.54,hit),(.66,recoil),(1,idle)],u)
-    def textured(p):
-        pts=np.asarray(curve(p,85));lengths=np.linalg.norm(np.diff(pts,axis=0),axis=1)
-        lengths=np.maximum(lengths,.001);arc=np.concatenate(([0],np.cumsum(lengths)))
-        canvas=np.zeros((480,640,4),dtype=np.uint8)
-        closest=np.full((480,640),1e8)
-        # Inverse-map every strip into the original PNG using nearest pixels.
-        for j in range(84):
-            a,b=pts[j],pts[j+1];dx,dy=(b-a)/lengths[j];nx,ny=-dy,dx
-            x0=max(0,int(min(a[0],b[0])-62));x1=min(640,int(max(a[0],b[0])+63))
-            y0=max(0,int(min(a[1],b[1])-62));y1=min(480,int(max(a[1],b[1])+63))
-            yy,xx=np.mgrid[y0:y1,x0:x1];vx=xx-a[0];vy=yy-a[1]
-            along=vx*dx+vy*dy;across=vx*nx+vy*ny
-            sy=np.rint(318-(arc[j]+along)/arc[-1]*318).astype(int)
-            sx=np.rint(67+across/.76).astype(int)
-            valid=(along>=-.6)&(along<=lengths[j]+.6)&(sx>=0)&(sx<135)&(sy>=0)&(sy<319)
-            sy=np.clip(sy,0,318);sx=np.clip(sx,0,134)
-            sample=texture[sy,sx];distance=np.abs(across)
-            take=valid&(sample[:,:,3]>0)&(distance<closest[y0:y1,x0:x1])
-            canvas[y0:y1,x0:x1][take]=sample[take]
-            closest[y0:y1,x0:x1][take]=distance[take]
-        return Image.fromarray(canvas)
+    assert source.size==(1328,1184)
+    boxes=[(185,65,452,430),(534,85,801,430),(875,65,1142,430),
+           (185,500,452,765),(534,533,801,765),(875,515,1142,765),
+           (185,829,452,1145),(534,829,801,1145),(875,829,1142,1080)]
+    sprites=[source.crop(box) for box in boxes]
+    # Preparation, extension, strike and recoil. Every source pose is used.
+    order=[4,3,2,1,6,9,7,8,9,6,5]
     frames=[]
-    for k in range(60):
-        t=k*.04;u=(t/duration)%1
-        im=Image.new('RGBA',(640,480),'#ecd0a7');d=ImageDraw.Draw(im)
-        d.rectangle((0,371,639,479),fill='#dbb17f')
-        d.line((0,373,639,373),fill='#c29769',width=3)
-        for j in range(40):
-            x=(j*83)%640;y=385+(j*37)%90;d.rectangle((x,y,x+4,y+2),fill='#c69a69')
-        if .4<u<.56:
-            tip=pose_at(t)[-1]
-            for j in range(3):
-                x=round(tip[0]+37+j*15);y=round(tip[1]-30-j*17)
-                if y>65:d.line((x-22,y-40,x,y),fill='#fff2d7',width=4)
-        limb=textured(pose_at(t))
-        limb.paste((0,0,0,0),(0,373,640,480))
-        im.alpha_composite(limb)
-        # Restore the actual sand rim from the supplied sheet over the root.
-        rim=socket.resize((184,44),Image.Resampling.NEAREST)
-        im.alpha_composite(rim,(root[0]-92,349))
-        d=ImageDraw.Draw(im);shake=(0,0)
-        for n in range(-1,3):
-            age=t-(n*duration+.54*duration);tx=[466,490,476][n%3]
-            if 0<=age<.34:
-                v=age/.34
-                d.ellipse((tx-33,368,tx+34,381),fill='#a87554')
-                for side in (-1,1):
-                    d.line([(tx+side*12,379),(tx+side*43,389),(tx+side*62,386)],fill='#8c5d46',width=3)
-                spread=22+v*72
-                d.arc((tx-spread,369-v*12,tx+spread,386+v*10),0,180,fill='#fff0c6',width=4)
-                for j in range(15):
-                    side=-1 if j%2 else 1
-                    x=tx+side*(21+(100+j%5*36)*age)
-                    y=371-(160+j%4*65)*age+500*age*age;r=3+j%3
-                    d.polygon([(x-r,y),(x,y-r),(x+r,y+r),(x-r,y+r)],fill='#ad7854',outline='#79523e')
-                if age<.07:
-                    d.polygon([(tx-40,373),(tx-22,360),(tx-30,335),(tx-5,351),
-                               (tx+9,331),(tx+19,357),(tx+43,352),(tx+29,376)],fill='#fff4d4')
-                if age<.12:
-                    s=round(4*(1-age/.12));shake=(s*(-1 if k%2 else 1),s)
-        if shake!=(0,0):
-            shifted=Image.new('RGBA',im.size,'#ecd0a7');shifted.alpha_composite(im,shake);im=shifted
-        frames.append(im.convert('RGB'))
-    sample=Image.new('RGB',(640,480*6))
-    for i,j in enumerate((0,4,8,11,13,17)):sample.paste(frames[j],(0,i*480))
-    palette=sample.quantize(colors=240)
-    frames=[f.quantize(palette=palette,dither=Image.Dither.NONE) for f in frames]
+    for number in order:
+        sprite=sprites[number-1]
+        frame=Image.new('RGBA',(560,560),'#ecd0a7')
+        # Native source dimensions; cropping and integer translation only.
+        frame.alpha_composite(sprite,((560-sprite.width)//2,465-sprite.height))
+        frames.append(frame.convert('RGB'))
+    sample=Image.new('RGB',(560,560*len(frames)))
+    for i,frame in enumerate(frames):sample.paste(frame,(0,i*560))
+    palette=sample.quantize(colors=256)
+    quantized=[f.quantize(palette=palette,dither=Image.Dither.NONE) for f in frames]
     path=OUT/'tentacle-pixel-slam.gif'
-    frames[0].save(path,save_all=True,append_images=frames[1:],duration=40,loop=0,disposal=2,optimize=False)
+    quantized[0].save(path,save_all=True,append_images=quantized[1:],
+                      duration=50,loop=0,disposal=2,optimize=False)
     with Image.open(path) as gif:
-        assert gif.n_frames==60
-        total=0
-        for j in range(60):gif.seek(j);total+=gif.info['duration']
-        assert total==2400
-    print('Source PNG textured slam: 640x480, 60 frames, 25fps, 2.4 seconds')
+        assert gif.n_frames==len(order)
+        times=[]
+        for j in range(gif.n_frames):gif.seek(j);times.append(gif.info['duration'])
+        assert times==[50]*len(order)
+    print(f'Unmodified source assets: {order}; 11 cels, 50ms each, 550ms loop; no scaling, warping or rotation')
 
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--pattern',type=int);parser.add_argument('--sheets',action='store_true');parser.add_argument('--verify',action='store_true');parser.add_argument('--pixel-poses',action='store_true');parser.add_argument('--pixel-slam',action='store_true');args=parser.parse_args()
     OUT.mkdir(exist_ok=True,parents=True)
-    if args.pixel_slam:source_pixel_slam_gif();return
+    if args.pixel_slam:asset_pixel_slam_gif();return
     if args.pixel_poses:pixel_poses_gif();return
     if args.verify:
         report={'gif':{},'alpha':{},'counts_per_arm':[sum(e['arm']==i for e in EVENTS30) for i in range(6)],'rock_releases':len(EVENTS8)}
