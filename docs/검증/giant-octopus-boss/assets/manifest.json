@@ -1,0 +1,428 @@
+{
+  "fps": 25,
+  "cell_size": [
+    384,
+    288
+  ],
+  "order": "row-major, left to right, top to bottom",
+  "root_pivot_px": [
+    70,
+    235
+  ],
+  "body_origin": "built-in image_gen original; animation arms are procedural drawings, not imagegen frames",
+  "clips": {
+    "slam": {
+      "frames": 30,
+      "columns": 8,
+      "fps": 25,
+      "cell_size": [
+        384,
+        288
+      ],
+      "root_pivot_px": [
+        70,
+        235
+      ]
+    },
+    "ground": {
+      "frames": 61,
+      "columns": 8,
+      "fps": 25,
+      "cell_size": [
+        384,
+        288
+      ],
+      "root_pivot_px": [
+        170,
+        235
+      ]
+    },
+    "grip-throw": {
+      "frames": 49,
+      "columns": 8,
+      "fps": 25,
+      "cell_size": [
+        384,
+        288
+      ],
+      "root_pivot_px": [
+        70,
+        235
+      ]
+    }
+  },
+  "events_30": [
+    {
+      "arm": 0,
+      "start": 0.5,
+      "contact": 1.1256,
+      "target": [
+        397,
+        439
+      ]
+    },
+    {
+      "arm": 1,
+      "start": 0.66,
+      "contact": 1.2856,
+      "target": [
+        525,
+        283
+      ]
+    },
+    {
+      "arm": 2,
+      "start": 0.82,
+      "contact": 1.4456,
+      "target": [
+        360,
+        301
+      ]
+    },
+    {
+      "arm": 3,
+      "start": 0.98,
+      "contact": 1.6056,
+      "target": [
+        660,
+        334
+      ]
+    },
+    {
+      "arm": 4,
+      "start": 1.14,
+      "contact": 1.7656,
+      "target": [
+        487,
+        406
+      ]
+    },
+    {
+      "arm": 5,
+      "start": 1.3,
+      "contact": 1.9256,
+      "target": [
+        566,
+        476
+      ]
+    },
+    {
+      "arm": 0,
+      "start": 1.46,
+      "contact": 2.0856,
+      "target": [
+        290,
+        346
+      ]
+    },
+    {
+      "arm": 1,
+      "start": 1.62,
+      "contact": 2.2456,
+      "target": [
+        564,
+        275
+      ]
+    },
+    {
+      "arm": 2,
+      "start": 1.78,
+      "contact": 2.4056,
+      "target": [
+        535,
+        401
+      ]
+    },
+    {
+      "arm": 3,
+      "start": 1.94,
+      "contact": 2.5656,
+      "target": [
+        560,
+        313
+      ]
+    },
+    {
+      "arm": 4,
+      "start": 2.1,
+      "contact": 2.7256,
+      "target": [
+        287,
+        316
+      ]
+    },
+    {
+      "arm": 5,
+      "start": 2.26,
+      "contact": 2.8856,
+      "target": [
+        609,
+        288
+      ]
+    },
+    {
+      "arm": 0,
+      "start": 2.42,
+      "contact": 3.0456,
+      "target": [
+        600,
+        447
+      ]
+    },
+    {
+      "arm": 1,
+      "start": 2.58,
+      "contact": 3.2056,
+      "target": [
+        343,
+        380
+      ]
+    },
+    {
+      "arm": 2,
+      "start": 2.74,
+      "contact": 3.3656,
+      "target": [
+        512,
+        356
+      ]
+    },
+    {
+      "arm": 3,
+      "start": 2.9,
+      "contact": 3.5256,
+      "target": [
+        296,
+        346
+      ]
+    },
+    {
+      "arm": 4,
+      "start": 3.06,
+      "contact": 3.6856,
+      "target": [
+        621,
+        411
+      ]
+    },
+    {
+      "arm": 5,
+      "start": 3.22,
+      "contact": 3.8456,
+      "target": [
+        671,
+        488
+      ]
+    },
+    {
+      "arm": 0,
+      "start": 3.38,
+      "contact": 4.0056,
+      "target": [
+        408,
+        416
+      ]
+    },
+    {
+      "arm": 1,
+      "start": 3.54,
+      "contact": 4.1656,
+      "target": [
+        355,
+        423
+      ]
+    },
+    {
+      "arm": 2,
+      "start": 3.7,
+      "contact": 4.3256,
+      "target": [
+        373,
+        353
+      ]
+    },
+    {
+      "arm": 3,
+      "start": 3.86,
+      "contact": 4.4856,
+      "target": [
+        492,
+        386
+      ]
+    },
+    {
+      "arm": 4,
+      "start": 4.02,
+      "contact": 4.6456,
+      "target": [
+        548,
+        465
+      ]
+    },
+    {
+      "arm": 5,
+      "start": 4.18,
+      "contact": 4.8056,
+      "target": [
+        568,
+        353
+      ]
+    },
+    {
+      "arm": 0,
+      "start": 4.34,
+      "contact": 4.9656,
+      "target": [
+        459,
+        351
+      ]
+    },
+    {
+      "arm": 1,
+      "start": 4.5,
+      "contact": 5.1256,
+      "target": [
+        361,
+        441
+      ]
+    },
+    {
+      "arm": 2,
+      "start": 4.66,
+      "contact": 5.2856,
+      "target": [
+        540,
+        433
+      ]
+    },
+    {
+      "arm": 3,
+      "start": 4.82,
+      "contact": 5.4456,
+      "target": [
+        366,
+        316
+      ]
+    },
+    {
+      "arm": 4,
+      "start": 4.98,
+      "contact": 5.6056,
+      "target": [
+        461,
+        337
+      ]
+    },
+    {
+      "arm": 5,
+      "start": 5.14,
+      "contact": 5.7656,
+      "target": [
+        513,
+        424
+      ]
+    }
+  ],
+  "events_8": [
+    {
+      "arm": 0,
+      "start": 0.4,
+      "release": 1.6400000000000001,
+      "target": [
+        601,
+        470
+      ]
+    },
+    {
+      "arm": 1,
+      "start": 1.12,
+      "release": 2.3600000000000003,
+      "target": [
+        344,
+        364
+      ]
+    },
+    {
+      "arm": 2,
+      "start": 1.8399999999999999,
+      "release": 3.08,
+      "target": [
+        357,
+        460
+      ]
+    },
+    {
+      "arm": 3,
+      "start": 2.56,
+      "release": 3.8,
+      "target": [
+        668,
+        360
+      ]
+    },
+    {
+      "arm": 4,
+      "start": 3.28,
+      "release": 4.52,
+      "target": [
+        333,
+        476
+      ]
+    },
+    {
+      "arm": 5,
+      "start": 3.9999999999999996,
+      "release": 5.239999999999999,
+      "target": [
+        437,
+        347
+      ]
+    },
+    {
+      "arm": 0,
+      "start": 4.720000000000001,
+      "release": 5.960000000000001,
+      "target": [
+        397,
+        489
+      ]
+    },
+    {
+      "arm": 1,
+      "start": 5.44,
+      "release": 6.680000000000001,
+      "target": [
+        321,
+        361
+      ]
+    }
+  ],
+  "mirroring": {
+    "right_arm": "flip horizontally inside a 384x288 cell",
+    "right_root_pivot_px": [
+      314,
+      235
+    ]
+  },
+  "durations": {
+    "01-pattern.gif": 5.6,
+    "02-pattern.gif": 6.8,
+    "03-pattern.gif": 9.2,
+    "04-pattern.gif": 26.4
+  },
+  "half_arena": {
+    "order": [
+      "top",
+      "bottom",
+      "left",
+      "right"
+    ],
+    "cycle_seconds": 6.6,
+    "barrage_seconds": 3,
+    "arm_count": 6,
+    "barrage_axis": "vertical down",
+    "per_arm_cycle_seconds": 0.4,
+    "roots_fixed_during_barrage": true,
+    "root_changes": "only while fully occluded below ground"
+  }
+}

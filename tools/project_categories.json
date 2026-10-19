@@ -68,7 +68,16 @@
         "Assets/Resources/Monsters/*",
         "Assets/Editor/GiantMonsterSetup.cs",
         "Assets/Resources/OctopusBoss/*.bytes",
-        "Assets/Editor/OctopusBossChecks.cs"
+        "Assets/Editor/OctopusBossChecks.cs",
+        "../../docs/검증/giant-octopus-boss/*",
+        "../../docs/검증/giant-octopus-boss/assets/*.png",
+        "../../docs/검증/giant-octopus-boss/assets/*.json",
+        "../../docs/검증/giant-octopus-boss/assets/tentacle-pixel-nine-poses.*",
+        "../../docs/검증/giant-octopus-boss/tentacle-pixel-nine-poses.gif",
+        "../../docs/검증/giant-octopus-boss/tentacle-pixel-slam.gif",
+        "../../docs/검증/giant-octopus-boss/assets/tentacle-pixel-user-reference.png",
+        "../../docs/검증/giant-octopus-boss/assets/tentacle-pixel-tall-sheet.png",
+        "../../tools/render_octopus_boss.py"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
