@@ -65,7 +65,8 @@
         "Assets/Resources/Monsters/*",
         "Assets/Editor/GiantMonsterSetup.cs",
         "../../docs/검증/giant-octopus-boss/*",
-        "../../docs/검증/giant-octopus-boss/assets/*",
+        "../../docs/검증/giant-octopus-boss/assets/*.png",
+        "../../docs/검증/giant-octopus-boss/assets/*.json",
         "../../tools/render_octopus_boss.py"
       ],
       "anchors": {

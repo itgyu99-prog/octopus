@@ -5,6 +5,24 @@
 필드는 전체 배치를 한 화면에 보여주기 위해 세로로 축소했다. 본체는 상단 벽 위, 팔짱은 벽 앞에 배치했다.
 분홍색 테두리 안이 전투 구역이며 전투용 촉수는 좌우 세 개씩이다. 본체의 팔짱은 별도 장식 팔이다.
 
+## 선택한 1번 촉수의 정지 자세
+
+사용자가 선택한 길고 점진적으로 가늘어지는 S곡선 촉수를 기준으로 제작한 정지 원화다.
+내장 image_gen으로 각각 생성했고, 게임 코드 및 기존 GIF에는 아직 적용하지 않았다.
+다섯 자세는 모두 **1254×1254 RGBA PNG**, 배경 알파를 포함한다. 컷마다 구도와 점유 크기가 다른 디자인 원화이며 애니메이션 시트는 아니다.
+
+| 자세 | 파일 |
+|---|---|
+| 앞모습 / 기본 자세 | [tentacle-front.png](assets/tentacle-front.png) |
+| 내려치기 / 지면 접촉 | [tentacle-slam.png](assets/tentacle-slam.png) |
+| 잠복 / 낮게 숙여 땅으로 들어감 | [tentacle-burrow.png](assets/tentacle-burrow.png) |
+| 돌을 감아 들어 올림 | [tentacle-rock-lift.png](assets/tentacle-rock-lift.png) |
+| 돌을 놓은 직후 / 투척 | [tentacle-throw.png](assets/tentacle-throw.png) |
+
+선택한 원본은 `assets/tentacle-design-reference.png`, 공통 및 자세별 최종 프롬프트는 `assets/tentacle-poses-prompts.json`에 보존했다.
+돌 들기 이미지를 투척 이미지의 추가 참조로 사용했다. 잠복 컷은 흙턱 가림과 낮은 말림을 강조하도록 한 차례 수정했다.
+아래 GIF들은 이전 촉수 디자인의 동작 검토 자료다.
+
 ## 확인 파일
 
 | 파일 | 내용 | 길이 / 출력 |

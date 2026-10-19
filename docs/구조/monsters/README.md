@@ -30,6 +30,13 @@
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/slam-contact.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/slam-first.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/slam-sheet.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-burrow.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-design-reference.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-front.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-poses-prompts.json`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-rock-lift.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-slam.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-throw.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/boss-field.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/layout-reference.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/player-reference.png`
