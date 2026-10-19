@@ -63,7 +63,10 @@
         "Assets/Scripts/World/WorldView.cs",
         "Assets/Scripts/Core/RuntimeArt.cs",
         "Assets/Resources/Monsters/*",
-        "Assets/Editor/GiantMonsterSetup.cs"
+        "Assets/Editor/GiantMonsterSetup.cs",
+        "../../docs/검증/giant-octopus-boss/*",
+        "../../docs/검증/giant-octopus-boss/assets/*",
+        "../../tools/render_octopus_boss.py"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [

@@ -1,5 +1,7 @@
 # 최근 변경
 
+- 2026-10-19: `docs/검증/giant-octopus-boss`에 스케치 기반 독립 보스 GIF 5개, 필드 합성 PNG, 투명 에셋·연결 시트·피벗 명세 추가. `tools/render_octopus_boss.py`로 Unity 없이 재제작하며 게임 코드에는 적용하지 않았다.
+
 - 2026-10-13: 일반 적 하위 유형으로 거대 게·소라게·해파리·불가사리·성게 추가. 서버가 상태·피해·이동·사망을 판정하며 기존 25바이트 스냅샷의 적 duration 필드에 종류/상태/방향을 인코딩한다. 일반 속성 적의 duration 값은 기존대로 유지.
 - `Assets/Resources/Monsters/Giant1~5.asset`에서 배율·해금·가중치·범위·준비·회복·쿨타임·돌진·투사체·방어·반격을 설정. 기본 체력/속도는 현재 일반 적의 시간 성장 공식을 그대로 곱한다.
 - 각 asset의 `prefab`, `idleFrames`, `attackFrames`, `animator`로 외형 교체 가능. 기본 Prefab은 독립 5종 4자세 아틀라스를 사용한다. Animator는 미지정이어도 서버 상태 기반 스프라이트 교체가 동작한다.

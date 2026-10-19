@@ -12,6 +12,37 @@
 
 ## 관련 파일
 
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/01-pattern.gif`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/02-pattern.gif`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/03-pattern.gif`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/04-pattern.gif`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/05-detail.gif`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/body.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/grip-throw-first.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/grip-throw-sheet.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/ground-back.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/ground-first.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/ground-front.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/ground-sheet.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/manifest.json`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/rock-held.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/rock.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/slam-contact.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/slam-first.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/slam-sheet.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/boss-field.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/layout-reference.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/player-reference.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/PROMPT.txt`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-1-consecutive.jpg`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-2-consecutive.jpg`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-3-consecutive.jpg`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-4-consecutive.jpg`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-detail.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-report.json`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/README.md`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/video-reference.jpg`
+- `Source/문어_유한맵/../../tools/render_octopus_boss.py`
 - `Source/문어_유한맵/Assets/Editor/GiantMonsterSetup.cs`
 - `Source/문어_유한맵/Assets/Resources/Monsters/Giant1.asset`
 - `Source/문어_유한맵/Assets/Resources/Monsters/Giant1.asset.meta`
