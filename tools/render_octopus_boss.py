@@ -145,22 +145,50 @@ def hole(im,r,front=False,activity=0):
             xx=x+math.cos(a)*rr; yy=y+math.sin(a)*rr*.35-activity*14
             ell(d,(xx-5,yy-3,xx+5,yy+3),'#e9c899')
 
-def impact(im,pos,age,wide=False):
-    if not 0<=age<.40:return
-    x,y=pos; u=age/.4; d=ImageDraw.Draw(im); rx=(94 if wide=='barrage' else 64 if wide else 24)+u*(58 if wide=='barrage' else 43)
-    d.ellipse((x-rx,y-rx*.28,x+rx,y+rx*.28),outline='#fff0c2',width=max(1,round(5*(1-u))))
-    for j in range(9):
-        a=j*2.399; r=(15+u*55)*(1+j%3*.15); xx=x+math.cos(a)*r; yy=y+math.sin(a)*r*.45-math.sin(u*math.pi)*16
-        sz=(1-u)*(7+j%3)
-        ell(d,(xx-sz,yy-sz*.6,xx+sz,yy+sz*.6),'#edc990')
+def impact(im,pos,age,wide=False,under=False):
+    """Press the field at contact, then throw earth around the planted tip."""
+    if not 0<=age<.42:return
+    x,y=pos;u=age/.42;ease=smooth(u);fade=1-u
+    scale=1.0 if wide=='barrage' else .64 if wide else .42
+    pad=52;ox=round(x-pad);oy=round(y-pad)
+    layer=Image.new('RGBA',(pad*2,pad*2));d=ImageDraw.Draw(layer)
+    x-=ox;y-=oy
+    # Keep each footprint smaller than the gap between lanes, so six impacts
+    # read as separate contacts rather than one continuous stripe.
+    rx=(14+ease*28)*scale;ry=max(5,rx*.19)
+    if under:
+        # A shallow depression and short radial splits sit underneath the arm.
+        d.ellipse((x-rx,y-ry,x+rx,y+ry),fill=(83,57,47,round(24*fade)),outline=(126,85,57,round(120*fade)),width=2)
+        d.arc((x-rx*.72,y-ry*.7,x+rx*.72,y+ry*.8),8,172,fill=(229,190,132,round(110*fade)),width=2)
+        d.ellipse((x-14,y-4,x+14,y+4),fill=(67,47,43,round(34*fade)))
+        for side in (-1,1):
+            d.line((x+side*14,y,x+side*(22+fade*4),y-3),fill=(94,65,51,round(130*fade)),width=2)
+            d.line((x+side*22,y-3,x+side*(26+fade*5),y-8),fill=(112,77,56,round(115*fade)),width=1)
+        im.alpha_composite(layer,(ox,oy));return
+    # The sand plume starts beside the sucker tip so its silhouette stays clear.
+    for side in (-1,1):
+        spread=(14+ease*24)*scale
+        for j in range(3):
+            drift=spread*(.55+j*.22)
+            lift=(3+j*4+ease*12)*scale
+            xx=x+side*drift; yy=y-lift+math.sin(u*math.pi)*5
+            size=(2+j%2+fade*1.5)*scale
+            a=round((125-j*16)*fade)
+            d.ellipse((xx-size*1.25,yy-size*.65,xx+size*1.25,yy+size*.65),fill=(224,190,143,a),outline=(151,112,76,round(a*.8)),width=1)
+    for j in range(6):
+        a=math.pi+(j/5)*math.pi
+        distance=(14+ease*27)*(1+(j%2)*.12)*scale
+        xx=x+math.cos(a)*distance;yy=y+math.sin(a)*(8+ease*13)*scale
+        size=max(1,(2+fade*(2+j%2))*scale)
+        alpha=round(145*fade)
+        d.polygon([(xx-size,yy),(xx,yy-size*.7),(xx+size,yy+size*.2)],fill=(184,139,91,alpha),outline=(137,97,65,alpha))
         if wide=='rock' and j%2==0:
-            d.polygon([(xx-3,yy+2),(xx+2,yy-4),(xx+5,yy+3)],fill='#a28c89',outline=INK)
-    if u<.24:
-        for dx in (-27,0,27): d.line((x+dx-6,y-14,x+dx+4,y+8),fill='#fff8d9',width=3)
+            d.polygon([(xx-3,yy+2),(xx+2,yy-4),(xx+5,yy+3)],fill=(162,140,137,alpha),outline=(41,33,42,alpha))
+    im.alpha_composite(layer,(ox,oy))
 
 def warning(im,box,phase):
     ov=Image.new('RGBA',im.size); d=ImageDraw.Draw(ov)
-    d.rounded_rectangle(box,radius=15,fill=(228,66,81,round(30+30*phase)),outline=(241,95,100,180),width=3)
+    d.rounded_rectangle(box,radius=15,fill=(228,66,81,round(12+12*phase)),outline=(206,102,95,112),width=2)
     im.alpha_composite(ov)
 
 def rock(im,pos,r=23,angle=0):
@@ -304,6 +332,8 @@ class Renderer:
                     ps[i]=ground_pose(r,s,180*(1-smooth((u-5.6)/.6)));visibility[i]=.5;dust[i]=math.sin(math.pi*(u-5.6)/.6)
             player=[(480,465),(480,280),(640,420),(320,420)][cycle]
         for i,r in enumerate(roots):hole(im,r,False,dust[i])
+        # Ground compression is behind the limbs; flying soil is added after.
+        for pos,age,wide in effects:impact(im,pos,age,wide,under=True)
         if trails:
             trail=Image.new('RGBA',im.size)
             for p in trails:arm(trail,p)
