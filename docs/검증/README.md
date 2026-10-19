@@ -191,3 +191,9 @@ Relay 자동 검증에서만 사용하는 참가 코드 파일의 읽기/쓰기 
 - 첨부 5개 PNG와 Resources bytes의 바이트 일치, 42프레임 개수·원본 내 좌표·유효 알파 여백, 기본 공격 입력/서버 타격 경로 제거 정적 검사 통과. CharacterVisualChecks에 42프레임 로딩 및 전기 선택/HUD 리소스 검사 추가.
 - 전기 선택 목록·대기실 버튼·HUD 아이콘 연결·아이콘 bytes/meta가 origin/main에도 있음을 확인. 팀원 PC 화면 및 네트워크 실행은 미검증.
 - 프로젝트가 이미 Unity에서 열려 있어 별도 배치 검사는 실행 불가(Logs/character-assets-check.log 및 character-assets-retry.log). 이번 작업에서 실제 Play Mode/시각 검사는 실행하지 못했다. Windows 배포/ZIP은 생성하지 않음.
+
+## 2026-10-18 승리 포즈 제한 및 이동 방향
+
+- Unity 6000.5.7f1의 기존 Bee 응답 파일과 Roslyn으로 게임·에디터 C# 컴파일 통과(오류 0, 기존 deprecated API 경고). 출력 DLL은 프로젝트 Temp/CharacterVisualChecks에만 저장했다.
+- CharacterVisualChecks에 일반 스테이지 완료/보스 처치 전후/게임오버/로비/이동 및 마지막 좌우 방향 유지 검사를 추가했다. 재실행 메뉴: 문어/캐릭터 및 진주 표시 검증.
+- 프로젝트를 사용하는 Unity 편집기가 이미 열려 있어 별도 배치 검사는 초기화 중 종료했다(Logs/character-visual-checks.log). 상태별 검사 실행 및 실제 플레이·네트워크 화면 확인은 미실행. Windows 빌드/ZIP은 만들지 않았다.
