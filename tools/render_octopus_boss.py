@@ -458,9 +458,125 @@ def pixel_poses_gif():
     print(f'{path}: 9 frames, 560x560, {duration} ms, infinite loop')
 
 
+def pixel_slam_gif():
+    """Animate a fresh pixel ribbon each frame; fast contact, elastic recovery."""
+    size=(256,160); scale=3; root=(48,127); period=.8
+    idle=[root,(28,92),(115,26),(100,51)]
+    wind=[root,(22,106),(37,46),(65,61)]
+    raised=[root,(29,68),(150,10),(167,30)]
+
+    def moving_pose(t):
+        beat=math.floor(t/period);u=(t/period)%1
+        tx=[181,195,187][beat%3]
+        contact=[root,(96,79),(tx-31,133),(tx,125)]
+        rebound=[root,(72,69),(tx-28,78),(tx-4,98)]
+        return interpolate([(0,idle),(.22,wind),(.39,raised),
+                            (.54,contact),(.64,rebound),(1,idle)],u)
+
+    def ribbon(im,p,trail=False):
+        pts=curve(p,80);normals=[];left=[];right=[];inner=[]
+        for j,(x,y) in enumerate(pts):
+            a=pts[max(0,j-1)];b=pts[min(len(pts)-1,j+1)]
+            dx,dy=b[0]-a[0],b[1]-a[1];length=max(.01,math.hypot(dx,dy))
+            nx,ny=-dy/length,dx/length;normals.append((nx,ny))
+            radius=11*(1-j/79)**.65+1.5
+            left.append((round(x+nx*radius),round(y+ny*radius)))
+            right.append((round(x-nx*radius),round(y-ny*radius)))
+            inner.append((round(x+nx*radius*.25),round(y+ny*radius*.25)))
+        d=ImageDraw.Draw(im)
+        if trail:
+            d.line([(round(x),round(y)) for x,y in pts[30:]],fill='#efb0ad',width=4)
+            return
+        outline=left+right[::-1]
+        d.polygon(outline,fill='#ed8fa4');d.line(outline+[outline[0]],fill='#462539',width=2)
+        d.polygon(inner+left[::-1],fill='#ca638a')
+        d.line(right[9:67],fill='#ffc9cb',width=2)
+        # The same material positions carry their cups through every deformation.
+        for j in range(7,74,9):
+            x,y=pts[j];nx,ny=normals[j];r=11*(1-j/79)**.65+1.5
+            for offset in (.38,.78):
+                xx=x+nx*r*offset; yy=y+ny*r*offset
+                rr=max(1,round(2.4*(1-j/100)))
+                d.ellipse((round(xx)-rr,round(yy)-rr,round(xx)+rr,round(yy)+rr),fill='#ffe1d5',outline='#a94e76')
+
+    frames=[];poses=[]
+    for k in range(60):
+        t=k/25;u=(t/period)%1
+        im=Image.new('RGB',size,'#eed0a4');d=ImageDraw.Draw(im)
+        d.rectangle((0,127,255,159),fill='#dfb47f')
+        d.line((0,128,255,128),fill='#bd8c5b',width=2)
+        for j in range(32):
+            x=(j*47+13)%256;y=132+(j*19)%27
+            d.rectangle((x,y,x+2,y+1),fill='#c99968' if j%2 else '#efcc95')
+        d.ellipse((26,121,70,136),fill='#93634b',outline='#6c473f',width=2)
+        d.ellipse((32,123,65,132),fill='#462d3c')
+        # Contact events persist into recovery; clods follow ballistic trajectories.
+        events=[(n*period+.54*period,[181,195,187][n%3]) for n in range(-1,3)]
+        for event,tx in events:
+            age=t-event
+            if 0<=age<.36:
+                v=age/.36
+                d.ellipse((tx-15,124,tx+17,131),fill='#a97153')
+                for side in (-1,1):
+                    d.line([(tx+side*7,128),(tx+side*19,132),(tx+side*28,131)],fill='#8e5e4b',width=1)
+                spread=11+v*37
+                d.arc((tx-spread,125-v*6,tx+spread,133+v*5),0,180,fill='#fff0bc',width=2)
+        if .39<u<.59:
+            for delay in (.07,.035):ribbon(im,moving_pose(t-delay),True)
+            tip=moving_pose(t)[-1]
+            for j in range(3):
+                x=round(tip[0]+10+j*7);y=round(tip[1]-12-j*9)
+                if y-23>5 and x<250:
+                    d.line((x-10,y-23,x,y),fill='#fff3ce',width=2)
+        p=moving_pose(t);poses.append(p);ribbon(im,p)
+        d=ImageDraw.Draw(im)
+        d.pieslice((25,119,71,138),0,180,fill='#d5a06a',outline='#875b47',width=1)
+        d.arc((25,119,71,136),0,180,fill='#ffe0a5',width=2)
+        shake=(0,0)
+        for event,tx in events:
+            age=t-event
+            if 0<=age<.32:
+                v=age/.32
+                for j in range(14):
+                    side=-1 if j%2 else 1;speed=48+(j%5)*16
+                    x=tx+side*(9+speed*age);y=127-(65+(j%4)*24)*age+240*age*age
+                    rr=1+j%3
+                    if y<=135:
+                        d.polygon([(round(x)-rr,round(y)),(round(x),round(y)-rr),
+                                   (round(x)+rr,round(y)+rr),(round(x)-rr,round(y)+rr)],
+                                  fill='#ad7854',outline='#7b5344')
+                if age<.08:
+                    d.polygon([(tx-21,126),(tx-10,121),(tx-15,109),(tx-2,117),
+                               (tx+4,106),(tx+9,120),(tx+23,117),(tx+15,128)],fill='#fff2c8')
+                    # Flash stays at the ground, leaving the pink arm readable.
+                    d.line((tx-24,130,tx+25,130),fill='#fff9e5',width=2)
+                if age<.12:
+                    strength=round(2*(1-age/.12))
+                    shake=(strength*(-1 if k%2 else 1),strength*(-1 if k%3 else 1))
+        if shake!=(0,0):
+            shifted=Image.new('RGB',size,'#eed0a4');shifted.paste(im,shake);im=shifted
+        frame=im.resize((size[0]*scale,size[1]*scale),Image.Resampling.NEAREST)
+        frames.append(frame)
+    palette_sample=Image.new('RGB',(768,480*6))
+    for i,j in enumerate((0,7,10,11,13,17)):palette_sample.paste(frames[j],(0,i*480))
+    palette=palette_sample.quantize(colors=96)
+    quantized=[f.quantize(palette=palette,dither=Image.Dither.NONE) for f in frames]
+    path=OUT/'tentacle-pixel-slam.gif'
+    quantized[0].save(path,save_all=True,append_images=quantized[1:],duration=40,loop=0,optimize=False,disposal=2)
+    with Image.open(path) as check:
+        assert check.n_frames==60
+        total=0
+        for i in range(check.n_frames):check.seek(i);total+=check.info['duration']
+        assert total==2400
+    assert all(math.dist(p[0],root)<1e-6 for p in poses)
+    assert all(8<x<248 and 5<y<145 for p in poses for x,y in curve(p))
+    print(f'{path}: 60 frames, 25fps, 2400ms, 3 strikes, fixed root, 3x nearest-neighbor')
+
+
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--pattern',type=int);parser.add_argument('--sheets',action='store_true');parser.add_argument('--verify',action='store_true');parser.add_argument('--pixel-poses',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--pattern',type=int);parser.add_argument('--sheets',action='store_true');parser.add_argument('--verify',action='store_true');parser.add_argument('--pixel-poses',action='store_true');parser.add_argument('--pixel-slam',action='store_true');args=parser.parse_args()
     OUT.mkdir(exist_ok=True,parents=True)
+    if args.pixel_slam:pixel_slam_gif();return
     if args.pixel_poses:pixel_poses_gif();return
     if args.verify:
         report={'gif':{},'alpha':{},'counts_per_arm':[sum(e['arm']==i for e in EVENTS30) for i in range(6)],'rock_releases':len(EVENTS8)}

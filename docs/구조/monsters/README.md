@@ -41,6 +41,7 @@
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-throw.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/boss-field.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/layout-reference.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/pixel-slam-check.tmp.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/player-reference.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/PROMPT.txt`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-1-consecutive.jpg`
@@ -53,6 +54,7 @@
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/qa-report.json`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/README.md`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/tentacle-pixel-nine-poses.gif`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/tentacle-pixel-slam.gif`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/video-reference.jpg`
 - `Source/문어_유한맵/../../tools/render_octopus_boss.py`
 - `Source/문어_유한맵/Assets/Editor/GiantMonsterSetup.cs`
