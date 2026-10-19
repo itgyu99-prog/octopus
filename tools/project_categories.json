@@ -67,6 +67,7 @@
         "../../docs/검증/giant-octopus-boss/*",
         "../../docs/검증/giant-octopus-boss/assets/*.png",
         "../../docs/검증/giant-octopus-boss/assets/*.json",
+        "../../docs/검증/giant-octopus-boss/assets/tentacle-pixel-nine-poses.*",
         "../../tools/render_octopus_boss.py"
       ],
       "anchors": {

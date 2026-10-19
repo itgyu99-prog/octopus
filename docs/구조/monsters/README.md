@@ -33,6 +33,8 @@
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-burrow.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-design-reference.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-front.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-pixel-nine-poses.json`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-pixel-nine-poses.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-poses-prompts.json`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-rock-lift.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/tentacle-slam.png`
