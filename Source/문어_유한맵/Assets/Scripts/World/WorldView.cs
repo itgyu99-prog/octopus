@@ -69,6 +69,13 @@ namespace OctopusSurvivors
                 sr = go.AddComponent<SpriteRenderer>();
                 _views[id] = sr;
             }
+            if (kind == ActorKind.Enemy && Mathf.Approximately(duration, OctopusBossPattern.ArmMarker))
+            {
+                sr.enabled = false; sr.transform.position = pos;
+                _target[id] = pos; _basePositions[id] = pos;
+                _enemyBodies[id] = new Vector3(pos.x, pos.y, size);
+                return;
+            }
 
             sr.sprite = kind == ActorKind.Enemy ? (duration < 1000 ? RuntimeArt.ElementMonster((ElementId)Mathf.RoundToInt(duration)) : null) : SpriteFor(kind);
             sr.color = kind == ActorKind.Enemy && extra == 0 ? Color.white : ColorFor(kind, extra);

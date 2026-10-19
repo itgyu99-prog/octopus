@@ -22,9 +22,13 @@
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `RandomInterior` — 1974행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `RandomEdge` — 2048행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ActiveCenter` — 1999행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `RandomInterior` — 1979행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `RandomEdge` — 2053행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ActiveCenter` — 2004행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+## `Assets/Scripts/World/ArenaBuilder.cs` 진입 함수
+
+- `BuildBackdrop` — 42행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

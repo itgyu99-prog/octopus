@@ -22,6 +22,9 @@
           "RandomInterior",
           "RandomEdge",
           "ActiveCenter"
+        ],
+        "Assets/Scripts/World/ArenaBuilder.cs": [
+          "BuildBackdrop"
         ]
       }
     },
@@ -77,7 +80,9 @@
         "../../docs/검증/giant-octopus-boss/tentacle-pixel-slam.gif",
         "../../docs/검증/giant-octopus-boss/assets/tentacle-pixel-user-reference.png",
         "../../docs/검증/giant-octopus-boss/assets/tentacle-pixel-tall-sheet.png",
-        "../../tools/render_octopus_boss.py"
+        "../../tools/render_octopus_boss.py",
+        "Assets/Scripts/UI/GameHud.cs",
+        "Assets/Scripts/World/ArenaBuilder.cs"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
@@ -94,6 +99,13 @@
           "TickBulletBoss",
           "TickAreaBoss",
           "TickBossBullet"
+        ],
+        "Assets/Scripts/World/OctopusBoss.cs": [
+          "CanTargetActor",
+          "DamageOctopusArm",
+          "BreakOctopusArm",
+          "RestoreOctopusArms",
+          "TickOctopusBoss"
         ]
       }
     },
@@ -105,7 +117,9 @@
       ],
       "related": [
         "Assets/Scripts/Player/OctopusPlayer.cs",
-        "Assets/Scripts/Core/GameTypes.cs"
+        "Assets/Scripts/Core/GameTypes.cs",
+        "Assets/Scripts/World/OctopusBoss.cs",
+        "Assets/Scripts/World/OctopusBossPattern.cs"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [
@@ -302,7 +316,8 @@
       ],
       "related": [
         "Packages/manifest.json",
-        "Assets/DefaultNetworkPrefabs.asset"
+        "Assets/DefaultNetworkPrefabs.asset",
+        "Assets/Scripts/World/OctopusBossPattern.cs"
       ],
       "anchors": {
         "Assets/Scripts/World/GameSession.cs": [

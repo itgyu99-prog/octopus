@@ -94,23 +94,33 @@
 - `Source/문어_유한맵/Assets/Scripts/Core/GameConfig.cs`
 - `Source/문어_유한맵/Assets/Scripts/Core/GameTypes.cs`
 - `Source/문어_유한맵/Assets/Scripts/Core/RuntimeArt.cs`
+- `Source/문어_유한맵/Assets/Scripts/UI/GameHud.cs`
+- `Source/문어_유한맵/Assets/Scripts/World/ArenaBuilder.cs`
 - `Source/문어_유한맵/Assets/Scripts/World/WorldView.cs`
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `TickEnemy` — 828행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `EnemyContact` — 905행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnWave` — 985행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnBoss` — 1002행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ClearLiveBosses` — 374행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `OnBossDefeated` — 1013행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `KillEnemy` — 1457행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickBossPattern` — 1558행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ChaseBoss` — 1574행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickChargeBoss` — 1584행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickBulletBoss` — 1648행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickAreaBoss` — 1669행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickBossBullet` — 1736행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickEnemy` — 829행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `EnemyContact` — 908행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnWave` — 988행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnBoss` — 1005행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ClearLiveBosses` — 375행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `OnBossDefeated` — 1016행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `KillEnemy` — 1461행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickBossPattern` — 1563행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ChaseBoss` — 1579행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickChargeBoss` — 1589행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickBulletBoss` — 1653행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickAreaBoss` — 1674행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickBossBullet` — 1741행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+
+## `Assets/Scripts/World/OctopusBoss.cs` 진입 함수
+
+- `CanTargetActor` — 13행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `DamageOctopusArm` — 40행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `BreakOctopusArm` — 49행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `RestoreOctopusArms` — 19행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickOctopusBoss` — 76행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

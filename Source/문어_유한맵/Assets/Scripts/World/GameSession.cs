@@ -11,6 +11,7 @@ namespace OctopusSurvivors
         public ActorKind Kind;
         public ElementId Element;
         public GiantMonsterDefinition Giant;
+        public int OctopusArm = -1;
         public GiantState GiantState;
         public float CounterTime, ChargeTravel;
         public int HitPlayers;
@@ -786,8 +787,8 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var enemy = _actors[i];
-                if (enemy.Dead || (enemy.Kind != ActorKind.Enemy && enemy.Kind != ActorKind.Boss)) continue;
-                float radius = projectile.Size + (enemy.Kind == ActorKind.Boss ? enemy.Size * .5f : enemy.Giant != null ? enemy.Size * .4f : GameConfig.EnemyRadius);
+                if (!CanTargetActor(enemy)) continue;
+                float radius = projectile.Size + (enemy.Kind == ActorKind.Boss ? enemy.Size * .5f : enemy.OctopusArm >= 0 ? 3f : enemy.Giant != null ? enemy.Size * .4f : GameConfig.EnemyRadius);
                 float t = lengthSquared > .00001f ? Mathf.Clamp01(Vector2.Dot(enemy.Pos - previous, travel) / lengthSquared) : 0f;
                 if ((enemy.Pos - (previous + travel * t)).sqrMagnitude > radius * radius || t >= nearest) continue;
                 nearest = t; target = enemy; hitTime = t;
@@ -805,7 +806,7 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
                 if (hole.Bounces < 0 && e.Kind == ActorKind.Boss)
                     continue;
@@ -813,7 +814,7 @@ namespace OctopusSurvivors
                 if (to.sqrMagnitude > radius * radius)
                     continue;
                 float pull = hole.Bounces < 0 || e.Kind == ActorKind.Boss ? 1.2f : 6.5f;
-                e.Pos += to.normalized * pull * dt;
+                if (e.OctopusArm < 0) e.Pos += to.normalized * pull * dt;
                 ApplyDamage(e, hole.Damage * dt, StatusMask.None, 0f, 0f);
             }
 
@@ -827,6 +828,8 @@ namespace OctopusSurvivors
 
         void TickEnemy(SimActor enemy, float dt)
         {
+            if (enemy.OctopusArm >= 0) { TickOctopusArm(enemy, dt); return; }
+            if (enemy.Duration == OctopusBossPattern.VisualMarker) { TickOctopusCore(enemy, dt); return; }
             if (enemy.BurnTime > 0f)
             {
                 enemy.BurnTime -= dt;
@@ -910,9 +913,9 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
-                if (e.Giant != null) continue;
+                if (e.Giant != null || e.OctopusArm >= 0) continue;
                 if (e.SpicyTime > 0f || e.StunTime > 0f)
                     continue;
                 float reach = GameConfig.PlayerRadius + (e.Kind == ActorKind.Boss ? e.Size * 0.5f : GameConfig.EnemyRadius);
@@ -1135,11 +1138,11 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
                 if (!hitBoss && e.Kind == ActorKind.Boss)
                     continue;
-                if ((e.Pos - pos).sqrMagnitude > r2)
+                if ((e.Pos - pos).sqrMagnitude > Mathf.Pow(radius + OctopusHitPadding(e), 2))
                     continue;
 
                 var mask = status;
@@ -1160,10 +1163,10 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
                 Vector2 to = e.Pos - pos;
-                if (to.sqrMagnitude > radius * radius)
+                if (to.sqrMagnitude > Mathf.Pow(radius + OctopusHitPadding(e), 2))
                     continue;
                 if (Vector2.Angle(dir, to) > half)
                     continue;
@@ -1181,9 +1184,9 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
-                if (DistToSegment(e.Pos, a, b) > width + (e.Giant != null ? e.Size * .4f : GameConfig.EnemyRadius))
+                if (DistToSegment(e.Pos, a, b) > width + (e.OctopusArm >= 0 ? 3f : e.Giant != null ? e.Size * .4f : GameConfig.EnemyRadius))
                     continue;
                 var mask = status;
                 if ((status & StatusMask.Stun) != 0 && Random.value > stunChance)
@@ -1210,7 +1213,7 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
                 if ((e.Pos - projectile.Pos).sqrMagnitude > r2)
                     continue;
@@ -1239,9 +1242,9 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
-                if ((e.Pos - center).sqrMagnitude > r2)
+                if ((e.Pos - center).sqrMagnitude > Mathf.Pow(radius + OctopusHitPadding(e), 2))
                     continue;
                 if (Vector2.Dot(e.Pos - origin, dir) < 0f)
                     continue;
@@ -1260,11 +1263,11 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
                 if (alreadyHit != null && alreadyHit.Contains(e.Id))
                     continue;
-                float reach = width + (e.Kind == ActorKind.Boss || e.Giant != null ? e.Size * 0.35f : GameConfig.EnemyRadius);
+                float reach = width + (e.OctopusArm >= 0 ? 3f : e.Kind == ActorKind.Boss || e.Giant != null ? e.Size * 0.35f : GameConfig.EnemyRadius);
                 float reach2 = reach * reach;
                 bool touched = false;
                 for (int p = 0; p < points.Count; p++)
@@ -1296,9 +1299,9 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
-                float d = (e.Pos - pos).sqrMagnitude;
+                float d = Mathf.Pow(Mathf.Max(0, Vector2.Distance(e.Pos, pos) - OctopusHitPadding(e)), 2);
                 if (d < bestD)
                 {
                     best = e;
@@ -1344,7 +1347,7 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
                 if ((e.Pos - around).sqrMagnitude > search * search)
                     continue;
@@ -1375,7 +1378,7 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
                 n++;
                 if (Random.Range(0, n) == 0)
@@ -1391,7 +1394,7 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || e.Kind != ActorKind.Enemy)
+                if (e.Dead || e.Kind != ActorKind.Enemy || e.OctopusArm >= 0)
                     continue;
                 if ((e.Pos - pos).sqrMagnitude <= r2)
                     KillEnemy(e);
@@ -1400,11 +1403,12 @@ namespace OctopusSurvivors
 
         bool ApplyDamage(SimActor enemy, float damage, StatusMask status, float statusTime, float burnDps)
         {
-            if (!CombatActive || enemy.Dead || (enemy.Kind != ActorKind.Enemy && enemy.Kind != ActorKind.Boss))
+            if (!CombatActive || !CanTargetActor(enemy))
                 return false;
 
             if (SpecialPassive.Value)
                 damage *= GameConfig.SpecialPassiveMul;
+            if (enemy.OctopusArm >= 0) return DamageOctopusArm(enemy, damage, status, statusTime, burnDps);
 
             if (enemy.Giant != null && enemy.Giant.attackPattern == GiantPattern.Urchin && enemy.GiantState == GiantState.Attack)
             {
@@ -1458,6 +1462,7 @@ namespace OctopusSurvivors
         {
             if (enemy.Dead)
                 return;
+            if (enemy.OctopusArm >= 0) { BreakOctopusArm(enemy); return; }
             enemy.Dead = true;
             enemy.GiantState = GiantState.Dead;
 
@@ -1778,7 +1783,7 @@ namespace OctopusSurvivors
                 Vector2 to = target.Pos - spirit.Pos;
                 if (to.sqrMagnitude > 0.01f)
                     spirit.Pos += to.normalized * GameConfig.EnemySpeed(Elapsed.Value) * dt;
-                float reach = spirit.Size + (target.Kind == ActorKind.Boss || target.Giant != null ? target.Size * 0.5f : GameConfig.EnemyRadius);
+                float reach = spirit.Size + (target.OctopusArm >= 0 ? 3f : target.Kind == ActorKind.Boss || target.Giant != null ? target.Size * 0.5f : GameConfig.EnemyRadius);
                 if ((target.Pos - spirit.Pos).sqrMagnitude <= reach * reach && spirit.ContactCooldown <= 0f)
                 {
                     ApplyDamage(target, spirit.Damage, StatusMask.Stun | StatusMask.Knockback, 1.6f, 0f);
@@ -2036,7 +2041,7 @@ namespace OctopusSurvivors
             for (int i = 0; i < _actors.Count; i++)
             {
                 var e = _actors[i];
-                if (e.Dead || (e.Kind != ActorKind.Enemy && e.Kind != ActorKind.Boss))
+                if (!CanTargetActor(e))
                     continue;
                 if ((e.Pos - from).sqrMagnitude <= r2)
                     list.Add(e);
@@ -2206,7 +2211,7 @@ namespace OctopusSurvivors
         }
 
         // Enemy snapshots use the otherwise unused duration channel for their visual element.
-        static float VisualDuration(SimActor a) => a.Kind == ActorKind.Enemy
+        static float VisualDuration(SimActor a) => a.OctopusArm >= 0 ? OctopusBossPattern.ArmMarker : a.Kind == ActorKind.Enemy
             ? (a.Giant != null ? 1000 + a.Giant.id * 100 + (int)a.GiantState * 10 + Mathf.Repeat(Mathf.Atan2(a.SkillPoint.y,a.SkillPoint.x)*Mathf.Rad2Deg,360f)/360f : (float)a.Element) : a.Duration;
 
         static byte PackFlags(SimActor a)

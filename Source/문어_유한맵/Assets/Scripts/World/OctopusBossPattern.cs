@@ -9,19 +9,38 @@ namespace OctopusSurvivors
         public byte Pattern, Half, Contacts;
         public uint Seed;
         public float Time;
+        public float Vulnerable, ArmMaxHp;
+        public byte Hp0, Hp1, Hp2, Hp3, Hp4, Hp5;
+        public float ArmHealth(int arm)
+        {
+            if (ArmMaxHp <= 0) return 1;
+            return (arm == 0 ? Hp0 : arm == 1 ? Hp1 : arm == 2 ? Hp2 : arm == 3 ? Hp3 : arm == 4 ? Hp4 : Hp5) / 255f;
+        }
+        public void SetArmHealth(int arm, float ratio)
+        {
+            byte value = ratio <= 0 ? (byte)0 : (byte)Mathf.Clamp(Mathf.RoundToInt(ratio * 255), 1, 255);
+            switch (arm) { case 0: Hp0 = value; break; case 1: Hp1 = value; break; case 2: Hp2 = value; break;
+                case 3: Hp3 = value; break; case 4: Hp4 = value; break; default: Hp5 = value; break; }
+        }
+        public int LivingArms { get { int n = 0; for (int i = 0; i < 6; i++) if (ArmHealth(i) > 0) n++; return n; } }
         public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
         {
             s.SerializeValue(ref Pattern); s.SerializeValue(ref Half); s.SerializeValue(ref Contacts);
             s.SerializeValue(ref Seed); s.SerializeValue(ref Time);
+            s.SerializeValue(ref Vulnerable); s.SerializeValue(ref ArmMaxHp);
+            s.SerializeValue(ref Hp0); s.SerializeValue(ref Hp1); s.SerializeValue(ref Hp2);
+            s.SerializeValue(ref Hp3); s.SerializeValue(ref Hp4); s.SerializeValue(ref Hp5);
         }
         public bool Equals(OctopusBossSnapshot o) => Pattern == o.Pattern && Half == o.Half &&
-            Contacts == o.Contacts && Seed == o.Seed && Time.Equals(o.Time);
+            Contacts == o.Contacts && Seed == o.Seed && Time.Equals(o.Time) && Vulnerable.Equals(o.Vulnerable) &&
+            ArmMaxHp.Equals(o.ArmMaxHp) && Hp0 == o.Hp0 && Hp1 == o.Hp1 && Hp2 == o.Hp2 && Hp3 == o.Hp3 && Hp4 == o.Hp4 && Hp5 == o.Hp5;
     }
 
     // Both the server and all views use these exact contact times and positions.
     public static class OctopusBossPattern
     {
         public const float VisualMarker = 5005;
+        public const float ArmMarker = 6005, VulnerableSeconds = 10;
         public const int Arms = 6, RelayHits = 30;
         public const float Interval = .16f, ContactOffset = .34f, SwingDuration = .78f;
         public const float RelayFirstContact = .75f, RelayDuration = 6.65f;
@@ -36,6 +55,11 @@ namespace OctopusSurvivors
         public static Vector2 RestRoot(int arm) => new Vector2(
             (arm < 3 ? -1 : 1) * FiniteBeach.Width * (arm % 3 == 1 ? .345f : .315f),
             Mathf.Lerp(FiniteBeach.Height * .26f, -FiniteBeach.Height * .245f, arm % 3 / 2f));
+        public static bool ArmsVisible(OctopusBossSnapshot s) => s.Pattern != 5 &&
+            !(s.Pattern == 4 && ((s.Time >= .55f && s.Time < 1.1f) || (s.Time >= 5.2f && s.Time < 5.65f)));
+        public static Vector2 ArmRoot(OctopusBossSnapshot s, int arm) => s.Pattern == 4 && s.Time >= 1.1f && s.Time < 5.2f ? HalfRoot(s.Half, arm) : RestRoot(arm);
+        public static Vector2 ArmTargetPoint(OctopusBossSnapshot s, int arm) => ArmRoot(s, arm) +
+            (s.Pattern == 4 && s.Time >= 1.65f && s.Time < 4.65f ? Vector2.down * HalfCell(s.Half, arm).height * .30f : Vector2.up * IdleHeight * .35f);
         public static int RelayArm(int strike) => (strike % 6) / 2 + (strike % 2) * 3;
         public static float RelayContact(int strike) => RelayFirstContact + strike * Interval;
         public static Rect HalfRect(int half)

@@ -35,6 +35,8 @@ namespace OctopusSurvivors
         readonly Arm[] trails = new Arm[6];
         readonly Mesh[] impactMeshes = new Mesh[6];
         readonly MeshRenderer[] impactRenderers = new MeshRenderer[6];
+        readonly Mesh[] healthMeshes = new Mesh[6];
+        readonly MeshRenderer[] healthRenderers = new MeshRenderer[6];
         readonly List<Vector3> vertices = new List<Vector3>(600);
         readonly List<Color> colors = new List<Color>(600);
         readonly List<int> triangles = new List<int>(900);
@@ -47,6 +49,7 @@ namespace OctopusSurvivors
         bool isPreview, initialized;
         float observedTime, receivedAt;
         byte observedPattern;
+        byte hitFlags;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetAssets()
@@ -61,12 +64,21 @@ namespace OctopusSurvivors
             var t = new Texture2D(2, 2, TextureFormat.RGBA32, false) { name = "Octopus boss " + name,
                 filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
             ImageConversion.LoadImage(t, bytes.bytes);
-            if (whiteKey)
+            if (whiteKey || name == "Burrow")
             {
                 var pixels = t.GetPixels32();
                 for (int i = 0; i < pixels.Length; i++)
+                {
                     if (pixels[i].r > 235 && pixels[i].g > 235 && pixels[i].b > 235 &&
-                        Mathf.Max(pixels[i].r, pixels[i].b) - pixels[i].g < 25) pixels[i].a = 0;
+                        Mathf.Max(pixels[i].r, pixels[i].b) - pixels[i].g < 25 && whiteKey) pixels[i].a = 0;
+                    var p = pixels[i];
+                    if (p.a > 0 && p.r > p.g * 1.07f && p.g > p.b * 1.16f && p.r > 60)
+                    {
+                        float shade = Mathf.InverseLerp(.23f, 1f, p.r / 255f);
+                        Color earth = Color.Lerp(new Color(.37f, .24f, .14f), new Color(.91f, .77f, .59f), shade);
+                        earth.a = p.a / 255f; pixels[i] = earth;
+                    }
+                }
                 t.SetPixels32(pixels); t.Apply();
             }
             assets.Add(t); return t;
@@ -121,9 +133,13 @@ namespace OctopusSurvivors
             for (int i = 0; i < count; i++)
             {
                 int ox = i % cols * w, oy = (rows - 1 - i / cols) * h;
-                int bottom = h, top = 0;
+                int bottom = h, top = 0, left = w, right = 0;
                 for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
-                    if (pixels[(oy + y) * t.width + ox + x].a > 100) { bottom = Mathf.Min(bottom, y); top = Mathf.Max(top, y); }
+                {
+                    var p = pixels[(oy + y) * t.width + ox + x];
+                    bool art = p.a > 100 && (name != "Slam" || Mathf.Max(p.r, Mathf.Max(p.g, p.b)) - Mathf.Min(p.r, Mathf.Min(p.g, p.b)) > 12);
+                    if (art) { bottom = Mathf.Min(bottom, y); top = Mathf.Max(top, y); left = Mathf.Min(left, x); right = Mathf.Max(right, x); }
+                }
                 if (i == 0) ppu = Mathf.Max(1, top - bottom + 1) / baseHeight;
                 Vector2 pivot = new Vector2(w * .5f, bottom);
                 if (fixedWhip) pivot = new Vector2(300, 39);
@@ -142,7 +158,14 @@ namespace OctopusSurvivors
                         if (pixels[(oy + y) * t.width + ox + x].a > 120) { total += x; n++; }
                     pivot = new Vector2(n > 0 ? total / n : w * .5f, top - 10);
                 }
-                result[i] = Make(t, new Rect(ox, oy, w, h), pivot, ppu, down);
+                var rect = new Rect(ox, oy, w, h);
+                if (name == "Slam")
+                {
+                    int l = Mathf.Max(0, left - 8), b = Mathf.Max(0, bottom - 8);
+                    int r = Mathf.Min(w, right + 9), u = Mathf.Min(h, top + 9);
+                    rect = new Rect(ox + l, oy + b, r - l, u - b); pivot -= new Vector2(l, b);
+                }
+                result[i] = Make(t, rect, pivot, ppu, down);
             }
             return result;
         }
@@ -198,6 +221,9 @@ namespace OctopusSurvivors
                 effect.AddComponent<MeshFilter>().sharedMesh = impactMeshes[a];
                 impactRenderers[a] = effect.AddComponent<MeshRenderer>();
                 impactRenderers[a].sharedMaterial = effects; impactRenderers[a].sortingOrder = 21;
+                var health = new GameObject("Tentacle HP " + (a + 1)); health.transform.SetParent(world, false);
+                healthMeshes[a] = new Mesh(); health.AddComponent<MeshFilter>().sharedMesh = healthMeshes[a];
+                healthRenderers[a] = health.AddComponent<MeshRenderer>(); healthRenderers[a].sharedMaterial = effects; healthRenderers[a].sortingOrder = 28;
             }
             var area = new GameObject("Half-area anticipation"); area.transform.SetParent(world, false);
             areaMesh = new Mesh(); area.AddComponent<MeshFilter>().sharedMesh = areaMesh;
@@ -205,6 +231,7 @@ namespace OctopusSurvivors
         }
         public void Configure(byte flags)
         {
+            hitFlags = flags;
             Initialize(); body.color = (flags & (byte)EnemyFlag.Hit) != 0 ? new Color(1, .65f, .65f) : Color.white;
         }
         public void Preview(OctopusBossSnapshot value)
@@ -227,12 +254,19 @@ namespace OctopusSurvivors
             world.localScale = new Vector3(1 / Mathf.Max(.001f, scale.x), 1 / Mathf.Max(.001f, scale.y), 1);
             world.position = Vector3.zero;
             body.transform.position = OctopusBossPattern.Head;
+            body.color = (hitFlags & (byte)EnemyFlag.Hit) != 0 ? new Color(1, .65f, .65f) : Color.white;
+            if (s.Vulnerable > 0)
+            { body.transform.position += Vector3.down * .8f; body.color = new Color(.78f, .84f, .88f); }
             DrawArea(s);
             for (int a = 0; a < 6; a++)
             {
                 impactRenderers[a].enabled = false;
                 trails[a].Root.SetActive(false);
                 var root = OctopusBossPattern.RestRoot(a);
+                healthRenderers[a].enabled = OctopusBossPattern.ArmsVisible(s);
+                if (healthRenderers[a].enabled) DrawHealth(a, OctopusBossPattern.ArmRoot(s, a), s.ArmHealth(a),
+                    s.Pattern == 4 && s.Time >= 1.65f && s.Time < 4.65f);
+                if (s.Vulnerable > 0 || s.ArmHealth(a) <= 0) { arms[a].Root.SetActive(false); continue; }
                 arms[a].Root.SetActive(true);
                 if (s.Pattern == 4) DrawHalfArm(s, a, root);
                 else DrawRelayArm(s, a, root);
@@ -324,7 +358,17 @@ namespace OctopusSurvivors
             {
                 float px = f.Rect.width * x / Columns, py = f.Rect.height * y / Rows;
                 Vector2 p = (new Vector2(px, py) - f.Pivot) / f.Ppu;
-                if (f.Down) p = new Vector2(-p.y, p.x);
+                if (f.Down)
+                {
+                    // Preserve every pixel of the complete downward pose; never bend/fold its triangles.
+                    float drop = Mathf.Max(1, -f.Tip.y);
+                    float scaleDown = reach > 0 && target.x > 0 ? Mathf.Clamp(target.x / drop, .35f, 1.2f) : 1;
+                    p *= scaleDown; if (mirror) p.x = -p.x;
+                    arm.Vertices[n] = p;
+                    arm.Uv[n++] = new Vector2((f.Rect.x + .5f + (f.Rect.width - 1) * x / Columns) / f.Texture.width,
+                        (f.Rect.y + .5f + (f.Rect.height - 1) * y / Rows) / f.Texture.height);
+                    continue;
+                }
                 if (reach > 0 && tip.x > keep + .5f && p.x > keep)
                 {
                     float t = Mathf.Clamp01((p.x - keep) / length), u = 1 - t;
@@ -332,14 +376,12 @@ namespace OctopusSurvivors
                     Vector2 tangent = (3 * u * u * (p1 - p0) + 6 * u * t * (p2 - p1) + 3 * t * t * (target - p2)).normalized;
                     if (tangent.sqrMagnitude < .1f) tangent = Vector2.right;
                     var normal = new Vector2(-tangent.y, tangent.x);
-                    float column = f.Down ? (1 - py / f.Rect.height) * Columns : x;
+                    float column = x;
                     int ci = Mathf.Clamp((int)column, 0, Columns - 1);
                     float cross = Mathf.Lerp(f.Centerline[ci], f.Centerline[ci + 1], column - ci);
-                    float press = f.Down ? 1 + t * t * .7f : 1;
-                    Vector2 bent = center + normal * (p.y - cross) * press;
+                    Vector2 bent = center + normal * (p.y - cross);
                     p = Vector2.Lerp(p, bent, reach);
                 }
-                if (f.Down) p = new Vector2(p.y, -p.x);
                 if (mirror) p.x = -p.x;
                 arm.Vertices[n] = p;
                 arm.Uv[n++] = new Vector2((f.Rect.x + px) / f.Texture.width, (f.Rect.y + py) / f.Texture.height);
@@ -347,6 +389,18 @@ namespace OctopusSurvivors
             arm.Mesh.vertices = arm.Vertices; arm.Mesh.uv = arm.Uv; arm.Mesh.RecalculateBounds();
         }
         void BeginGeometry() { vertices.Clear(); colors.Clear(); triangles.Clear(); }
+        void DrawHealth(int index, Vector2 root, float ratio, bool slamming)
+        {
+            BeginGeometry();
+            float x = root.x - 2.5f, y = root.y + (slamming ? .75f : -.85f), w = 5, h = .35f;
+            var bg = new Color(.12f, .08f, .10f, .95f); var fill = new Color(.93f, .26f, .44f);
+            Triangle(new Vector3(x, y, 0), new Vector3(x + w, y, 0), new Vector3(x + w, y + h, 0), bg, bg, bg);
+            Triangle(new Vector3(x, y, 0), new Vector3(x + w, y + h, 0), new Vector3(x, y + h, 0), bg, bg, bg);
+            w = (w - .10f) * ratio; x += .05f; y += .05f; h -= .10f;
+            Triangle(new Vector3(x, y, 0), new Vector3(x + w, y, 0), new Vector3(x + w, y + h, 0), fill, fill, fill);
+            Triangle(new Vector3(x, y, 0), new Vector3(x + w, y + h, 0), new Vector3(x, y + h, 0), fill, fill, fill);
+            ApplyGeometry(healthMeshes[index]);
+        }
         Vector3 Clip(Vector2 p, Rect? clip)
         {
             if (clip.HasValue) { var r = clip.Value; p.x = Mathf.Clamp(p.x, r.xMin, r.xMax); p.y = Mathf.Clamp(p.y, r.yMin, r.yMax); }
@@ -431,6 +485,7 @@ namespace OctopusSurvivors
             foreach (var a in arms) if (a != null && a.Mesh != null) Destroy(a.Mesh);
             foreach (var a in trails) if (a != null && a.Mesh != null) Destroy(a.Mesh);
             foreach (var mesh in impactMeshes) if (mesh != null) Destroy(mesh);
+            foreach (var mesh in healthMeshes) if (mesh != null) Destroy(mesh);
             if (areaMesh != null) Destroy(areaMesh);
             if (effects != null) Destroy(effects);
             if (body != null && body.sprite != null) Destroy(body.sprite);

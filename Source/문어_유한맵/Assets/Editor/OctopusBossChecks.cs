@@ -108,7 +108,8 @@ namespace OctopusSurvivors.EditorTools
             Call(s, "TickBossPattern", boss, .02f, 0f);
             Check(s.OctopusBoss.Value.Pattern == 2 && s.OctopusBoss.Value.Contacts == 0,
                 "return completes before the next relay resets its counter");
-            var wire = new OctopusBossSnapshot { Pattern = 4, Half = 3, Contacts = 30, Seed = 0x1234abcd, Time = 2.345f };
+            var wire = new OctopusBossSnapshot { Pattern = 4, Half = 3, Contacts = 30, Seed = 0x1234abcd, Time = 2.345f,
+                Vulnerable = 7.25f, ArmMaxHp = 200, Hp0 = 255, Hp1 = 182, Hp2 = 117, Hp3 = 80, Hp4 = 15, Hp5 = 0 };
             using (var writer = new FastBufferWriter(64, Allocator.Temp))
             {
                 writer.WriteNetworkSerializable(wire);
@@ -127,6 +128,7 @@ namespace OctopusSurvivors.EditorTools
                 s.OctopusBoss.Value = snap; Call(s, "RenderLocal"); yield return null;
                 var visual = FindFirstObjectByType<OctopusBossVisual>();
                 Check(visual != null, "supplied sprite frames are connected to the actual boss actor");
+                if (shot == 0) VerifyCompleteDownFrames(visual);
                 visual.Preview(snap);
                 var armViews = (Array)typeof(OctopusBossVisual).GetField("arms", Hidden).GetValue(visual);
                 int visible = 0;
@@ -151,6 +153,7 @@ namespace OctopusSurvivors.EditorTools
                 Capture(camera, "Logs/OctopusBossFrames/half-" + f.ToString("D3") + ".png");
                 if (f % 10 == 0) yield return null;
             }
+            VerifyLegGate(s, boss, actors);
             Call(s, "KillEnemy", boss);
             Check(!s.BossAlive.Value && s.SpecialUnlocked.Value && s.OctopusBoss.Value.Pattern == 0,
                 "defeat cleans up the pattern and preserves the stage 5 special unlock");
@@ -159,7 +162,79 @@ namespace OctopusSurvivors.EditorTools
             { rewards++; Check(FiniteBeach.Walkable(actor.Pos, .4f), "special reward remains reachable on the beach"); }
             Check(rewards == 2, "two original stage 5 special rewards retained");
             File.WriteAllText("Logs/OctopusBossChecks.summary.txt",
-                "PASS: stage5 replacement; 30 hits at 120fps/30fps/hitch; counter at contact; 4 half rectangles; 3-second/all-six slam; safe-half exclusion; snapshot roundtrip; full-frame assets; defeat/unlock; eight screenshots and 75 continuous half-area frames.");
+                "PASS: stage5 replacement; 30 contacts/4 half areas; six independent limb HP actors; protected core/target filtering; projectile and area limb damage; all-six break opens 10-second stun; core damage only during window; HP restore/relock/attack restart; snapshot HP+stun roundtrip; complete downward poses; continued ocean/sand backdrop; defeat/unlock/reachable rewards; eight screenshots and75 continuous frames.");
+        }
+        static void VerifyCompleteDownFrames(OctopusBossVisual visual)
+        {
+            var frames = (Array)typeof(OctopusBossVisual).GetField("slam", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var arms = (Array)typeof(OctopusBossVisual).GetField("arms", Hidden).GetValue(visual);
+            var arm = arms.GetValue(0);
+            var mesh = (Mesh)arm.GetType().GetField("Mesh").GetValue(arm);
+            for (int frame = 6; frame < 9; frame++)
+            for (int mirror = 0; mirror < 2; mirror++)
+            {
+                var source = frames.GetValue(frame);
+                var rect = (Rect)source.GetType().GetField("Rect").GetValue(source);
+                Call(visual, "DrawMesh", arm, source, Vector2.zero, new Vector2(1, -5), 1f, mirror != 0);
+                Check(Mathf.Abs(mesh.bounds.size.x / mesh.bounds.size.y - rect.width / rect.height) < .0001f,
+                    "downward frame keeps the complete source aspect and base " + frame + "/" + mirror);
+                var vertices = mesh.vertices; var indices = mesh.triangles; float sign = 0;
+                for (int t = 0; t < indices.Length; t += 3)
+                {
+                    var a = vertices[indices[t + 1]] - vertices[indices[t]];
+                    var b = vertices[indices[t + 2]] - vertices[indices[t]];
+                    float cross = a.x * b.y - a.y * b.x;
+                    if (t == 0) sign = Mathf.Sign(cross);
+                    if (cross * sign <= .000001f) throw new Exception("downward frame has a folded/collapsed triangle");
+                }
+                Check(true, "downward mesh has no folded or collapsed triangles " + frame + "/" + mirror);
+            }
+            var arena = GameObject.Find("FiniteBeachArena");
+            var cap = arena.transform.Find("Upper beach continuation").GetComponent<MeshRenderer>();
+            Check(cap.bounds.min.y <= FiniteBeach.Height * .5f,
+                "background continuation meets the original upper beach without a gap");
+        }
+        static void VerifyLegGate(GameSession s, SimActor boss, List<SimActor> actors)
+        {
+            Call(s, "StartOctopusBoss", boss);
+            float hp = boss.Hp;
+            Call(s, "ApplyDamage", boss, 100f, StatusMask.Burn, 5f, 20f);
+            Check(boss.Hp == hp && boss.BurnTime <= 0, "protected core rejects direct damage and damage-over-time status");
+            Check(!(bool)Call(s, "CanTargetActor", boss), "automatic attacks exclude the protected core");
+            var limbs = (SimActor[])typeof(GameSession).GetField("octopusArms", Hidden).GetValue(s);
+            Check(limbs.Length == 6 && limbs[0].Id != limbs[1].Id, "six independent damageable limb actors");
+            float before = limbs[0].Hp;
+            s.DamageCircle(limbs[0].Pos, .2f, 10f, StatusMask.None, 0, 0);
+            Check(Mathf.Abs(limbs[0].Hp - before + 10) < .01f && limbs[1].Hp == limbs[1].MaxHp,
+                "area damage reduces only the contacted limb HP");
+            var projectile = (SimActor)Call(s, "Create", ActorKind.Droplet, limbs[0].Pos + Vector2.right * 4, .3f);
+            projectile.Damage = 7;
+            bool hit = (bool)Call(s, "HitProjectileSegment", projectile, limbs[0].Pos - Vector2.right * 4);
+            Check(hit && Mathf.Abs(limbs[0].Hp - before + 17) < .01f, "projectiles hit the visible limb collider");
+            projectile.Dead = true;
+            Call(s, "ApplyDamage", limbs[0], 100000f, StatusMask.None, 0f, 0f);
+            Check(s.OctopusBoss.Value.LivingArms == 5 && s.OctopusBoss.Value.Vulnerable == 0, "one broken limb does not expose the core");
+            Call(s, "ApplyDamage", limbs[1], limbs[1].MaxHp * .55f, StatusMask.None, 0f, 0f);
+            Call(s, "RenderLocal"); FindFirstObjectByType<OctopusBossVisual>().Preview(s.OctopusBoss.Value);
+            Capture(Camera.main, "Logs/OctopusBossFrames/limb-hp.png");
+            for (int i = 1; i < 6; i++) Call(s, "ApplyDamage", limbs[i], 100000f, StatusMask.None, 0f, 0f);
+            Check(s.OctopusBoss.Value.LivingArms == 0 && s.OctopusBoss.Value.Pattern == 5 &&
+                Mathf.Abs(s.OctopusBoss.Value.Vulnerable - 10) < .001f, "last limb immediately interrupts attacks for exactly ten seconds");
+            Call(s, "TickBossPattern", boss, 3f, 0f);
+            Check(Mathf.Abs(s.OctopusBoss.Value.Vulnerable - 7) < .001f, "stun timer counts combat seconds");
+            FindFirstObjectByType<OctopusBossVisual>().Preview(s.OctopusBoss.Value);
+            Capture(Camera.main, "Logs/OctopusBossFrames/core-open.png");
+            Call(s, "ApplyDamage", boss, 13f, StatusMask.None, 0f, 0f);
+            Check(Mathf.Abs(boss.Hp - hp + 13) < .01f, "core becomes damageable during stun");
+            Call(s, "TickBossPattern", boss, 6.99f, 0f);
+            Check(s.OctopusBoss.Value.Vulnerable > 0, "core remains open just before ten seconds");
+            Call(s, "TickBossPattern", boss, .02f, 0f);
+            Check(s.OctopusBoss.Value.Vulnerable == 0 && s.OctopusBoss.Value.LivingArms == 6 &&
+                s.OctopusBoss.Value.Pattern == 2, "ten-second expiry restores all limbs and restarts attacks");
+            for (int i = 0; i < 6; i++) Check(s.OctopusBoss.Value.ArmHealth(i) == 1, "restored limb HP is full");
+            float after = boss.Hp; Call(s, "ApplyDamage", boss, 100f, StatusMask.None, 0f, 0f);
+            Check(boss.Hp == after, "restored limbs protect the core again without healing core HP");
+            Check(boss.Hp < hp, "core damage persists between vulnerability cycles");
         }
         static void CheckGeometry()
         {

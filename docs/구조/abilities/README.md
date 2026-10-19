@@ -81,11 +81,11 @@
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `SpawnTransient` — 1073행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnAllySpirit` — 1815행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SpawnPiercingMeteor` — 1824행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CastBlackFlame` — 1845행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `InfectFlame` — 1880행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnTransient` — 1076행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnAllySpirit` — 1820행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SpawnPiercingMeteor` — 1829행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CastBlackFlame` — 1850행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `InfectFlame` — 1885행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Player/OctopusPlayer.cs` 진입 함수
 

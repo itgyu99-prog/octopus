@@ -13,17 +13,18 @@ LAN·Relay, 접속·준비, 서버 권한·상태 동기화
 ## 관련 파일
 
 - `Source/문어_유한맵/Assets/DefaultNetworkPrefabs.asset`
+- `Source/문어_유한맵/Assets/Scripts/World/OctopusBossPattern.cs`
 - `Source/문어_유한맵/Packages/manifest.json`
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `OnNetworkSpawn` — 144행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `OnNetworkDespawn` — 165행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CanStart` — 198행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SelectStartingElementRpc` — 107행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `SetReadyRpc` — 217행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `BroadcastActors` — 2106행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `OnActorsMessage` — 2171행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `OnNetworkSpawn` — 145행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `OnNetworkDespawn` — 166행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CanStart` — 199행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SelectStartingElementRpc` — 108행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `SetReadyRpc` — 218행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `BroadcastActors` — 2111행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `OnActorsMessage` — 2176행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

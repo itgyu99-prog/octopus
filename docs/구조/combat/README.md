@@ -12,17 +12,19 @@
 
 - `Source/문어_유한맵/Assets/Scripts/Core/GameTypes.cs`
 - `Source/문어_유한맵/Assets/Scripts/Player/OctopusPlayer.cs`
+- `Source/문어_유한맵/Assets/Scripts/World/OctopusBoss.cs`
+- `Source/문어_유한맵/Assets/Scripts/World/OctopusBossPattern.cs`
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `ApplyDamage` — 1401행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `DamageCircle` — 1130행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `DamageCone` — 1156행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `DamageLine` — 1179행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `HitEnemy` — 1207행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TryMeleeArc` — 1224행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `StrikeWhip` — 1254행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `NearestEnemy` — 1292행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ApplyDamage` — 1404행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `DamageCircle` — 1133행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `DamageCone` — 1159행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `DamageLine` — 1182행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `HitEnemy` — 1210행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TryMeleeArc` — 1227행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `StrikeWhip` — 1257행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `NearestEnemy` — 1295행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

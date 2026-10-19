@@ -400,9 +400,11 @@ namespace OctopusSurvivors
                     if (session.OctopusBossActive)
                     {
                         var octopus = session.OctopusBoss.Value;
-                        _bossLabel.text = octopus.Pattern == 2 ? $"문어 보스 · 무작위 난타  {octopus.Contacts} / 30" :
-                            $"문어 보스 · {OctopusBossPattern.HalfName(octopus.Half)}쪽 반구역 난타";
-                        _octopusCounts.text = octopus.Pattern == 2 ? OctopusBossPattern.ContactLabel(octopus.Contacts) : "";
+                        _bossLabel.text = octopus.Vulnerable > 0 ? $"문어 보스 무력화 · 본체 공격 가능 {octopus.Vulnerable:F1}초" :
+                            octopus.Pattern == 2 ? $"문어 보스 · 본체 보호 ({octopus.LivingArms}/6) · 난타 {octopus.Contacts}/30" :
+                            $"문어 보스 · 본체 보호 ({octopus.LivingArms}/6) · {OctopusBossPattern.HalfName(octopus.Half)}쪽 난타";
+                        _octopusCounts.text = octopus.Vulnerable > 0 ? "10초 후 다리가 복구됩니다" :
+                            $"다리 HP  1:{octopus.ArmHealth(0):P0}   2:{octopus.ArmHealth(1):P0}   3:{octopus.ArmHealth(2):P0}   4:{octopus.ArmHealth(3):P0}   5:{octopus.ArmHealth(4):P0}   6:{octopus.ArmHealth(5):P0}";
                     }
                     else { _bossLabel.text = "보스"; _octopusCounts.text = ""; }
                 }

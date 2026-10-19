@@ -6,24 +6,74 @@ namespace OctopusSurvivors
     {
         static GameObject root;
         static Sprite sprite;
+        static readonly System.Collections.Generic.List<Object> backdropAssets = new System.Collections.Generic.List<Object>();
         public static void Build()
         {
             Destroy();
             root = new GameObject("FiniteBeachArena");
             var texture = RuntimeArt.BeachTexture();
+            BuildBackdrop(texture);
             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
                 new Vector2(.5f, .5f), 100f, 0, SpriteMeshType.FullRect);
-            var renderer = root.AddComponent<SpriteRenderer>();
+            var beach = new GameObject("Original beach artwork");
+            beach.transform.SetParent(root.transform, false);
+            var renderer = beach.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
             renderer.sortingOrder = -20;
-            root.transform.localScale = new Vector3(FiniteBeach.Width / sprite.bounds.size.x,
+            beach.transform.localScale = new Vector3(FiniteBeach.Width / sprite.bounds.size.x,
                 FiniteBeach.Height / sprite.bounds.size.y, 1);
         }
         public static void Destroy()
         {
             if (root != null) Object.Destroy(root);
             if (sprite != null) Object.Destroy(sprite);
+            foreach (var asset in backdropAssets) if (asset != null) Object.Destroy(asset);
+            backdropAssets.Clear();
             root = null; sprite = null;
+        }
+        static Material Tile(Texture2D source, Rect rect)
+        {
+            var t = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.RGBA32, false)
+                { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Repeat };
+            t.SetPixels(source.GetPixels((int)rect.x, (int)rect.y, t.width, t.height)); t.Apply();
+            var material = new Material(Shader.Find("Sprites/Default")) { mainTexture = t };
+            backdropAssets.Add(t); backdropAssets.Add(material); return material;
+        }
+        static void BuildBackdrop(Texture2D source)
+        {
+            var water = Tile(source, new Rect(source.width * .40f, 0, 1024, 80));
+            var sand = Tile(source, new Rect(source.width * .40f, source.height * .60f, 1024, 512));
+            float pixelsPerWorld = source.width / FiniteBeach.Width;
+            for (int layer = 0; layer < 2; layer++)
+            {
+                var go = new GameObject(layer == 0 ? "Continuous outer ocean" : "Upper beach continuation");
+                go.transform.SetParent(root.transform, false);
+                var mesh = new Mesh(); backdropAssets.Add(mesh); go.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var renderer = go.AddComponent<MeshRenderer>(); renderer.sharedMaterial = layer == 0 ? water : sand;
+                renderer.sortingOrder = layer == 0 ? -40 : -30;
+                const int rows = 24; var v = new Vector3[(rows + 1) * 2]; var uv = new Vector2[v.Length];
+                var indices = new int[rows * 6];
+                for (int y = 0; y <= rows; y++)
+                {
+                    float t = y / (float)rows;
+                    float height = layer == 0 ? Mathf.Lerp(-FiniteBeach.Height * 2, FiniteBeach.Height * 2, t) :
+                        Mathf.Lerp(FiniteBeach.Height * .5f - .04f, FiniteBeach.Height * 1.6f, t);
+                    float width = layer == 0 ? FiniteBeach.Width * 1.8f : FiniteBeach.Width * .5f +
+                        Mathf.SmoothStep(0, 1, Mathf.Clamp01(t * 4)) * FiniteBeach.Width * .48f;
+                    for (int side = 0; side < 2; side++)
+                    {
+                        int n = y * 2 + side;
+                        v[n] = new Vector3((side == 0 ? -1 : 1) * width, height, 0);
+                        uv[n] = new Vector2(v[n].x * pixelsPerWorld / 1024,
+                            v[n].y * pixelsPerWorld / (layer == 0 ? 80 : 512));
+                    }
+                    if (y == rows) continue;
+                    int i = y * 6, a = y * 2;
+                    indices[i] = a; indices[i + 1] = a + 2; indices[i + 2] = a + 1;
+                    indices[i + 3] = a + 1; indices[i + 4] = a + 2; indices[i + 5] = a + 3;
+                }
+                mesh.vertices = v; mesh.uv = uv; mesh.triangles = indices; mesh.RecalculateBounds();
+            }
         }
     }
 

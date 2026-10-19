@@ -21,16 +21,16 @@
 
 ## `Assets/Scripts/World/GameSession.cs` 진입 함수
 
-- `TickStageTransition` — 452행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CompleteStage` — 472행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `StartArtifactStage` — 1489행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `ClearFieldForNextStage` — 1519행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickArtifacts` — 1888행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TickPotions` — 1534행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `CollectPickup` — 1335행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `TryDropAttribute` — 1483행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `DropBossSpecial` — 1031행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
-- `AttributeNeeded` — 1477행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickStageTransition` — 453행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CompleteStage` — 473행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `StartArtifactStage` — 1494행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `ClearFieldForNextStage` — 1524행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickArtifacts` — 1893행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TickPotions` — 1539행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `CollectPickup` — 1338행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `TryDropAttribute` — 1488행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `DropBossSpecial` — 1034행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `AttributeNeeded` — 1482행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## `Assets/Scripts/Player/OctopusPlayer.cs` 진입 함수
 
