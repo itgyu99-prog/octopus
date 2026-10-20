@@ -219,8 +219,36 @@ class Renderer:
         self.field=Image.open(ROOT/'Source/문어_유한맵/Assets/Resources/Art/Beach.bytes').convert('RGBA').resize((960,450),Image.Resampling.LANCZOS)
         self.body=Image.open(OUT/'assets/body.png').convert('RGBA')
         self.body=self.body.crop(self.body.getbbox()); self.body.thumbnail((300,165),Image.Resampling.LANCZOS)
+        # Playback atlas preserves every supplied pose and the fixed sand-mouth pivot.
+        self.side_sheet=Image.open(OUT/'assets/animation-pack/07_좌우내리치기_재생시트.png').convert('RGBA')
+        if self.side_sheet.size!=(3000,2500):
+            raise ValueError('좌우 난타 재생 시트는 5x5, 600x500 셀이어야 합니다.')
         sheet=Image.open(ROOT/'문어 에셋파일/대기모션.png').convert('RGBA')
         self.player=sheet.crop((0,0,362,362));self.player=self.player.crop(self.player.getbbox());self.player.thumbnail((30,30),Image.Resampling.LANCZOS)
+    def side_pose(self,frame,root,mirror=False):
+        cell=self.side_sheet.crop(((frame%5)*600,(frame//5)*500,(frame%5+1)*600,(frame//5+1)*500))
+        if mirror:cell=cell.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+        # Keep a stable sand pivot at (300, 460). Only the supplied long contact
+        # pose gains a little reach; its thickness and all other frames stay intact.
+        scale=.32; stretch=1.65 if frame==12 else 1.0
+        size=(round(600*scale*stretch),round(500*scale))
+        cell=cell.resize(size,Image.Resampling.NEAREST)
+        x,y=root
+        px=round(x-size[0]/2);py=round(y-460*scale)
+        return cell,(px,py)
+    @staticmethod
+    def side_frame(age,beat=.48):
+        # Twelve 25-fps samples retain the wind-up, snap, brief impact, long
+        # planted reach, recovery, and settle of the supplied 21-pose sequence.
+        t=max(0,min(beat,age))
+        spans=((.08,0,3),(.20,4,7),(.28,8,11),(.36,12,12),(.44,13,16),(.48,17,20))
+        start=0.0
+        for end,first,last in spans:
+            if t<=end:
+                u=0 if end==start else (t-start)/(end-start)
+                return round(first+(last-first)*max(0,min(1,u)))
+            start=end
+        return 20
     def base(self,title,sub,t):
         im=Image.new('RGBA',(W,H),'#ddbc91');im.alpha_composite(self.field,(0,150))
         d=ImageDraw.Draw(im);d.rectangle((0,0,W,59),fill='#242431');d.text((22,9),title,font=FONT,fill='#fff0dc');d.text((22,35),sub,font=SMALL,fill='#c7bec4')
@@ -238,6 +266,7 @@ class Renderer:
         im=self.base(names[pattern],subs[pattern],t); d=ImageDraw.Draw(im)
         roots=list(ROOTS); ps=[pose(r,1 if i<3 else -1,'idle') for i,r in enumerate(roots)]
         flats=[0]*6; visibility=[1]*6; effects=[]; dust=[0]*6; held=[]; rocks=[]; trails=[]
+        side_poses={}
         player=(480,470)
         if pattern==1:
             for k in range(3):
@@ -297,8 +326,15 @@ class Renderer:
                 # A broad top/bottom zone gets six distinct vertical lanes.
                 emerged=[(lerp(b0+24,b2-24,i/5),b1+17) for i in range(6)]
             else:
-                # A narrow left/right zone gets two columns by three rows.
-                emerged=[(lerp(b0+38,b2-38,i%2),lerp(b1+30,b3-65,i//2/2)) for i in range(6)]
+                # Side sockets form a six-step zigzag, with evenly spaced
+                # vertical lanes so adjacent strike sprites do not stack on top.
+                rows=[]
+                for lane in range(6):
+                    zigzag=(lane%2)*42
+                    x=b0+30+zigzag if cycle==2 else b2-30-zigzag
+                    y=lerp(b1+24,b3-24,lane/5)
+                    rows.append((x,y))
+                emerged=rows
             for i,r in enumerate(ROOTS):
                 s=1 if i<3 else -1
                 if u<.8:
@@ -309,21 +345,28 @@ class Renderer:
                     roots[i]=emerged[i];dep=180*(1-smooth((u-1.1)/.6));ps[i]=ground_pose(roots[i],s,dep);visibility[i]=.5;dust[i]=math.sin(math.pi*(u-1.1)/.6)
                 elif u<4.7:
                     roots[i]=emerged[i]
-                    beat=.40; offset=i*.055; phase=u-1.7+offset; age=phase%beat; n=int(phase/beat)
-                    # Every root stays planted; each arm winds up and drops into
-                    # a neighboring vertical lane so the middle is struck too.
+                    beat=.48; offset=i*.065; phase=u-1.7+offset; age=phase%beat; n=int(phase/beat)
                     rx,ry=roots[i]
                     if b2-b0 > b3-b1:
+                        # Preserve the up/down attack: fixed roots, six lanes,
+                        # and a slightly slower vertical slam cycle.
+                        beat=.44; phase=u-1.7+offset; age=phase%beat; n=int(phase/beat)
                         tx=max(b0+24,min(b2-24,rx+math.sin(n*1.8+i)*9))
                         ty=b3-20
+                        target=(tx,ty);ps[i]=vertical_slam(roots[i],s,target,age,beat)
+                        if u<1.9:ps[i]=[mix(a,b,smooth((u-1.7)/.2)) for a,b in zip(pose(roots[i],s,'idle'),ps[i])]
+                        if .52<age/beat<.77:trails.append(vertical_slam(roots[i],s,target,max(0,age-.035),beat))
+                        flats[i]=.56<=age/beat<=.70
+                        effects.append((target,age-.60*beat,'barrage'))
                     else:
-                        tx=max(b0+28,min(b2-28,rx+math.sin(n*1.8+i)*8))
-                        ty=min(b3-18,ry+72+math.cos(n+i)*8)
-                    target=(tx,ty);ps[i]=vertical_slam(roots[i],s,target,age,beat)
-                    if u<1.9:ps[i]=[mix(a,b,smooth((u-1.7)/.2)) for a,b in zip(pose(roots[i],s,'idle'),ps[i])]
-                    if .52<age/beat<.77:trails.append(vertical_slam(roots[i],s,target,max(0,age-.035),beat))
-                    flats[i]=.56<=age/beat<=.70
-                    effects.append((target,age-.60*beat,'barrage'))
+                        # Horizontal attacks play the supplied cels from the
+                        # fixed sand pivot. Long frame 12 is the impact reach.
+                        inward=1 if cycle==2 else -1
+                        reach=137 if i%2==0 else 104
+                        target=(max(b0+20,min(b2-20,rx+inward*reach)),ry+math.sin(n*.8+i)*5)
+                        frame=self.side_frame(age,beat)
+                        side_poses[i]=(frame,roots[i],cycle==3)
+                        effects.append((target,age-.30*beat,'barrage'))
                 elif u<5.3:
                     roots[i]=emerged[i];ps[i]=ground_pose(roots[i],s,180*smooth((u-4.7)/.6));visibility[i]=.5;dust[i]=math.sin(math.pi*(u-4.7)/.6)
                 elif u<5.6:
@@ -341,7 +384,12 @@ class Renderer:
             im.alpha_composite(trail)
         # Sort roots for stable ground-plane overlap.
         for i in sorted(range(6),key=lambda j:roots[j][1]):
-            arm(im,ps[i],visibility[i],flats[i],roots[i][1]);hole(im,roots[i],True)
+            if i in side_poses:
+                sprite,at=self.side_pose(*side_poses[i])
+                im.alpha_composite(sprite,at)
+            else:
+                arm(im,ps[i],visibility[i],flats[i],roots[i][1])
+            hole(im,roots[i],True)
         for pos,s in held:grip(im,pos,s)
         for pos,rr,ang in rocks:rock(im,pos,rr,ang)
         for pos,age,wide in effects:impact(im,pos,age,wide)
