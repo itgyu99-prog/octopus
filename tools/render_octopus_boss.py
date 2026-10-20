@@ -223,9 +223,22 @@ class Renderer:
         self.side_sheet=Image.open(OUT/'assets/animation-pack/07_좌우내리치기_재생시트.png').convert('RGBA')
         if self.side_sheet.size!=(3000,2500):
             raise ValueError('좌우 난타 재생 시트는 5x5, 600x500 셀이어야 합니다.')
+        self.side_contact=Image.open(ROOT/'Source/문어_유한맵/Assets/Resources/OctopusBoss/Contact.bytes').convert('RGBA')
         sheet=Image.open(ROOT/'문어 에셋파일/대기모션.png').convert('RGBA')
         self.player=sheet.crop((0,0,362,362));self.player=self.player.crop(self.player.getbbox());self.player.thumbnail((30,30),Image.Resampling.LANCZOS)
     def side_pose(self,frame,root,mirror=False):
+        if frame==12:
+            # Use the supplied long-contact asset for the hit keyframe. Scale
+            # from its authored (35, 4) sand pivot, matching the runtime sprite.
+            cell=self.side_contact
+            if mirror:cell=cell.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+            sx=.50; sy=.50*2.1
+            size=(round(cell.width*sx),round(cell.height*sy))
+            cell=cell.resize(size,Image.Resampling.NEAREST)
+            pivot_x=round((cell.width-35*sx) if mirror else 35*sx)
+            pivot_y=round((40-4)*sy)
+            x,y=root
+            return cell,(round(x-pivot_x),round(y-pivot_y))
         cell=self.side_sheet.crop(((frame%5)*600,(frame//5)*500,(frame%5+1)*600,(frame//5+1)*500))
         if mirror:cell=cell.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
         # Keep the supplied sand pivot fixed. Compensate only the flat poses'

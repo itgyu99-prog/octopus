@@ -353,7 +353,10 @@ namespace OctopusSurvivors
                 Mathf.RoundToInt(Mathf.Lerp(17, 20, (age - .44f) / .04f));
             float reach = age < .08f ? Mathf.SmoothStep(0, 1, age / .08f) :
                 age < .36f ? 1f : 1f - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.36f, .48f, age));
-            var sideFrame = whip[Mathf.Clamp(frame, 0, 20)];
+            // The supplied long-contact pose is the impact keyframe for side slams.
+            // Its authored sand-mouth pivot matches the other attack poses, so the
+            // opening stays planted while the long limb reaches across the lane.
+            var sideFrame = frame == 12 ? contact : whip[Mathf.Clamp(frame, 0, 20)];
             float thickness = Mathf.Clamp(3.0f / Mathf.Max(.01f, sideFrame.Height), 1f, 3f);
             DrawMesh(arms[arm], sideFrame, root, target - root, reach, target.x < root.x, thickness);
         }
