@@ -145,12 +145,12 @@ namespace OctopusSurvivors.EditorTools
             yield return null;
             yield return null;
             Bounds mapBounds = mapRenderer.bounds;
-            float expectedSize = PlayerCameraFollow.MapFitOrthographicSize(mapBounds, camera.aspect);
-            Check(camera.orthographic && camera.orthographicSize >= expectedSize - .001f &&
-                Vector2.Distance(camera.transform.position, mapBounds.center) < .001f,
-                "stage 5 camera fits the actual map bounds and centers on the map");
-            VerifyMapInsideCamera(mapRenderer, camera);
-            VerifyAspectChangesKeepMapVisible(mapBounds);
+            float expectedSize = PlayerCameraFollow.BossOrthographicSize;
+            Check(camera.orthographic && Mathf.Abs(camera.orthographicSize - expectedSize) < .001f &&
+                Mathf.Abs(camera.transform.position.x - mapBounds.center.x) < .001f,
+                "stage 5 camera uses exactly 2x normal size and centers horizontally");
+            VerifyBossCameraFrame(mapRenderer, camera);
+            VerifyFixedViewportAspects(mapBounds);
             if (OctopusBossChecks.MapOnly)
             {
                 var modeChecks = VerifyBossMapModeTransitions(s, camera, mapRenderer);
@@ -208,7 +208,7 @@ namespace OctopusSurvivors.EditorTools
             if (OctopusBossChecks.MapOnly)
             {
                 File.WriteAllText("Logs/Stage5MapChecks.summary.txt",
-                    "PASS: bottom-only 7373x5100 map; original center anchored at world zero; actual map Bounds and all four corners fit; aspect calculations; live boss/arm roots; HUD separation; existing limb/core combat checks; eight captured poses.");
+                    "PASS: unchanged 7373x5100 map; fixed 2x camera (22); combat framing and body visible; Pattern 2/0/4/0/2 keeps camera/map; lifecycle restores player follow; four live Game view sizes; unchanged boss/arm roots; HUD separation; existing limb/core combat checks; eight captured poses. Full artwork fit is intentionally not required at fixed 2x.");
                 yield break;
             }
             // Continuous captures expose stepping/teleporting that isolated poses can hide.
@@ -228,7 +228,7 @@ namespace OctopusSurvivors.EditorTools
             { rewards++; Check(FiniteBeach.Walkable(actor.Pos, .4f), "special reward remains reachable on the beach"); }
             Check(rewards == 2, "two original stage 5 special rewards retained");
             File.WriteAllText("Logs/OctopusBossChecks.summary.txt",
-                "PASS: stage5 replacement; map-bounds camera fit and 5% margin; all four map corners visible; fixed-aspect letterboxing; boss head and HUD non-overlap; 30 contacts/4 half areas; six independent limb HP actors; protected core/target filtering; projectile and area limb damage; all-six break opens 10-second stun; core damage only during window; HP restore/relock/attack restart; snapshot HP+stun roundtrip; complete downward poses; continued ocean/sand backdrop; defeat/unlock/reachable rewards; eight screenshots and75 continuous frames.");
+                "PASS: stage5 replacement; fixed 2x camera; combat arena and boss visible; fixed-aspect letterboxing; boss head and HUD non-overlap; 30 contacts/4 half areas; six independent limb HP actors; protected core/target filtering; projectile and area limb damage; all-six break opens 10-second stun; core damage only during window; HP restore/relock/attack restart; snapshot HP+stun roundtrip; complete downward poses; continued ocean/sand backdrop; defeat/unlock/reachable rewards; eight screenshots and75 continuous frames.");
         }
         static void VerifyCompleteDownFrames(OctopusBossVisual visual)
         {
@@ -303,33 +303,32 @@ namespace OctopusSurvivors.EditorTools
                     "all four body bounds corners stay inside the live camera viewport");
             }
         }
-        static void VerifyMapInsideCamera(SpriteRenderer map, Camera camera)
+        static void VerifyBossCameraFrame(SpriteRenderer map, Camera camera)
         {
-            var b = map.bounds;
-            for (int x = 0; x < 2; x++) for (int y = 0; y < 2; y++)
+            Check(camera.orthographic && Mathf.Abs(camera.orthographicSize - GameConfig.CameraSize * 2f) < .001f,
+                "boss camera remains exactly 2x normal zoom without map/HUD auto zoom-out");
+            Check(Mathf.Abs(camera.transform.position.x - map.bounds.center.x) < .001f,
+                "boss camera remains horizontally centered");
+            var arena = OctopusBossPattern.Arena;
+            foreach (var point in new[] { new Vector3(arena.xMin, arena.yMin, 0), new Vector3(arena.xMax, arena.yMin, 0),
+                new Vector3(arena.xMin, arena.yMax, 0), new Vector3(arena.xMax, arena.yMax, 0) })
             {
-                var p = camera.WorldToViewportPoint(new Vector3(x == 0 ? b.min.x : b.max.x,
-                    y == 0 ? b.min.y : b.max.y, b.center.z));
+                var p = camera.WorldToViewportPoint(point);
                 Check(p.z > 0 && p.x >= 0 && p.x <= 1 && p.y >= 0 && p.y <= 1,
-                    "all four map SpriteRenderer bounds corners stay inside the live camera viewport");
+                    "combat arena corner remains inside the fixed 2x view");
             }
-            float viewWidth = 2f * camera.orthographicSize * camera.aspect;
-            float viewHeight = 2f * camera.orthographicSize;
-            Debug.Log($"[Stage5MapCameraValidation] bounds={b.size.x:F2}x{b.size.y:F2} " +
-                $"cameraView={viewWidth:F2}x{viewHeight:F2} " +
-                $"center=({b.center.x:F2},{b.center.y:F2}) cornersInside=true.");
+            Debug.Log($"[Stage5FixedZoomValidation] size={camera.orthographicSize:F4}; ratio={camera.orthographicSize / GameConfig.CameraSize:F2}; " +
+                $"center={camera.transform.position}; mapBounds={map.bounds}; fullArtworkFitIsNotRequired=true.");
         }
-        static void VerifyAspectChangesKeepMapVisible(Bounds bounds)
+        static void VerifyFixedViewportAspects(Bounds bounds)
         {
             foreach (float screenAspect in new[] { 4f / 3f, 16f / 9f, 21f / 9f, 9f / 16f })
             {
                 var viewport = PlayerCameraFollow.AspectFitViewport(screenAspect, FiniteBeach.Aspect);
                 float viewportAspect = screenAspect * viewport.width / viewport.height;
-                float size = PlayerCameraFollow.MapFitOrthographicSize(bounds, viewportAspect);
-                bool visible = 2f * size >= bounds.size.y && 2f * size * viewportAspect >= bounds.size.x;
-                Check(Mathf.Abs(viewportAspect - FiniteBeach.Aspect) < .001f && visible &&
-                    viewport.xMin >= 0 && viewport.yMin >= 0 && viewport.xMax <= 1 && viewport.yMax <= 1,
-                    "fixed gameplay viewport letterboxes without cropping map at screen aspect " + screenAspect.ToString("F3"));
+                Check(Mathf.Abs(viewportAspect - FiniteBeach.Aspect) < .001f &&
+                    Mathf.Approximately(PlayerCameraFollow.BossOrthographicSize, GameConfig.CameraSize * 2f),
+                    "fixed 2x camera keeps the same gameplay aspect at screen aspect " + screenAspect.ToString("F3"));
             }
         }
         static Type EditorType(string name)
@@ -348,6 +347,7 @@ namespace OctopusSurvivors.EditorTools
             var bossArt = map.sprite;
             var scale = map.transform.localScale;
             var bounds = map.bounds;
+            Vector2 cameraCenter = camera.transform.position;
             foreach (byte pattern in new byte[] { 2, 0, 4, 0, 2 })
             {
                 var next = original; next.Pattern = pattern; session.OctopusBoss.Value = next;
@@ -363,9 +363,9 @@ namespace OctopusSurvivors.EditorTools
                 Check(follow.BossMapCameraActive, "boss camera remains active for boss pattern " + pattern);
                 Check(map.transform.localScale == scale && map.bounds == bounds,
                     "map scale, pivot and bounds remain unchanged for boss pattern " + pattern);
-                VerifyMapInsideCamera(map, camera);
-                Check(Vector2.Distance(camera.transform.position, bounds.center) < .001f,
-                    "boss camera remains centered for boss pattern " + pattern);
+                VerifyBossCameraFrame(map, camera);
+                Check(Vector2.Distance(camera.transform.position, cameraCenter) < .001f,
+                    "boss combat framing remains fixed for boss pattern " + pattern);
             }
             session.BossAlive.Value = false;
             yield return null;
@@ -418,13 +418,13 @@ namespace OctopusSurvivors.EditorTools
                     for (int frame = 0; frame < 5; frame++) yield return null;
                     Check(Screen.width == dimensions.x && Screen.height == dimensions.y,
                         "live Game view resolution changed to " + dimensions);
-                    VerifyMapInsideCamera(map, camera);
+                    VerifyBossCameraFrame(map, camera);
                     var visual = FindAnyObjectByType<OctopusBossVisual>();
                     Check(visual != null, "boss remains present after live resolution change");
                     VerifyHeadInsideCamera(visual, camera);
                     VerifyHeadDoesNotOverlapBossHud(visual, camera);
                     Debug.Log($"[Stage5LiveResize] screen={Screen.width}x{Screen.height}; rect={camera.rect}; " +
-                        $"cameraSize={camera.orthographicSize:F2}; mapCornersInside=true.");
+                        $"cameraSize={camera.orthographicSize:F2}; fixedZoom=2x; combatArenaInside=true.");
                 }
             }
             finally

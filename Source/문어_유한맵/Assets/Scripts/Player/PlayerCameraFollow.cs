@@ -28,6 +28,7 @@ namespace OctopusSurvivors
 
         public static bool ShouldUseBossMap(GameSession session) => session != null && session.IsPlaying &&
             session.Stage.Value == 5 && session.BossAlive.Value;
+        public static float BossOrthographicSize => GameConfig.CameraSize * 2f;
         public static void StrongImpact(Vector2 point)
         {
             if (OctopusPlayer.Local != null && Vector2.Distance(OctopusPlayer.Local.Pos, point) < 10f)
@@ -45,14 +46,6 @@ namespace OctopusSurvivors
             }
             float height = screenAspect / targetAspect;
             return new Rect(0f, (1f - height) * .5f, 1f, height);
-        }
-
-        public static float MapFitOrthographicSize(Bounds bounds, float aspect)
-        {
-            aspect = Mathf.Max(0.01f, aspect);
-            float verticalSize = bounds.size.y / 2f;
-            float horizontalSize = bounds.size.x / (2f * aspect);
-            return Mathf.Max(verticalSize, horizontalSize) * 1.05f;
         }
 
         void Awake()
@@ -158,10 +151,10 @@ namespace OctopusSurvivors
 
             Bounds bounds = map.bounds;
             float aspect = Mathf.Max(0.01f, _camera.aspect);
-            // Apply the final size once. Both constraints are minima, not successive zooms.
-            float requiredSize = Mathf.Max(MapFitOrthographicSize(bounds, aspect), BossHudMinimumSize(bounds.center.y));
-            _camera.orthographicSize = requiredSize;
-            transform.position = new Vector3(bounds.center.x, bounds.center.y, transform.position.z);
+            // User-selected fixed 2x view. Never zoom farther out to fit the artwork or HUD.
+            _camera.orthographicSize = BossOrthographicSize;
+            float centerY = Mathf.Max(OctopusBossPattern.OverviewCenter.y, BossHudMinimumCenterY());
+            transform.position = new Vector3(bounds.center.x, centerY, transform.position.z);
             shakeOffset = Vector3.zero;
 
             float viewWidth = 2f * _camera.orthographicSize * aspect;
@@ -176,16 +169,16 @@ namespace OctopusSurvivors
             if (fitChanged)
             {
                 Debug.Log($"[Stage5MapCamera] mapBounds={bounds.size.x:F2}x{bounds.size.y:F2} " +
-                    $"center=({bounds.center.x:F2},{bounds.center.y:F2}); " +
+                    $"mapCenter=({bounds.center.x:F2},{bounds.center.y:F2}); cameraCenter={transform.position}; " +
                     $"cameraView={viewWidth:F2}x{viewHeight:F2}; aspect={aspect:F3}; " +
-                    $"fullyVisible={fullyVisible}; margin>=5%; actor positions fixed.");
+                    $"fullyVisible={fullyVisible}; fixedZoom=2x; size={_camera.orthographicSize:F2}; actor positions fixed.");
                 _lastLoggedAspect = aspect;
                 _lastLoggedSize = _camera.orthographicSize;
                 _lastLoggedBounds = bounds;
                 _hasLoggedBossMapFit = true;
             }
         }
-        float BossHudMinimumSize(float mapCenterY)
+        float BossHudMinimumCenterY()
         {
             if (_bossVisual == null) _bossVisual = FindAnyObjectByType<OctopusBossVisual>();
             if (_bossHud == null)
@@ -194,18 +187,21 @@ namespace OctopusSurvivors
                 if (hud != null) _bossHud = hud.GetComponent<RectTransform>();
             }
             if (_bossVisual == null || _bossVisual.BodyRenderer == null || _bossHud == null ||
-                !_bossHud.gameObject.activeInHierarchy || _camera.pixelHeight <= 0) return 0f;
+                !_bossHud.gameObject.activeInHierarchy || _camera.pixelHeight <= 0) return OctopusBossPattern.OverviewCenter.y;
             var canvas = _bossHud.GetComponentInParent<Canvas>();
-            if (canvas == null) return 0f;
+            if (canvas == null) return OctopusBossPattern.OverviewCenter.y;
             _bossHud.GetWorldCorners(_hudCorners);
             float hudBottom = float.PositiveInfinity;
             foreach (var corner in _hudCorners)
                 hudBottom = Mathf.Min(hudBottom, RectTransformUtility.WorldToScreenPoint(
                     canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera, corner).y);
             float safeTop = (hudBottom - 12f - _camera.pixelRect.yMin) / _camera.pixelHeight;
-            if (safeTop <= .5f) return 0f;
+            if (safeTop <= .5f) return OctopusBossPattern.OverviewCenter.y;
             safeTop = Mathf.Min(1f, safeTop);
-            return (_bossVisual.BodyRenderer.bounds.max.y - mapCenterY) / (2f * safeTop - 1f);
+            // Use the resting portrait top, so vulnerability poses do not move the camera.
+            float bodyTop = OctopusBossPattern.Head.y - FiniteBeach.Height * .14f +
+                _bossVisual.BodyRenderer.bounds.extents.y;
+            return bodyTop - (2f * safeTop - 1f) * BossOrthographicSize;
         }
     }
 }
