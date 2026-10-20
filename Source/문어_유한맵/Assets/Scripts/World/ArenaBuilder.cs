@@ -12,7 +12,9 @@ namespace OctopusSurvivors
             Destroy();
             root = new GameObject("FiniteBeachArena");
             var texture = RuntimeArt.BeachTexture();
-            BuildBackdrop(texture);
+            float artworkHeight = OctopusBossPattern.OverviewSize * 2f;
+            float artworkWidth = artworkHeight * texture.width / texture.height;
+            BuildBackdrop(texture, artworkWidth);
             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
                 new Vector2(.5f, .5f), 100f, 0, SpriteMeshType.FullRect);
             var beach = new GameObject("Original beach artwork");
@@ -20,8 +22,8 @@ namespace OctopusSurvivors
             var renderer = beach.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
             renderer.sortingOrder = -20;
-            beach.transform.localScale = new Vector3(FiniteBeach.Width / sprite.bounds.size.x,
-                FiniteBeach.Height / sprite.bounds.size.y, 1);
+            beach.transform.localScale = new Vector3(artworkWidth / sprite.bounds.size.x,
+                artworkHeight / sprite.bounds.size.y, 1);
         }
         public static void Destroy()
         {
@@ -39,11 +41,11 @@ namespace OctopusSurvivors
             var material = new Material(Shader.Find("Sprites/Default")) { mainTexture = t };
             backdropAssets.Add(t); backdropAssets.Add(material); return material;
         }
-        static void BuildBackdrop(Texture2D source)
+        static void BuildBackdrop(Texture2D source, float artworkWidth)
         {
             var water = Tile(source, new Rect(source.width * .40f, 0, 1024, 80));
             var sand = Tile(source, new Rect(source.width * .40f, source.height * .60f, 1024, 512));
-            float pixelsPerWorld = source.width / FiniteBeach.Width;
+            float pixelsPerWorld = source.width / artworkWidth;
             for (int layer = 0; layer < 2; layer++)
             {
                 var go = new GameObject(layer == 0 ? "Continuous outer ocean" : "Upper beach continuation");
