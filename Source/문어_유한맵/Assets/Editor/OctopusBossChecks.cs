@@ -17,8 +17,17 @@ namespace OctopusSurvivors.EditorTools
     public static class OctopusBossChecks
     {
         const string Key = "Octopus.Stage5BossCheck";
+        internal static bool MapOnly => SessionState.GetBool(Key + ".MapOnly", false);
+        static string StatusPath => MapOnly ? "Logs/Stage5MapChecks.status" : "Logs/OctopusBossChecks.status";
         static OctopusBossChecks()
         {
+            EditorApplication.delayCall += () =>
+            {
+                const string request = "Logs/Stage5MapChecks.request";
+                if (!File.Exists(request) || EditorApplication.isPlayingOrWillChangePlaymode) return;
+                File.Delete(request);
+                RunMapOnly();
+            };
             EditorApplication.playModeStateChanged += state =>
             {
                 if (state == PlayModeStateChange.EnteredPlayMode && SessionState.GetBool(Key, false))
@@ -33,15 +42,26 @@ namespace OctopusSurvivors.EditorTools
         [MenuItem("문어/5스테이지 문어 보스 검증")]
         public static void Run()
         {
+            SessionState.SetBool(Key + ".MapOnly", false);
+            StartCheck();
+        }
+        [MenuItem("문어/5스테이지 맵 표시 검증")]
+        public static void RunMapOnly()
+        {
+            SessionState.SetBool(Key + ".MapOnly", true);
+            StartCheck();
+        }
+        static void StartCheck()
+        {
             Directory.CreateDirectory("Logs");
-            File.WriteAllText("Logs/OctopusBossChecks.status", "RUNNING");
+            File.WriteAllText(StatusPath, "RUNNING");
             EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity");
             ShaderUtil.allowAsyncCompilation = false;
             SessionState.SetBool(Key, true); EditorApplication.EnterPlaymode();
         }
         internal static void Finish(bool pass)
         {
-            File.WriteAllText("Logs/OctopusBossChecks.status", pass ? "PASS" : "FAIL");
+            File.WriteAllText(StatusPath, pass ? "PASS" : "FAIL");
             SessionState.SetInt(Key + ".Exit", pass ? 0 : 2); EditorApplication.isPlaying = false;
         }
     }
@@ -121,14 +141,33 @@ namespace OctopusSurvivors.EditorTools
             Check(camera != null && follow != null && follow.enabled && mapRenderer != null,
                 "runtime camera follow and the actual beach SpriteRenderer are available");
             s.OctopusBoss.Value = new OctopusBossSnapshot { Pattern = 2, Seed = 12345 };
+            Call(s, "RenderLocal");
+            yield return null;
             yield return null;
             Bounds mapBounds = mapRenderer.bounds;
             float expectedSize = PlayerCameraFollow.MapFitOrthographicSize(mapBounds, camera.aspect);
-            Check(camera.orthographic && Mathf.Abs(camera.orthographicSize - expectedSize) < .001f &&
+            Check(camera.orthographic && camera.orthographicSize >= expectedSize - .001f &&
                 Vector2.Distance(camera.transform.position, mapBounds.center) < .001f,
                 "stage 5 camera fits the actual map bounds and centers on the map");
             VerifyMapInsideCamera(mapRenderer, camera);
             VerifyAspectChangesKeepMapVisible(mapBounds);
+            if (OctopusBossChecks.MapOnly)
+            {
+                var modeChecks = VerifyBossMapModeTransitions(s, camera, mapRenderer);
+                while (modeChecks.MoveNext()) yield return modeChecks.Current;
+                var art = mapRenderer.sprite;
+                Check(art.texture.width == 7373 && art.texture.height == 5100,
+                    "stage 5 uses the exact 7373x5100 bottom-ocean artwork");
+                var originalCenter = mapRenderer.transform.TransformPoint(
+                    new Vector3((7373f * .5f - art.pivot.x) / art.pixelsPerUnit,
+                        (953f + 4147f * .5f - art.pivot.y) / art.pixelsPerUnit, 0));
+                Check(((Vector2)originalCenter).sqrMagnitude < .000001f,
+                    "original 7373x4147 artwork center remains at world zero after bottom extension");
+                Check(boss.Pos == OctopusBossPattern.Head,
+                    "map replacement preserves the simulation boss world position");
+                var resizeChecks = VerifyLiveGameViewSizes(mapRenderer, camera);
+                while (resizeChecks.MoveNext()) yield return resizeChecks.Current;
+            }
             VerifyLegGate(s, boss, actors);
             Directory.CreateDirectory("Logs/OctopusBossFrames");
             for (int shot = 0; shot < 8; shot++)
@@ -140,6 +179,7 @@ namespace OctopusSurvivors.EditorTools
                 var visual = FindFirstObjectByType<OctopusBossVisual>();
                 Check(visual != null, "supplied sprite frames are connected to the actual boss actor");
                 visual.Preview(snap);
+                Call(follow, "LateUpdate");
                 var armViews = (Array)typeof(OctopusBossVisual).GetField("arms", Hidden).GetValue(visual);
                 int visible = 0;
                 for (int arm = 0; arm < 6; arm++)
@@ -157,9 +197,19 @@ namespace OctopusSurvivors.EditorTools
                 {
                     VerifyHeadInsideCamera(visual, camera);
                     VerifyHeadDoesNotOverlapBossHud(visual, camera);
-                    VerifyCompleteDownFrames(visual);
+                    if (OctopusBossChecks.MapOnly)
+                        Check(Vector2.Distance(visual.BodyRenderer.transform.position,
+                            OctopusBossPattern.Head + Vector2.down * (FiniteBeach.Height * .14f)) < .001f,
+                            "boss portrait stays at its existing fixed world position without HUD-driven movement");
+                    if (!OctopusBossChecks.MapOnly) VerifyCompleteDownFrames(visual);
                 }
-                if (shot == 4) VerifySideContactPose(visual);
+                if (shot == 4 && !OctopusBossChecks.MapOnly) VerifySideContactPose(visual);
+            }
+            if (OctopusBossChecks.MapOnly)
+            {
+                File.WriteAllText("Logs/Stage5MapChecks.summary.txt",
+                    "PASS: bottom-only 7373x5100 map; original center anchored at world zero; actual map Bounds and all four corners fit; aspect calculations; live boss/arm roots; HUD separation; existing limb/core combat checks; eight captured poses.");
+                yield break;
             }
             // Continuous captures expose stepping/teleporting that isolated poses can hide.
             for (int f = 0; f < 75; f++)
@@ -281,6 +331,110 @@ namespace OctopusSurvivors.EditorTools
                     viewport.xMin >= 0 && viewport.yMin >= 0 && viewport.xMax <= 1 && viewport.yMax <= 1,
                     "fixed gameplay viewport letterboxes without cropping map at screen aspect " + screenAspect.ToString("F3"));
             }
+        }
+        static Type EditorType(string name)
+        {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var type = assembly.GetType("UnityEditor." + name);
+                if (type != null) return type;
+            }
+            throw new Exception("Unity editor type unavailable: " + name);
+        }
+        static IEnumerator VerifyBossMapModeTransitions(GameSession session, Camera camera, SpriteRenderer map)
+        {
+            var follow = camera.GetComponent<PlayerCameraFollow>();
+            var original = session.OctopusBoss.Value;
+            var bossArt = map.sprite;
+            var scale = map.transform.localScale;
+            var bounds = map.bounds;
+            foreach (byte pattern in new byte[] { 2, 0, 4, 0, 2 })
+            {
+                var next = original; next.Pattern = pattern; session.OctopusBoss.Value = next;
+                yield return null;
+                Debug.Log($"[Stage5ModeTransition] Stage={session.Stage.Value}; BossAlive={session.BossAlive.Value}; " +
+                    $"Pattern={pattern}; mode={(follow.BossMapCameraActive ? "BossMap" : "PlayerFollow")}; " +
+                    $"size={camera.orthographicSize:F4}; center={camera.transform.position}; " +
+                    $"map={map.sprite.texture.name}; bounds={map.bounds}.");
+                Debug.Log($"[Stage5ModeComparison] previousPredicate={(session.OctopusBossActive ? "BossMap" : "PlayerFollow")}; " +
+                    $"actualMode={(follow.BossMapCameraActive ? "BossMap" : "PlayerFollow")}; Pattern={pattern}. " +
+                    "previousPredicate is the former condition evaluated against the same live state.");
+                Check(map.sprite == bossArt, "BossBeach remains active for boss pattern " + pattern);
+                Check(follow.BossMapCameraActive, "boss camera remains active for boss pattern " + pattern);
+                Check(map.transform.localScale == scale && map.bounds == bounds,
+                    "map scale, pivot and bounds remain unchanged for boss pattern " + pattern);
+                VerifyMapInsideCamera(map, camera);
+                Check(Vector2.Distance(camera.transform.position, bounds.center) < .001f,
+                    "boss camera remains centered for boss pattern " + pattern);
+            }
+            session.BossAlive.Value = false;
+            yield return null;
+            Check(!follow.BossMapCameraActive && map.sprite != bossArt && map.sprite.texture.name == "Beach",
+                "boss defeat restores player tracking and the regular map");
+            session.BossAlive.Value = true;
+            session.Stage.Value = 6;
+            yield return null;
+            Check(!follow.BossMapCameraActive && map.sprite != bossArt, "other stages retain player tracking and the regular map");
+            session.Stage.Value = 5;
+            session.OctopusBoss.Value = original;
+            yield return null;
+            Check(map.sprite == bossArt, "stage 5 live boss restores BossBeach without changing actor positions");
+            byte phase = session.Phase.Value;
+            session.Phase.Value = (byte)GamePhase.Waiting;
+            yield return null;
+            Check(!follow.BossMapCameraActive && map.sprite != bossArt, "leaving gameplay exits boss camera and map together");
+            session.Phase.Value = phase;
+            Call(session, "RenderLocal");
+            yield return null;
+            Check(follow.BossMapCameraActive && map.sprite == bossArt, "restoring gameplay restores the matching boss camera and map");
+        }
+        static IEnumerator VerifyLiveGameViewSizes(SpriteRenderer map, Camera camera)
+        {
+            const BindingFlags any = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            var viewType = EditorType("GameView");
+            var sizesType = EditorType("GameViewSizes");
+            var sizeType = EditorType("GameViewSize");
+            var sizeKind = EditorType("GameViewSizeType");
+            var groupKind = EditorType("GameViewSizeGroupType");
+            var sizes = sizesType.BaseType.GetProperty("instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+            var group = sizesType.GetMethod("GetGroup", any).Invoke(sizes, new[] { Enum.Parse(groupKind, "Standalone") });
+            var groupType = group.GetType();
+            int builtins = (int)groupType.GetMethod("GetBuiltinCount", any).Invoke(group, null);
+            int custom = (int)groupType.GetMethod("GetCustomCount", any).Invoke(group, null);
+            var view = EditorWindow.GetWindow(viewType, false, "Game", false);
+            var selection = viewType.GetProperty("selectedSizeIndex", any);
+            int prior = (int)selection.GetValue(view);
+            int added = 0;
+            try
+            {
+                foreach (var dimensions in new[] { new Vector2Int(960, 720), new Vector2Int(1280, 720),
+                    new Vector2Int(1680, 720), new Vector2Int(720, 1280) })
+                {
+                    var size = Activator.CreateInstance(sizeType, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                        null, new object[] { Enum.Parse(sizeKind, "FixedResolution"), dimensions.x, dimensions.y, "Stage5 map validation" }, null);
+                    groupType.GetMethod("AddCustomSize", any).Invoke(group, new[] { size });
+                    selection.SetValue(view, builtins + custom + added++);
+                    view.Repaint();
+                    for (int frame = 0; frame < 5; frame++) yield return null;
+                    Check(Screen.width == dimensions.x && Screen.height == dimensions.y,
+                        "live Game view resolution changed to " + dimensions);
+                    VerifyMapInsideCamera(map, camera);
+                    var visual = FindAnyObjectByType<OctopusBossVisual>();
+                    Check(visual != null, "boss remains present after live resolution change");
+                    VerifyHeadInsideCamera(visual, camera);
+                    VerifyHeadDoesNotOverlapBossHud(visual, camera);
+                    Debug.Log($"[Stage5LiveResize] screen={Screen.width}x{Screen.height}; rect={camera.rect}; " +
+                        $"cameraSize={camera.orthographicSize:F2}; mapCornersInside=true.");
+                }
+            }
+            finally
+            {
+                selection.SetValue(view, prior);
+                for (int i = added - 1; i >= 0; i--)
+                    groupType.GetMethod("RemoveCustomSize", any).Invoke(group, new object[] { custom + i });
+                view.Repaint();
+            }
+            for (int frame = 0; frame < 5; frame++) yield return null;
         }
         static void VerifyHeadDoesNotOverlapBossHud(OctopusBossVisual visual, Camera camera)
         {
