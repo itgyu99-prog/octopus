@@ -45,7 +45,8 @@ namespace OctopusSurvivors
         public const float Interval = .16f, ContactOffset = .34f, SwingDuration = .78f;
         public const float RelayFirstContact = .75f, RelayDuration = 6.65f;
         public const float HalfAttackStart = 1.65f, HalfAttackSeconds = 3f, HalfDuration = 7.3f;
-        public const float SlamInterval = .24f;
+        public const float SlamInterval = .26f;
+        public const float SideSlamInterval = .48f;
         public static Vector2 Head => new Vector2(0, FiniteBeach.Height * .53f);
         public static Vector2 OverviewCenter => new Vector2(0, FiniteBeach.Height * .11f);
         public static float OverviewSize => FiniteBeach.Height * .64f;
@@ -58,8 +59,15 @@ namespace OctopusSurvivors
         public static bool ArmsVisible(OctopusBossSnapshot s) => s.Pattern != 5 &&
             !(s.Pattern == 4 && ((s.Time >= .55f && s.Time < 1.1f) || (s.Time >= 5.2f && s.Time < 5.65f)));
         public static Vector2 ArmRoot(OctopusBossSnapshot s, int arm) => s.Pattern == 4 && s.Time >= 1.1f && s.Time < 5.2f ? HalfRoot(s.Half, arm) : RestRoot(arm);
-        public static Vector2 ArmTargetPoint(OctopusBossSnapshot s, int arm) => ArmRoot(s, arm) +
-            (s.Pattern == 4 && s.Time >= 1.65f && s.Time < 4.65f ? Vector2.down * HalfCell(s.Half, arm).height * .30f : Vector2.up * IdleHeight * .35f);
+        public static Vector2 ArmTargetPoint(OctopusBossSnapshot s, int arm)
+        {
+            if (s.Pattern == 4 && s.Time >= HalfAttackStart && s.Time < HalfAttackStart + HalfAttackSeconds)
+            {
+                int cycle = Mathf.Max(0, Mathf.FloorToInt((s.Time - HalfContact(s.Half, arm, 0)) / HalfInterval(s.Half)));
+                return HalfTarget(s.Seed, s.Half, arm, cycle);
+            }
+            return ArmRoot(s, arm) + Vector2.up * IdleHeight * .35f;
+        }
         public static int RelayArm(int strike) => (strike % 6) / 2 + (strike % 2) * 3;
         public static float RelayContact(int strike) => RelayFirstContact + strike * Interval;
         public static Rect HalfRect(int half)
@@ -75,14 +83,17 @@ namespace OctopusSurvivors
         }
         public static Rect HalfCell(int half, int arm)
         {
-            var r = HalfRect(half); int columns = half < 2 ? 3 : 2, rows = 6 / columns;
+            var r = HalfRect(half); int columns = half < 2 ? 6 : 1, rows = 6 / columns;
             float w = r.width / columns, h = r.height / rows;
-            return new Rect(r.xMin + arm % columns * w, r.yMin + arm / columns * h, w, h);
+            int row = half < 2 ? arm / columns : rows - 1 - arm / columns;
+            return new Rect(r.xMin + arm % columns * w, r.yMin + row * h, w, h);
         }
         public static Vector2 HalfRoot(int half, int arm)
         {
-            var c = HalfCell(half, arm);
-            return new Vector2(c.center.x, c.yMax - c.height * .08f);
+            var r = HalfRect(half); var c = HalfCell(half, arm);
+            if (half < 2) return new Vector2(c.center.x, c.yMax - c.height * .08f);
+            float inset = r.width * (arm % 2 == 0 ? .10f : .23f);
+            return new Vector2(half == 2 ? r.xMin + inset : r.xMax - inset, c.center.y);
         }
         public static Vector2 RelayTarget(uint seed, int strike)
         {
@@ -94,12 +105,22 @@ namespace OctopusSurvivors
         {
             var c = HalfCell(half, arm);
             int n = cycle * 12 + arm * 2 + 113;
+            if (half >= 2)
+            {
+                float inward = half == 2 ? 1f : -1f;
+                return c.center + new Vector2(inward * c.width * .22f + (Sample(seed, n) - .5f) * c.width * .06f,
+                    (Sample(seed, n + 1) - .5f) * c.height * .22f);
+            }
             return c.center + new Vector2((Sample(seed, n) - .5f) * c.width * .30f,
                 -c.height * .22f + (Sample(seed, n + 1) - .5f) * c.height * .16f);
         }
-        public static Vector2 HalfRadii(int half) => new Vector2(HalfCell(half, 0).width * .65f,
-            HalfCell(half, 0).height * .65f);
-        public static float HalfContact(int arm, int cycle) => HalfAttackStart + .09f + arm * .014f + cycle * SlamInterval;
+        public static Vector2 HalfRadii(int half) => half < 2
+            ? new Vector2(HalfCell(half, 0).width * .65f, HalfCell(half, 0).height * .65f)
+            : new Vector2(HalfCell(half, 0).width * .22f, HalfCell(half, 0).height * .60f);
+        public static float HalfInterval(int half) => half < 2 ? SlamInterval : SideSlamInterval;
+        public static float HalfContact(int half, int arm, int cycle) => half < 2
+            ? HalfAttackStart + .09f + arm * .014f + cycle * SlamInterval
+            : HalfAttackStart + SideSlamInterval * .32f + arm * .035f + cycle * SideSlamInterval;
         public static bool InFootprint(Vector2 p, Vector2 center, Vector2 radii, float padding = 0)
         {
             var d = p - center;

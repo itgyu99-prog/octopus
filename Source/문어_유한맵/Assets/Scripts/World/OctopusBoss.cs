@@ -112,7 +112,7 @@ namespace OctopusSurvivors
                 for (int arm = 0; arm < 6; arm++)
                 {
                     if (state.ArmHealth(arm) <= 0) continue;
-                    float contact = OctopusBossPattern.HalfContact(arm, cycle);
+                    float contact = OctopusBossPattern.HalfContact(state.Half, arm, cycle);
                     if (contact >= OctopusBossPattern.HalfAttackStart + OctopusBossPattern.HalfAttackSeconds ||
                         before >= contact || state.Time < contact) continue;
                     HitOctopusFootprint(OctopusBossPattern.HalfTarget(state.Seed, state.Half, arm, cycle),

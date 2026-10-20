@@ -19,7 +19,7 @@ namespace OctopusSurvivors
             public bool Down;
         }
         static Frame[] idle, whip, burrow, slam;
-        static Frame contact, head;
+        static Frame head;
         static readonly List<UnityEngine.Object> assets = new List<UnityEngine.Object>();
         static readonly Dictionary<Texture2D, Color32[]> pixelCache = new Dictionary<Texture2D, Color32[]>();
         const int Columns = 32, Rows = 18;
@@ -55,7 +55,7 @@ namespace OctopusSurvivors
         static void ResetAssets()
         {
             foreach (var o in assets) if (o != null) Destroy(o);
-            assets.Clear(); pixelCache.Clear(); idle = whip = burrow = slam = null; contact = head = null;
+            assets.Clear(); pixelCache.Clear(); idle = whip = burrow = slam = null; head = null;
         }
         static Texture2D Load(string name, bool whiteKey = false)
         {
@@ -177,9 +177,7 @@ namespace OctopusSurvivors
             whip = Sheet("Whip", 5, 5, 21, h, false, true);
             burrow = Sheet("Burrow", 4, 3, 12, h);
             slam = Sheet("Slam", 3, 3, 9, h);
-            var texture = Load("Contact");
-            contact = Make(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(35, 4), 11.2f);
-            texture = Load("Body");
+            var texture = Load("Body");
             head = Make(texture, new Rect(0, 0, texture.width, texture.height),
                 new Vector2(texture.width * .5f, texture.height * .5f), 100);
         }
@@ -287,9 +285,9 @@ namespace OctopusSurvivors
             float reach = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.13f, OctopusBossPattern.ContactOffset, age));
             if (age > .45f) reach *= 1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.45f, .76f, age));
             Frame f;
-            if (age >= .28f && age < .55f) f = contact;
-            else if (age < .32f) f = whip[Mathf.Clamp((int)(age / .32f * 12), 0, 11)];
-            else f = whip[Mathf.Clamp(13 + (int)((age - .55f) / .23f * 8), 13, 20)];
+            if (age < .30f) f = whip[Mathf.Clamp((int)(age / .30f * 12), 0, 11)];
+            else if (age < .40f) f = whip[12];
+            else f = whip[Mathf.Clamp(13 + (int)((age - .40f) / .38f * 8), 13, 20)];
             DrawFrame(arm, f, root, target - root, reach, arm >= 3);
             if (reach > .55f)
             {
@@ -311,9 +309,14 @@ namespace OctopusSurvivors
             if (t >= 4.65f && t < 5.2f) { DrawFrame(arm, burrow[Mathf.Clamp(8 + (int)((t - 4.65f) / .55f * 4), 8, 11)], raised, Vector2.zero, 0, arm >= 3); return; }
             if (t >= 5.65f && t < 6.2f) { DrawFrame(arm, burrow[Mathf.Clamp(4 + (int)((t - 5.65f) / .55f * 4), 4, 7)], rest, Vector2.zero, 0, arm >= 3); return; }
             if (t >= 6.2f) { DrawFrame(arm, idle[(int)(t * 8 + arm) % 4], rest, Vector2.zero, 0, arm >= 3); return; }
-            float first = OctopusBossPattern.HalfContact(arm, 0);
-            int cycle = Mathf.Max(0, Mathf.FloorToInt((t - first) / OctopusBossPattern.SlamInterval));
-            float contactTime = OctopusBossPattern.HalfContact(arm, cycle);
+            float first = OctopusBossPattern.HalfContact(s.Half, arm, 0);
+            if (s.Half >= 2)
+            {
+                DrawSideHalfArm(s, arm, raised);
+                return;
+            }
+            int cycle = Mathf.Max(0, Mathf.FloorToInt((t - first) / OctopusBossPattern.HalfInterval(s.Half)));
+            float contactTime = OctopusBossPattern.HalfContact(s.Half, arm, cycle);
             float since = t - contactTime;
             var target = OctopusBossPattern.HalfTarget(s.Seed, s.Half, arm, cycle);
             float progress = Mathf.Repeat(t - first + .09f, OctopusBossPattern.SlamInterval) / OctopusBossPattern.SlamInterval;
@@ -327,6 +330,29 @@ namespace OctopusSurvivors
                 trails[arm].Root.SetActive(true);
                 DrawMesh(trails[arm], frame, raised, target - raised, reach * .78f, arm >= 3);
             }
+            if (since >= 0) DrawImpact(arm, target, OctopusBossPattern.HalfRadii(s.Half), since,
+                s.Seed + (uint)(cycle * 6 + arm), OctopusBossPattern.HalfRect(s.Half));
+        }
+        void DrawSideHalfArm(OctopusBossSnapshot s, int arm, Vector2 root)
+        {
+            float t = s.Time, interval = OctopusBossPattern.SideSlamInterval;
+            float firstCycle = OctopusBossPattern.HalfAttackStart + arm * .035f;
+            int cycle = Mathf.Max(0, Mathf.FloorToInt((t - firstCycle) / interval));
+            float sequenceStart = firstCycle + cycle * interval;
+            float progress = Mathf.Clamp01((t - sequenceStart) / interval);
+            float contactTime = OctopusBossPattern.HalfContact(s.Half, arm, cycle);
+            float since = t - contactTime;
+            Vector2 target = OctopusBossPattern.HalfTarget(s.Seed, s.Half, arm, cycle);
+            float age = progress * interval;
+            int frame = age < .08f ? Mathf.RoundToInt(Mathf.Lerp(0, 3, age / .08f)) :
+                age < .20f ? Mathf.RoundToInt(Mathf.Lerp(4, 7, (age - .08f) / .12f)) :
+                age < .28f ? Mathf.RoundToInt(Mathf.Lerp(8, 11, (age - .20f) / .08f)) :
+                age < .36f ? 12 :
+                age < .44f ? Mathf.RoundToInt(Mathf.Lerp(13, 16, (age - .36f) / .08f)) :
+                Mathf.RoundToInt(Mathf.Lerp(17, 20, (age - .44f) / .04f));
+            float reach = progress < .20f ? Mathf.SmoothStep(0, 1, progress / .20f) :
+                progress < .36f ? 1f : 1f - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.36f, 1, progress));
+            DrawFrame(arm, whip[Mathf.Clamp(frame, 0, 20)], root, target - root, reach, s.Half == 3);
             if (since >= 0) DrawImpact(arm, target, OctopusBossPattern.HalfRadii(s.Half), since,
                 s.Seed + (uint)(cycle * 6 + arm), OctopusBossPattern.HalfRect(s.Half));
         }

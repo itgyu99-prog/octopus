@@ -250,13 +250,31 @@ namespace OctopusSurvivors.EditorTools
             {
                 var r = OctopusBossPattern.HalfRect(half);
                 Check(Mathf.Abs(r.width * r.height * 2 - OctopusBossPattern.Arena.width * OctopusBossPattern.Arena.height) < .01f, "exact half area " + half);
+                if (half < 2)
+                {
+                    Check(Mathf.Abs(OctopusBossPattern.HalfCell(half, 0).width * 6 - r.width) < .01f &&
+                        Mathf.Abs(OctopusBossPattern.HalfCell(half, 0).height - r.height) < .01f,
+                        "vertical barrage uses one row of six horizontal lanes " + half);
+                }
+                else
+                {
+                    Check(Mathf.Abs(OctopusBossPattern.HalfCell(half, 0).width - r.width) < .01f &&
+                        Mathf.Abs(OctopusBossPattern.HalfCell(half, 0).height * 6 - r.height) < .01f,
+                        "side barrage uses six vertical lanes " + half);
+                }
                 for (int a = 0; a < 6; a++)
                 {
                     Check(r.Contains(OctopusBossPattern.HalfRoot(half, a)), "all six emerge inside selected half");
+                    if (a > 0 && half < 2)
+                        Check(OctopusBossPattern.HalfRoot(half, a).x > OctopusBossPattern.HalfRoot(half, a - 1).x,
+                            "vertical lanes progress left-to-right " + half + "/" + a);
+                    if (a > 0 && half >= 2)
+                        Check(OctopusBossPattern.HalfRoot(half, a).y < OctopusBossPattern.HalfRoot(half, a - 1).y,
+                            "side roots progress down the lane " + half + "/" + a);
                     int contacts = 0;
                     for (int cycle = 0; cycle < 13; cycle++)
                     {
-                        float t = OctopusBossPattern.HalfContact(a, cycle);
+                        float t = OctopusBossPattern.HalfContact(half, a, cycle);
                         if (t >= 4.65f) continue;
                         Check(t >= 1.65f, "no damage before the 3-second active window"); contacts++;
                         var target = OctopusBossPattern.HalfTarget(12345, half, a, cycle);
@@ -264,7 +282,7 @@ namespace OctopusSurvivors.EditorTools
                         var safe = OctopusBossPattern.Arena.center * 2 - target;
                         Check(!OctopusBossPattern.HalfCanHit(safe, half, target), "safe half cannot receive slam damage");
                     }
-                    Check(contacts >= 12, "every arm slams throughout the 3-second window");
+                    Check(contacts >= (half < 2 ? 11 : 6), "every arm slams throughout the 3-second window");
                 }
             }
         }
