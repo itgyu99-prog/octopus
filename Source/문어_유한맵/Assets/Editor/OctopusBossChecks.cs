@@ -312,7 +312,10 @@ namespace OctopusSurvivors.EditorTools
                 bodyRect.xMin = Mathf.Min(bodyRect.xMin, p.x); bodyRect.xMax = Mathf.Max(bodyRect.xMax, p.x);
                 bodyRect.yMin = Mathf.Min(bodyRect.yMin, p.y); bodyRect.yMax = Mathf.Max(bodyRect.yMax, p.y);
             }
-            Check(!bodyRect.Overlaps(uiRect), "octopus body does not overlap the top boss HUD");
+            bool overlaps = bodyRect.Overlaps(uiRect);
+            Debug.Log($"[Stage5BossHudValidation] bodyScreen={bodyRect} hudScreen={uiRect} " +
+                $"bodyWorld={b} cameraSize={camera.orthographicSize:F2} cameraRect={camera.rect} overlaps={overlaps}.");
+            Check(!overlaps, "octopus body does not overlap the top boss HUD");
         }
         static void VerifySideContactPose(OctopusBossVisual visual)
         {
