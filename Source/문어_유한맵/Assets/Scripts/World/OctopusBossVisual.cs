@@ -48,9 +48,7 @@ namespace OctopusSurvivors
         OctopusBossSnapshot state, preview;
         bool isPreview, initialized;
         float observedTime, receivedAt;
-        float nextBossHudLookup;
-        RectTransform bossHud;
-        bool loggedBossHudAdjustment;
+        public SpriteRenderer BodyRenderer => body;
         byte observedPattern;
         byte hitFlags;
 
@@ -281,49 +279,6 @@ namespace OctopusSurvivors
                 arms[a].Root.SetActive(true);
                 if (s.Pattern == 4) DrawHalfArm(s, a, root);
                 else DrawRelayArm(s, a, root);
-            }
-            KeepHeadClearOfBossHud();
-        }
-
-        void KeepHeadClearOfBossHud()
-        {
-            if (body == null || !body.enabled) return;
-            if (bossHud == null && Time.unscaledTime >= nextBossHudLookup)
-            {
-                var hud = GameObject.Find("BossBar");
-                if (hud != null) bossHud = hud.GetComponent<RectTransform>();
-                nextBossHudLookup = Time.unscaledTime + 1f;
-            }
-            var camera = Camera.main;
-            if (bossHud == null || camera == null || !camera.orthographic || !bossHud.gameObject.activeInHierarchy || camera.pixelHeight <= 0)
-                return;
-
-            var canvas = bossHud.GetComponentInParent<Canvas>();
-            if (canvas == null) return;
-            var corners = new Vector3[4];
-            bossHud.GetWorldCorners(corners);
-            float hudBottom = float.PositiveInfinity;
-            for (int i = 0; i < corners.Length; i++)
-            {
-                var point = RectTransformUtility.WorldToScreenPoint(
-                    canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera, corners[i]);
-                hudBottom = Mathf.Min(hudBottom, point.y);
-            }
-
-            var bounds = body.bounds;
-            var top = camera.WorldToScreenPoint(new Vector3(bounds.center.x, bounds.max.y, body.transform.position.z));
-            const float gapPixels = 12f;
-            float overlapPixels = top.y - (hudBottom - gapPixels);
-            if (overlapPixels <= 0f) return;
-
-            float worldPerViewportPixel = 2f * camera.orthographicSize / camera.pixelHeight;
-            float shift = overlapPixels * worldPerViewportPixel;
-            body.transform.position += Vector3.down * shift;
-            if (!loggedBossHudAdjustment)
-            {
-                Debug.Log($"[Stage5BossHud] moved only the rendered boss body down by {shift:F2} world units " +
-                    $"to keep it {gapPixels:F0}px below the top HUD; simulation head and attacks are unchanged.");
-                loggedBossHudAdjustment = true;
             }
         }
         void DrawRelayArm(OctopusBossSnapshot s, int arm, Vector2 root)

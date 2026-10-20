@@ -97,6 +97,7 @@ namespace OctopusSurvivors
         }
 
         public static Texture2D BeachTexture() => LoadTexture("Beach");
+        public static Texture2D BossBeachTexture() => LoadTexture("BossBeach");
 
         public static Sprite Icon(string name)
         {

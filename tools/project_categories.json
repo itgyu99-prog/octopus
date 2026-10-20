@@ -12,6 +12,7 @@
         "Assets/Scripts/Core/GameConfig.cs",
         "Assets/Scripts/Core/RuntimeArt.cs",
         "Assets/Resources/Art/Beach.bytes",
+        "Assets/Resources/Art/BossBeach.bytes",
         "Assets/Scenes/SampleScene.unity"
       ],
       "anchors": {

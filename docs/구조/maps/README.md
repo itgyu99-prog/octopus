@@ -12,6 +12,7 @@
 ## 관련 파일
 
 - `Source/문어_유한맵/Assets/Resources/Art/Beach.bytes`
+- `Source/문어_유한맵/Assets/Resources/Art/BossBeach.bytes`
 - `Source/문어_유한맵/Assets/Scenes/SampleScene.unity`
 - `Source/문어_유한맵/Assets/Scripts/Core/GameConfig.cs`
 - `Source/문어_유한맵/Assets/Scripts/Core/RuntimeArt.cs`
@@ -28,7 +29,7 @@
 
 ## `Assets/Scripts/World/ArenaBuilder.cs` 진입 함수
 
-- `BuildBackdrop` — 42행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
+- `BuildBackdrop` — 78행 (행 번호는 색인 생성 시점, 수정 후 함수명으로 재검색)
 
 ## 범위 검색
 

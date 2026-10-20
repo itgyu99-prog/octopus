@@ -6,6 +6,8 @@ namespace OctopusSurvivors
     {
         static GameObject root;
         static Sprite sprite;
+        static Sprite bossSprite;
+        static bool usingBossArtwork;
         public static SpriteRenderer BeachRenderer { get; private set; }
         static readonly System.Collections.Generic.List<Object> backdropAssets = new System.Collections.Generic.List<Object>();
         public static void Build()
@@ -26,13 +28,43 @@ namespace OctopusSurvivors
             beach.transform.localScale = new Vector3(artworkWidth / sprite.bounds.size.x,
                 artworkHeight / sprite.bounds.size.y, 1);
         }
+        public static void UseBossArtwork(bool enabled)
+        {
+            if (BeachRenderer == null || usingBossArtwork == enabled) return;
+            if (enabled && bossSprite == null)
+            {
+                var texture = RuntimeArt.BossBeachTexture();
+                if (texture == null || texture.width != 7373 || texture.height != 5100)
+                {
+                    Debug.LogError("[Stage5Map] BossBeach must be the 7373x5100 bottom-only ocean extension.");
+                    return;
+                }
+                // The original 4147 rows stay at the top. Anchor their center at world zero:
+                // extending the canvas by 953 rows moves only its lower edge, not the shore.
+                float pivotY = (953f + 4147f * .5f) / 5100f;
+                bossSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(.5f, pivotY), 100f, 0, SpriteMeshType.FullRect);
+            }
+            BeachRenderer.sprite = enabled ? bossSprite : sprite;
+            usingBossArtwork = enabled;
+            foreach (string name in new[] { "Continuous outer ocean", "Upper beach continuation" })
+            {
+                var backdrop = root.transform.Find(name);
+                if (backdrop != null) backdrop.gameObject.SetActive(!enabled);
+            }
+            if (enabled)
+                Debug.Log($"[Stage5Map] 7373x4147 original anchored at world zero; bottom-only 953px extension; " +
+                    $"scale={BeachRenderer.transform.localScale}; bounds={BeachRenderer.bounds}; actor coordinates unchanged.");
+        }
         public static void Destroy()
         {
             if (root != null) Object.Destroy(root);
             if (sprite != null) Object.Destroy(sprite);
+            if (bossSprite != null) Object.Destroy(bossSprite);
             foreach (var asset in backdropAssets) if (asset != null) Object.Destroy(asset);
             backdropAssets.Clear();
             root = null; sprite = null;
+            bossSprite = null; usingBossArtwork = false;
             BeachRenderer = null;
         }
         static Material Tile(Texture2D source, Rect rect)

@@ -18,9 +18,11 @@
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/01-pattern.gif`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/02-pattern.gif`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/03-pattern.gif`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/04-barrage-side-assets-user-character-long-reach.gif`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/04-pattern.gif`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/05-detail.gif`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/body.png`
+- `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/boss-wide-field-overscan-7373x4147.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/grip-throw-first.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/grip-throw-sheet.png`
 - `Source/문어_유한맵/../../docs/검증/giant-octopus-boss/assets/ground-back.png`
