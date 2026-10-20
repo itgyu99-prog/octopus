@@ -211,8 +211,11 @@ namespace OctopusSurvivors
             Check(s.UnlockedComboSlots.Value==3,"three combo slots available from start");
             var texture=RuntimeArt.BeachTexture();
             var arena=GameObject.Find("FiniteBeachArena");
-            Check(Mathf.Abs(arena.transform.localScale.x-arena.transform.localScale.y)<.001f,"background uses uniform scale without stretch");
-            Check(Mathf.Abs(FiniteBeach.Width/FiniteBeach.Height-(float)texture.width/texture.height)<.001f,"background matches original image aspect");
+            var beachRenderer=ArenaBuilder.BeachRenderer;
+            Check(beachRenderer!=null&&Mathf.Abs(beachRenderer.transform.lossyScale.x-beachRenderer.transform.lossyScale.y)<.001f,
+                "background uses uniform scale without stretch");
+            Check(Mathf.Abs(beachRenderer.bounds.size.x/beachRenderer.bounds.size.y-(float)texture.width/texture.height)<.001f,
+                "background renderer preserves the imported image aspect");
             Check(Camera.main.orthographicSize==11f&&GameConfig.PlayerScreenHeight==.04f,"wide camera and compact player ratio");
             Check(GameplayRules.Data.attributeDropChance==.02f,"attribute drop chance reduced to two percent");
             Check(!s.SpecialUnlocked.Value,"specials unavailable before boss five");

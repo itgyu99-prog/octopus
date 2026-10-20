@@ -259,7 +259,9 @@ namespace OctopusSurvivors
             var scale = transform.lossyScale;
             world.localScale = new Vector3(1 / Mathf.Max(.001f, scale.x), 1 / Mathf.Max(.001f, scale.y), 1);
             world.position = Vector3.zero;
-            body.transform.position = OctopusBossPattern.Head;
+            // Keep the boss's simulation anchor and attacks unchanged while placing its
+            // large portrait below the fixed top-center boss HUD.
+            body.transform.position = OctopusBossPattern.Head + Vector2.down * (FiniteBeach.Height * .14f);
             body.color = (hitFlags & (byte)EnemyFlag.Hit) != 0 ? new Color(1, .65f, .65f) : Color.white;
             if (s.Vulnerable > 0)
             { body.transform.position += Vector3.down * .8f; body.color = new Color(.78f, .84f, .88f); }

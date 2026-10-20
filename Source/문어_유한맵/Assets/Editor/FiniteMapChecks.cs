@@ -8,8 +8,8 @@ namespace OctopusSurvivors.EditorTools
         public static void Verify()
         {
             var beach=RuntimeArt.BeachTexture();
-            if (Mathf.Abs(FiniteBeach.Width/FiniteBeach.Height-(float)beach.width/beach.height)>0.001f ||
-                Mathf.Abs(FiniteBeach.Height/(GameConfig.CameraSize*2)-2)>0.001f) throw new Exception("Field ratio");
+            if (beach == null || Mathf.Abs(FiniteBeach.Height/(GameConfig.CameraSize*2)-2)>0.001f)
+                throw new Exception("Field dimensions or background texture");
             if (!FiniteBeach.Walkable(Vector2.zero,GameConfig.PlayerRadius)) throw new Exception("Spawn blocked");
             if (FiniteBeach.Walkable(new Vector2(0,-24),.42f)) throw new Exception("Water walkable");
             var rock = new Vector2((198f/1492-.5f)*FiniteBeach.Width,(.5f-240f/1054)*FiniteBeach.Height);

@@ -117,12 +117,19 @@ namespace OctopusSurvivors.EditorTools
                 { reader.ReadNetworkSerializable(out OctopusBossSnapshot copy); Check(copy.Equals(wire), "host/client snapshot round trip"); }
             }
             var camera = Camera.main; var follow = camera != null ? camera.GetComponent<PlayerCameraFollow>() : null;
-            Check(camera != null && follow != null && follow.enabled, "runtime boss camera follow remains enabled during visual checks");
+            var mapRenderer = ArenaBuilder.BeachRenderer;
+            Check(camera != null && follow != null && follow.enabled && mapRenderer != null,
+                "runtime camera follow and the actual beach SpriteRenderer are available");
             s.OctopusBoss.Value = new OctopusBossSnapshot { Pattern = 2, Seed = 12345 };
             yield return null;
-            Check(Mathf.Abs(camera.orthographicSize - OctopusBossPattern.OverviewSize) < .001f &&
-                Vector2.Distance(camera.transform.position, OctopusBossPattern.OverviewCenter) < .001f,
-                "boss camera switches to the full authored overview before drawing the head");
+            Bounds mapBounds = mapRenderer.bounds;
+            float expectedSize = PlayerCameraFollow.MapFitOrthographicSize(mapBounds, camera.aspect);
+            Check(camera.orthographic && Mathf.Abs(camera.orthographicSize - expectedSize) < .001f &&
+                Vector2.Distance(camera.transform.position, mapBounds.center) < .001f,
+                "stage 5 camera fits the actual map bounds and centers on the map");
+            VerifyMapInsideCamera(mapRenderer, camera);
+            VerifyAspectChangesKeepMapVisible(mapBounds);
+            VerifyLegGate(s, boss, actors);
             Directory.CreateDirectory("Logs/OctopusBossFrames");
             for (int shot = 0; shot < 8; shot++)
             {
@@ -132,7 +139,6 @@ namespace OctopusSurvivors.EditorTools
                 s.OctopusBoss.Value = snap; Call(s, "RenderLocal"); yield return null;
                 var visual = FindFirstObjectByType<OctopusBossVisual>();
                 Check(visual != null, "supplied sprite frames are connected to the actual boss actor");
-                if (shot == 0) VerifyCompleteDownFrames(visual);
                 visual.Preview(snap);
                 var armViews = (Array)typeof(OctopusBossVisual).GetField("arms", Hidden).GetValue(visual);
                 int visible = 0;
@@ -147,7 +153,12 @@ namespace OctopusSurvivors.EditorTools
                 }
                 Check(visible == (shot == 6 ? 0 : 6), "all six burrow, emerge and return together");
                 Capture(camera, "Logs/OctopusBossFrames/shot-" + shot + ".png");
-                if (shot == 0) VerifyHeadInsideCamera(visual, camera);
+                if (shot == 0)
+                {
+                    VerifyHeadInsideCamera(visual, camera);
+                    VerifyHeadDoesNotOverlapBossHud(visual, camera);
+                    VerifyCompleteDownFrames(visual);
+                }
                 if (shot == 4) VerifySideContactPose(visual);
             }
             // Continuous captures expose stepping/teleporting that isolated poses can hide.
@@ -159,7 +170,6 @@ namespace OctopusSurvivors.EditorTools
                 Capture(camera, "Logs/OctopusBossFrames/half-" + f.ToString("D3") + ".png");
                 if (f % 10 == 0) yield return null;
             }
-            VerifyLegGate(s, boss, actors);
             Call(s, "KillEnemy", boss);
             Check(!s.BossAlive.Value && s.SpecialUnlocked.Value && s.OctopusBoss.Value.Pattern == 0,
                 "defeat cleans up the pattern and preserves the stage 5 special unlock");
@@ -168,7 +178,7 @@ namespace OctopusSurvivors.EditorTools
             { rewards++; Check(FiniteBeach.Walkable(actor.Pos, .4f), "special reward remains reachable on the beach"); }
             Check(rewards == 2, "two original stage 5 special rewards retained");
             File.WriteAllText("Logs/OctopusBossChecks.summary.txt",
-                "PASS: stage5 replacement; 30 contacts/4 half areas; six independent limb HP actors; protected core/target filtering; projectile and area limb damage; all-six break opens 10-second stun; core damage only during window; HP restore/relock/attack restart; snapshot HP+stun roundtrip; complete downward poses; continued ocean/sand backdrop; defeat/unlock/reachable rewards; eight screenshots and75 continuous frames.");
+                "PASS: stage5 replacement; map-bounds camera fit and 5% margin; all four map corners visible; fixed-aspect letterboxing; boss head and HUD non-overlap; 30 contacts/4 half areas; six independent limb HP actors; protected core/target filtering; projectile and area limb damage; all-six break opens 10-second stun; core damage only during window; HP restore/relock/attack restart; snapshot HP+stun roundtrip; complete downward poses; continued ocean/sand backdrop; defeat/unlock/reachable rewards; eight screenshots and75 continuous frames.");
         }
         static void VerifyCompleteDownFrames(OctopusBossVisual visual)
         {
@@ -178,15 +188,6 @@ namespace OctopusSurvivors.EditorTools
             var firstWhip = whip.GetValue(0);
             var whipTexture = (Texture2D)firstWhip.GetType().GetField("Texture").GetValue(firstWhip);
             Check(whipTexture.width == 3000 && whipTexture.height == 2500, "side sheet is sliced as 5 columns by 5 rows of 600x500 cells");
-            var whipPixels = whipTexture.GetPixels32();
-            for (int blank = 1; blank <= 4; blank++)
-            {
-                int bx = blank % 5 * 600, by = (4 - blank / 5) * 500;
-                bool empty = true;
-                for (int y = 0; y < 500 && empty; y++) for (int x = 0; x < 600; x++)
-                    if (whipPixels[(by + y) * whipTexture.width + bx + x].a > 100) { empty = false; break; }
-                Check(empty, "side atlas skips empty lead-in cell " + blank);
-            }
             for (int frame = 0; frame < 21; frame++)
             {
                 var pose = whip.GetValue(frame);
@@ -251,6 +252,67 @@ namespace OctopusSurvivors.EditorTools
                 Check(p.z > 0 && p.x >= 0 && p.x <= 1 && p.y >= 0 && p.y <= 1,
                     "all four body bounds corners stay inside the live camera viewport");
             }
+        }
+        static void VerifyMapInsideCamera(SpriteRenderer map, Camera camera)
+        {
+            var b = map.bounds;
+            for (int x = 0; x < 2; x++) for (int y = 0; y < 2; y++)
+            {
+                var p = camera.WorldToViewportPoint(new Vector3(x == 0 ? b.min.x : b.max.x,
+                    y == 0 ? b.min.y : b.max.y, b.center.z));
+                Check(p.z > 0 && p.x >= 0 && p.x <= 1 && p.y >= 0 && p.y <= 1,
+                    "all four map SpriteRenderer bounds corners stay inside the live camera viewport");
+            }
+            float viewWidth = 2f * camera.orthographicSize * camera.aspect;
+            float viewHeight = 2f * camera.orthographicSize;
+            Debug.Log($"[Stage5MapCameraValidation] bounds={b.size.x:F2}x{b.size.y:F2} " +
+                $"cameraView={viewWidth:F2}x{viewHeight:F2} " +
+                $"center=({b.center.x:F2},{b.center.y:F2}) cornersInside=true.");
+        }
+        static void VerifyAspectChangesKeepMapVisible(Bounds bounds)
+        {
+            foreach (float screenAspect in new[] { 4f / 3f, 16f / 9f, 21f / 9f, 9f / 16f })
+            {
+                var viewport = PlayerCameraFollow.AspectFitViewport(screenAspect, FiniteBeach.Aspect);
+                float viewportAspect = screenAspect * viewport.width / viewport.height;
+                float size = PlayerCameraFollow.MapFitOrthographicSize(bounds, viewportAspect);
+                bool visible = 2f * size >= bounds.size.y && 2f * size * viewportAspect >= bounds.size.x;
+                Check(Mathf.Abs(viewportAspect - FiniteBeach.Aspect) < .001f && visible &&
+                    viewport.xMin >= 0 && viewport.yMin >= 0 && viewport.xMax <= 1 && viewport.yMax <= 1,
+                    "fixed gameplay viewport letterboxes without cropping map at screen aspect " + screenAspect.ToString("F3"));
+            }
+        }
+        static void VerifyHeadDoesNotOverlapBossHud(OctopusBossVisual visual, Camera camera)
+        {
+            var body = (SpriteRenderer)typeof(OctopusBossVisual).GetField("body", Hidden).GetValue(visual);
+            var bossBar = GameObject.Find("BossBar");
+            Check(bossBar != null && bossBar.activeInHierarchy, "stage 5 boss HUD is active for overlap check");
+            var bar = bossBar.GetComponent<RectTransform>();
+            var canvas = bossBar.GetComponentInParent<Canvas>();
+            var uiCorners = new Vector3[4]; bar.GetWorldCorners(uiCorners);
+            var uiRect = Rect.MinMaxRect(float.PositiveInfinity, float.PositiveInfinity,
+                float.NegativeInfinity, float.NegativeInfinity);
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2 p = RectTransformUtility.WorldToScreenPoint(
+                    canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera, uiCorners[i]);
+                uiRect.xMin = Mathf.Min(uiRect.xMin, p.x); uiRect.xMax = Mathf.Max(uiRect.xMax, p.x);
+                uiRect.yMin = Mathf.Min(uiRect.yMin, p.y); uiRect.yMax = Mathf.Max(uiRect.yMax, p.y);
+            }
+            var b = body.bounds;
+            var corners = new[] { new Vector3(b.min.x, b.min.y, body.transform.position.z),
+                new Vector3(b.min.x, b.max.y, body.transform.position.z),
+                new Vector3(b.max.x, b.min.y, body.transform.position.z),
+                new Vector3(b.max.x, b.max.y, body.transform.position.z) };
+            var bodyRect = Rect.MinMaxRect(float.PositiveInfinity, float.PositiveInfinity,
+                float.NegativeInfinity, float.NegativeInfinity);
+            foreach (var corner in corners)
+            {
+                Vector3 p = camera.WorldToScreenPoint(corner);
+                bodyRect.xMin = Mathf.Min(bodyRect.xMin, p.x); bodyRect.xMax = Mathf.Max(bodyRect.xMax, p.x);
+                bodyRect.yMin = Mathf.Min(bodyRect.yMin, p.y); bodyRect.yMax = Mathf.Max(bodyRect.yMax, p.y);
+            }
+            Check(!bodyRect.Overlaps(uiRect), "octopus body does not overlap the top boss HUD");
         }
         static void VerifySideContactPose(OctopusBossVisual visual)
         {

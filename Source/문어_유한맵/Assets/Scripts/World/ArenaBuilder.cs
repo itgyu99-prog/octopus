@@ -6,6 +6,7 @@ namespace OctopusSurvivors
     {
         static GameObject root;
         static Sprite sprite;
+        public static SpriteRenderer BeachRenderer { get; private set; }
         static readonly System.Collections.Generic.List<Object> backdropAssets = new System.Collections.Generic.List<Object>();
         public static void Build()
         {
@@ -19,9 +20,9 @@ namespace OctopusSurvivors
                 new Vector2(.5f, .5f), 100f, 0, SpriteMeshType.FullRect);
             var beach = new GameObject("Original beach artwork");
             beach.transform.SetParent(root.transform, false);
-            var renderer = beach.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite;
-            renderer.sortingOrder = -20;
+            BeachRenderer = beach.AddComponent<SpriteRenderer>();
+            BeachRenderer.sprite = sprite;
+            BeachRenderer.sortingOrder = -20;
             beach.transform.localScale = new Vector3(artworkWidth / sprite.bounds.size.x,
                 artworkHeight / sprite.bounds.size.y, 1);
         }
@@ -32,6 +33,7 @@ namespace OctopusSurvivors
             foreach (var asset in backdropAssets) if (asset != null) Object.Destroy(asset);
             backdropAssets.Clear();
             root = null; sprite = null;
+            BeachRenderer = null;
         }
         static Material Tile(Texture2D source, Rect rect)
         {
