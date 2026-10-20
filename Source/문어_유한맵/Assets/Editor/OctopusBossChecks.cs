@@ -271,14 +271,29 @@ namespace OctopusSurvivors.EditorTools
                     if (a > 0 && half >= 2)
                         Check(OctopusBossPattern.HalfRoot(half, a).y < OctopusBossPattern.HalfRoot(half, a - 1).y,
                             "side roots progress down the lane " + half + "/" + a);
+                    if (half >= 2)
+                    {
+                        float inset = r.width * .12f;
+                        float expectedX = half == 2
+                            ? (a % 2 == 0 ? r.xMin + inset : r.xMax - inset)
+                            : (a % 2 == 0 ? r.xMax - inset : r.xMin + inset);
+                        Check(Mathf.Abs(OctopusBossPattern.HalfRoot(half, a).x - expectedX) < .001f,
+                            "side roots alternate across both edges in a zigzag " + half + "/" + a);
+                    }
                     int contacts = 0;
                     for (int cycle = 0; cycle < 13; cycle++)
                     {
                         float t = OctopusBossPattern.HalfContact(half, a, cycle);
+                        if (half >= 2)
+                            Check(Mathf.Abs(t - (OctopusBossPattern.HalfAttackStart + .32f + a * .035f + cycle * OctopusBossPattern.SideSlamInterval)) < .00001f,
+                                "side damage timing matches long-contact pose " + half + "/" + a + "/" + cycle);
                         if (t >= 4.65f) continue;
                         Check(t >= 1.65f, "no damage before the 3-second active window"); contacts++;
                         var target = OctopusBossPattern.HalfTarget(12345, half, a, cycle);
                         Check(r.Contains(target) && OctopusBossPattern.HalfCanHit(target, half, target), "broad physical footprint in half");
+                        if (half >= 2)
+                            Check(Mathf.Abs(target.x - r.center.x) < r.width * .05f,
+                                "side strikes stay in the central zigzag contact band " + half + "/" + a);
                         var safe = OctopusBossPattern.Arena.center * 2 - target;
                         Check(!OctopusBossPattern.HalfCanHit(safe, half, target), "safe half cannot receive slam damage");
                     }

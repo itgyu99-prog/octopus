@@ -228,13 +228,15 @@ class Renderer:
     def side_pose(self,frame,root,mirror=False):
         cell=self.side_sheet.crop(((frame%5)*600,(frame//5)*500,(frame%5+1)*600,(frame//5+1)*500))
         if mirror:cell=cell.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-        # Keep a stable sand pivot at (300, 460). Only the supplied long contact
-        # pose gains a little reach; its thickness and all other frames stay intact.
-        scale=.32; stretch=1.65 if frame==12 else 1.0
-        size=(round(600*scale*stretch),round(500*scale))
+        # Keep the supplied sand pivot fixed. Compensate only the flat poses'
+        # vertical thickness; never lengthen the long-contact frame across lanes.
+        scale=.36
+        bounds=cell.getbbox(); art_height=(bounds[3]-bounds[1]) if bounds else 0
+        thickness=max(1.0,min(3.0,48/max(1,art_height*scale)))
+        size=(round(600*scale),round(500*scale*thickness))
         cell=cell.resize(size,Image.Resampling.NEAREST)
         x,y=root
-        px=round(x-size[0]/2);py=round(y-460*scale)
+        px=round(x-size[0]/2);py=round(y-460*scale*thickness)
         return cell,(px,py)
     @staticmethod
     def side_frame(age,beat=.48):
@@ -265,7 +267,7 @@ class Renderer:
         subs={1:'상단 → 중앙 → 하단 · 공격이 끝난 구역은 즉시 해제',2:'각 팔 5회 · 뿌리 고정 · 접촉 간격 0.16초',3:'돌 아래 받치기 → 감아 쥐기 → 들어 올리기 → 투척 → 착탄',4:'상 · 하 · 좌 · 우 예시 / 각 방향 3초 난타'}
         im=self.base(names[pattern],subs[pattern],t); d=ImageDraw.Draw(im)
         roots=list(ROOTS); ps=[pose(r,1 if i<3 else -1,'idle') for i,r in enumerate(roots)]
-        flats=[0]*6; visibility=[1]*6; effects=[]; dust=[0]*6; held=[]; rocks=[]; trails=[]
+        flats=[0]*6; visibility=[1]*6; effects=[]; dust=[0]*6; held=[]; rocks=[]; trails=[]; no_holes=False
         side_poses={}
         player=(480,470)
         if pattern==1:
@@ -317,6 +319,7 @@ class Renderer:
             d.text((799,15),f'{count} / 8',font=FONT,fill='#ffccdc')
         elif pattern==4:
             cycle=int(t/6.6)%4; u=t%6.6
+            no_holes=cycle>=2
             boxes=[(240,220,720,367),(240,367,720,515),(240,220,480,515),(480,220,720,515)]
             box=boxes[cycle]; labels=['상단','하단','왼쪽','오른쪽']
             d.text((810,15),labels[cycle],font=FONT,fill='#ffccdc')
@@ -330,8 +333,9 @@ class Renderer:
                 # vertical lanes so adjacent strike sprites do not stack on top.
                 rows=[]
                 for lane in range(6):
-                    zigzag=(lane%2)*42
-                    x=b0+30+zigzag if cycle==2 else b2-30-zigzag
+                    inset=26
+                    outer=lane%2==0
+                    x=(b0+inset if outer else b2-inset) if cycle==2 else (b2-inset if outer else b0+inset)
                     y=lerp(b1+24,b3-24,lane/5)
                     rows.append((x,y))
                 emerged=rows
@@ -359,14 +363,12 @@ class Renderer:
                         flats[i]=.56<=age/beat<=.70
                         effects.append((target,age-.60*beat,'barrage'))
                     else:
-                        # Horizontal attacks play the supplied cels from the
-                        # fixed sand pivot. Long frame 12 is the impact reach.
-                        inward=1 if cycle==2 else -1
-                        reach=137 if i%2==0 else 104
-                        target=(max(b0+20,min(b2-20,rx+inward*reach)),ry+math.sin(n*.8+i)*5)
+                        # Alternate roots across both edges of the side zone;
+                        # each leg aims into its center lane from a fixed pivot.
+                        target=((b0+b2)*.5+math.sin(n*.8+i)*5,ry+math.sin(n*.8+i)*5)
                         frame=self.side_frame(age,beat)
-                        side_poses[i]=(frame,roots[i],cycle==3)
-                        effects.append((target,age-.30*beat,'barrage'))
+                        side_poses[i]=(frame,roots[i],target[0]<rx)
+                        effects.append((target,age-.32,'barrage'))
                 elif u<5.3:
                     roots[i]=emerged[i];ps[i]=ground_pose(roots[i],s,180*smooth((u-4.7)/.6));visibility[i]=.5;dust[i]=math.sin(math.pi*(u-4.7)/.6)
                 elif u<5.6:
@@ -374,9 +376,10 @@ class Renderer:
                 elif u<6.2:
                     ps[i]=ground_pose(r,s,180*(1-smooth((u-5.6)/.6)));visibility[i]=.5;dust[i]=math.sin(math.pi*(u-5.6)/.6)
             player=[(480,465),(480,280),(640,420),(320,420)][cycle]
-        for i,r in enumerate(roots):hole(im,r,False,dust[i])
+        if not no_holes:
+            for i,r in enumerate(roots):hole(im,r,False,dust[i])
         # Ground compression is behind the limbs; flying soil is added after.
-        for pos,age,wide in effects:impact(im,pos,age,wide,under=True)
+        for pos,age,wide in effects:impact(im,pos,age,wide,under=not no_holes)
         if trails:
             trail=Image.new('RGBA',im.size)
             for p in trails:arm(trail,p)
@@ -389,7 +392,7 @@ class Renderer:
                 im.alpha_composite(sprite,at)
             else:
                 arm(im,ps[i],visibility[i],flats[i],roots[i][1])
-            hole(im,roots[i],True)
+            if not no_holes:hole(im,roots[i],True)
         for pos,s in held:grip(im,pos,s)
         for pos,rr,ang in rocks:rock(im,pos,rr,ang)
         for pos,age,wide in effects:impact(im,pos,age,wide)

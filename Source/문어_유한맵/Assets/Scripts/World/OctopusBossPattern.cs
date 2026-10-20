@@ -92,8 +92,12 @@ namespace OctopusSurvivors
         {
             var r = HalfRect(half); var c = HalfCell(half, arm);
             if (half < 2) return new Vector2(c.center.x, c.yMax - c.height * .08f);
-            float inset = r.width * (arm % 2 == 0 ? .10f : .23f);
-            return new Vector2(half == 2 ? r.xMin + inset : r.xMax - inset, c.center.y);
+            float inset = r.width * .12f;
+            bool outerColumn = arm % 2 == 0;
+            float x = half == 2
+                ? (outerColumn ? r.xMin + inset : r.xMax - inset)
+                : (outerColumn ? r.xMax - inset : r.xMin + inset);
+            return new Vector2(x, c.center.y);
         }
         public static Vector2 RelayTarget(uint seed, int strike)
         {
@@ -107,9 +111,8 @@ namespace OctopusSurvivors
             int n = cycle * 12 + arm * 2 + 113;
             if (half >= 2)
             {
-                float inward = half == 2 ? 1f : -1f;
-                return c.center + new Vector2(inward * c.width * .22f + (Sample(seed, n) - .5f) * c.width * .06f,
-                    (Sample(seed, n + 1) - .5f) * c.height * .22f);
+                return c.center + new Vector2((Sample(seed, n) - .5f) * c.width * .08f,
+                    (Sample(seed, n + 1) - .5f) * c.height * .16f);
             }
             return c.center + new Vector2((Sample(seed, n) - .5f) * c.width * .30f,
                 -c.height * .22f + (Sample(seed, n + 1) - .5f) * c.height * .16f);
@@ -120,7 +123,7 @@ namespace OctopusSurvivors
         public static float HalfInterval(int half) => half < 2 ? SlamInterval : SideSlamInterval;
         public static float HalfContact(int half, int arm, int cycle) => half < 2
             ? HalfAttackStart + .09f + arm * .014f + cycle * SlamInterval
-            : HalfAttackStart + SideSlamInterval * .32f + arm * .035f + cycle * SideSlamInterval;
+            : HalfAttackStart + .32f + arm * .035f + cycle * SideSlamInterval;
         public static bool InFootprint(Vector2 p, Vector2 center, Vector2 radii, float padding = 0)
         {
             var d = p - center;
