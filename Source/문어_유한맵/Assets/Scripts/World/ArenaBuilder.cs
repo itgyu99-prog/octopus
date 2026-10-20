@@ -12,8 +12,8 @@ namespace OctopusSurvivors
             Destroy();
             root = new GameObject("FiniteBeachArena");
             var texture = RuntimeArt.BeachTexture();
-            float artworkHeight = OctopusBossPattern.OverviewSize * 2f;
-            float artworkWidth = artworkHeight * texture.width / texture.height;
+            float artworkWidth = OctopusBossPattern.OverviewSize * 2f * FiniteBeach.Aspect;
+            float artworkHeight = artworkWidth * texture.height / texture.width;
             BuildBackdrop(texture, artworkWidth);
             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
                 new Vector2(.5f, .5f), 100f, 0, SpriteMeshType.FullRect);
