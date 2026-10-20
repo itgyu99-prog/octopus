@@ -132,7 +132,12 @@ namespace OctopusSurvivors
             float ppu = 1;
             for (int i = 0; i < count; i++)
             {
-                int ox = i % cols * w, oy = (rows - 1 - i / cols) * h;
+                // The playback atlas has its first pose in the top-left cell,
+                // four empty cells after it, then the remaining twenty poses
+                // across the next four rows. Do not treat those empty cells as
+                // animation frames or the last four authored poses get dropped.
+                int sourceIndex = fixedWhip && i > 0 ? i + 4 : i;
+                int ox = sourceIndex % cols * w, oy = (rows - 1 - sourceIndex / cols) * h;
                 int bottom = h, top = 0, left = w, right = 0;
                 for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
                 {
@@ -343,7 +348,6 @@ namespace OctopusSurvivors
             int cycle = Mathf.Max(0, Mathf.FloorToInt((t - firstCycle) / interval));
             float sequenceStart = firstCycle + cycle * interval;
             float progress = Mathf.Clamp01((t - sequenceStart) / interval);
-            Vector2 target = OctopusBossPattern.HalfTarget(s.Seed, s.Half, arm, cycle);
             float age = progress * interval;
             int frame = age < .08f ? Mathf.RoundToInt(Mathf.Lerp(0, 3, age / .08f)) :
                 age < .20f ? Mathf.RoundToInt(Mathf.Lerp(4, 7, (age - .08f) / .12f)) :
@@ -351,14 +355,11 @@ namespace OctopusSurvivors
                 age < .36f ? 12 :
                 age < .44f ? Mathf.RoundToInt(Mathf.Lerp(13, 16, (age - .36f) / .08f)) :
                 Mathf.RoundToInt(Mathf.Lerp(17, 20, (age - .44f) / .04f));
-            float reach = age < .08f ? Mathf.SmoothStep(0, 1, age / .08f) :
-                age < .36f ? 1f : 1f - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.36f, .48f, age));
             // The supplied long-contact pose is the impact keyframe for side slams.
-            // Its authored sand-mouth pivot matches the other attack poses, so the
-            // opening stays planted while the long limb reaches across the lane.
+            // These are complete authored poses with their own sand base and pivots.
+            // Draw them as-is; bending the whole frame moves the soil and tears the silhouette.
             var sideFrame = frame == 12 ? contact : whip[Mathf.Clamp(frame, 0, 20)];
-            float thickness = Mathf.Clamp(3.0f / Mathf.Max(.01f, sideFrame.Height), 1f, 3f);
-            DrawMesh(arms[arm], sideFrame, root, target - root, reach, target.x < root.x, thickness);
+            DrawFrame(arm, sideFrame, root, Vector2.zero, 0, arm >= 3);
         }
         void DrawFrame(int index, Frame f, Vector2 root, Vector2 target, float reach, bool mirror)
         { DrawMesh(arms[index], f, root, target, reach, mirror); }
@@ -366,13 +367,26 @@ namespace OctopusSurvivors
         {
             arm.Renderer.sharedMaterial = f.Material;
             arm.Root.transform.position = root;
-            Vector2 tip = f.Tip;
-            if (mirror) target.x = -target.x;
             if (f.Down)
             {
-                target = new Vector2(-target.y, target.x);
-                tip = new Vector2(-tip.y, tip.x);
+                // The three downward poses already contain their full authored
+                // reach. Keep their size and root pixel exact instead of scaling
+                // each frame by its target distance (which made them shrink).
+                int downIndex = 0;
+                for (int y = 0; y <= Rows; y++) for (int x = 0; x <= Columns; x++)
+                {
+                    float px = f.Rect.width * x / Columns, py = f.Rect.height * y / Rows;
+                    Vector2 p = (new Vector2(px, py) - f.Pivot) / f.Ppu;
+                    if (mirror) p.x = -p.x;
+                    arm.Vertices[downIndex] = p;
+                    arm.Uv[downIndex++] = new Vector2((f.Rect.x + .5f + (f.Rect.width - 1) * x / Columns) / f.Texture.width,
+                        (f.Rect.y + .5f + (f.Rect.height - 1) * y / Rows) / f.Texture.height);
+                }
+                arm.Mesh.vertices = arm.Vertices; arm.Mesh.uv = arm.Uv; arm.Mesh.RecalculateBounds();
+                return;
             }
+            Vector2 tip = f.Tip;
+            if (mirror) target.x = -target.x;
             float keep = Mathf.Min(3.4f, OctopusBossPattern.IdleHeight * .34f);
             float length = Mathf.Max(.01f, tip.x - keep);
             float startColumn = Mathf.Clamp((f.Down ? (f.Rect.height - f.Pivot.y + keep * f.Ppu) / f.Rect.height :
@@ -388,17 +402,6 @@ namespace OctopusSurvivors
             {
                 float px = f.Rect.width * x / Columns, py = f.Rect.height * y / Rows;
                 Vector2 p = (new Vector2(px, py) - f.Pivot) / f.Ppu;
-                if (f.Down)
-                {
-                    // Preserve every pixel of the complete downward pose; never bend/fold its triangles.
-                    float drop = Mathf.Max(1, -f.Tip.y);
-                    float scaleDown = reach > 0 && target.x > 0 ? Mathf.Clamp(target.x / drop, .35f, 1.2f) : 1;
-                    p *= scaleDown; if (mirror) p.x = -p.x;
-                    arm.Vertices[n] = p;
-                    arm.Uv[n++] = new Vector2((f.Rect.x + .5f + (f.Rect.width - 1) * x / Columns) / f.Texture.width,
-                        (f.Rect.y + .5f + (f.Rect.height - 1) * y / Rows) / f.Texture.height);
-                    continue;
-                }
                 float column = x;
                 int ci = Mathf.Clamp((int)column, 0, Columns - 1);
                 float cross = Mathf.Lerp(f.Centerline[ci], f.Centerline[ci + 1], column - ci);

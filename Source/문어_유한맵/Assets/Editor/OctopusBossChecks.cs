@@ -116,9 +116,13 @@ namespace OctopusSurvivors.EditorTools
                 using (var reader = new FastBufferReader(writer, Allocator.Temp))
                 { reader.ReadNetworkSerializable(out OctopusBossSnapshot copy); Check(copy.Equals(wire), "host/client snapshot round trip"); }
             }
-            var camera = Camera.main; var follow = camera.GetComponent<PlayerCameraFollow>(); if (follow != null) follow.enabled = false;
-            camera.orthographicSize = OctopusBossPattern.OverviewSize; camera.aspect = 16f / 9;
-            camera.transform.position = new Vector3(0, OctopusBossPattern.OverviewCenter.y, -10);
+            var camera = Camera.main; var follow = camera != null ? camera.GetComponent<PlayerCameraFollow>() : null;
+            Check(camera != null && follow != null && follow.enabled, "runtime boss camera follow remains enabled during visual checks");
+            s.OctopusBoss.Value = new OctopusBossSnapshot { Pattern = 2, Seed = 12345 };
+            yield return null;
+            Check(Mathf.Abs(camera.orthographicSize - OctopusBossPattern.OverviewSize) < .001f &&
+                Vector2.Distance(camera.transform.position, OctopusBossPattern.OverviewCenter) < .001f,
+                "boss camera switches to the full authored overview before drawing the head");
             Directory.CreateDirectory("Logs/OctopusBossFrames");
             for (int shot = 0; shot < 8; shot++)
             {
@@ -143,6 +147,8 @@ namespace OctopusSurvivors.EditorTools
                 }
                 Check(visible == (shot == 6 ? 0 : 6), "all six burrow, emerge and return together");
                 Capture(camera, "Logs/OctopusBossFrames/shot-" + shot + ".png");
+                if (shot == 0) VerifyHeadInsideCamera(visual, camera);
+                if (shot == 4) VerifySideContactPose(visual);
             }
             // Continuous captures expose stepping/teleporting that isolated poses can hide.
             for (int f = 0; f < 75; f++)
@@ -167,6 +173,31 @@ namespace OctopusSurvivors.EditorTools
         static void VerifyCompleteDownFrames(OctopusBossVisual visual)
         {
             var frames = (Array)typeof(OctopusBossVisual).GetField("slam", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var whip = (Array)typeof(OctopusBossVisual).GetField("whip", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            Check(frames.Length == 9 && whip.Length == 21, "original 3x3 vertical and 5x5 side sheets use their authored frame counts");
+            var firstWhip = whip.GetValue(0);
+            var whipTexture = (Texture2D)firstWhip.GetType().GetField("Texture").GetValue(firstWhip);
+            Check(whipTexture.width == 3000 && whipTexture.height == 2500, "side sheet is sliced as 5 columns by 5 rows of 600x500 cells");
+            var whipPixels = whipTexture.GetPixels32();
+            for (int blank = 1; blank <= 4; blank++)
+            {
+                int bx = blank % 5 * 600, by = (4 - blank / 5) * 500;
+                bool empty = true;
+                for (int y = 0; y < 500 && empty; y++) for (int x = 0; x < 600; x++)
+                    if (whipPixels[(by + y) * whipTexture.width + bx + x].a > 100) { empty = false; break; }
+                Check(empty, "side atlas skips empty lead-in cell " + blank);
+            }
+            for (int frame = 0; frame < 21; frame++)
+            {
+                var pose = whip.GetValue(frame);
+                var sideRect = (Rect)pose.GetType().GetField("Rect").GetValue(pose);
+                int sourceIndex = frame == 0 ? 0 : frame + 4;
+                Check(sideRect.x == sourceIndex % 5 * 600 && sideRect.y == (4 - sourceIndex / 5) * 500 &&
+                    sideRect.width == 600 && sideRect.height == 500,
+                    "side playback frame maps to populated source cell " + sourceIndex);
+                Check(((Vector2)pose.GetType().GetField("Tip").GetValue(pose)).sqrMagnitude > .01f,
+                    "side source frame is populated, not a neighboring/blank slice " + frame);
+            }
             var arms = (Array)typeof(OctopusBossVisual).GetField("arms", Hidden).GetValue(visual);
             var arm = arms.GetValue(0);
             var mesh = (Mesh)arm.GetType().GetField("Mesh").GetValue(arm);
@@ -175,9 +206,24 @@ namespace OctopusSurvivors.EditorTools
             {
                 var source = frames.GetValue(frame);
                 var rect = (Rect)source.GetType().GetField("Rect").GetValue(source);
+                var sourceTexture = (Texture2D)source.GetType().GetField("Texture").GetValue(source);
+                int cellWidth = sourceTexture.width / 3, cellHeight = sourceTexture.height / 3;
+                int cellX = frame % 3 * cellWidth, cellY = (2 - frame / 3) * cellHeight;
+                var pixels = sourceTexture.GetPixels32(); bool unclipped = true;
+                for (int y = 0; y < cellHeight && unclipped; y++) for (int x = 0; x < cellWidth; x++)
+                {
+                    if (pixels[(cellY + y) * sourceTexture.width + cellX + x].a <= 100) continue;
+                    if (cellX + x < rect.x || cellX + x >= rect.xMax || cellY + y < rect.y || cellY + y >= rect.yMax)
+                    { unclipped = false; break; }
+                }
+                Check(unclipped, "downward source alpha remains fully inside its sliced rectangle " + frame);
                 Call(visual, "DrawMesh", arm, source, Vector2.zero, new Vector2(1, -5), 1f, mirror != 0);
                 Check(Mathf.Abs(mesh.bounds.size.x / mesh.bounds.size.y - rect.width / rect.height) < .0001f,
                     "downward frame keeps the complete source aspect and base " + frame + "/" + mirror);
+                float ppu = (float)source.GetType().GetField("Ppu").GetValue(source);
+                Check(Mathf.Abs(mesh.bounds.size.x - rect.width / ppu) < .001f &&
+                    Mathf.Abs(mesh.bounds.size.y - rect.height / ppu) < .001f,
+                    "downward frame keeps its original dimensions without target-based scaling " + frame + "/" + mirror);
                 var vertices = mesh.vertices; var indices = mesh.triangles; float sign = 0;
                 for (int t = 0; t < indices.Length; t += 3)
                 {
@@ -193,6 +239,35 @@ namespace OctopusSurvivors.EditorTools
             var cap = arena.transform.Find("Upper beach continuation").GetComponent<MeshRenderer>();
             Check(cap.bounds.min.y <= FiniteBeach.Height * .5f,
                 "background continuation meets the original upper beach without a gap");
+        }
+        static void VerifyHeadInsideCamera(OctopusBossVisual visual, Camera camera)
+        {
+            var body = (SpriteRenderer)typeof(OctopusBossVisual).GetField("body", Hidden).GetValue(visual);
+            var b = body.bounds;
+            for (int x = 0; x < 2; x++) for (int y = 0; y < 2; y++)
+            {
+                var p = camera.WorldToViewportPoint(new Vector3(x == 0 ? b.min.x : b.max.x,
+                    y == 0 ? b.min.y : b.max.y, body.transform.position.z - camera.transform.position.z));
+                Check(p.z > 0 && p.x >= 0 && p.x <= 1 && p.y >= 0 && p.y <= 1,
+                    "all four body bounds corners stay inside the live camera viewport");
+            }
+        }
+        static void VerifySideContactPose(OctopusBossVisual visual)
+        {
+            var snap = new OctopusBossSnapshot { Pattern = 4, Half = 2, Seed = 12345,
+                Time = OctopusBossPattern.HalfAttackStart + .32f };
+            var root = OctopusBossPattern.HalfRoot(2, 0);
+            Call(visual, "DrawSideHalfArm", snap, 0, root);
+            var arms = (Array)typeof(OctopusBossVisual).GetField("arms", Hidden).GetValue(visual);
+            var arm = arms.GetValue(0); var mesh = (Mesh)arm.GetType().GetField("Mesh").GetValue(arm);
+            var contact = typeof(OctopusBossVisual).GetField("contact", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var rect = (Rect)contact.GetType().GetField("Rect").GetValue(contact);
+            float ppu = (float)contact.GetType().GetField("Ppu").GetValue(contact);
+            var go = (GameObject)arm.GetType().GetField("Root").GetValue(arm);
+            Check(Vector2.Distance(go.transform.position, root) < .001f, "side contact preserves the authored sand-mouth root");
+            Check(Mathf.Abs(mesh.bounds.size.x - rect.width / ppu) < .001f &&
+                Mathf.Abs(mesh.bounds.size.y - rect.height / ppu) < .001f,
+                "side contact uses the full unwarped long-contact source frame");
         }
         static void VerifyLegGate(GameSession s, SimActor boss, List<SimActor> actors)
         {

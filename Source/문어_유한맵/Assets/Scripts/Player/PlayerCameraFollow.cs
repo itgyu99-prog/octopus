@@ -43,14 +43,18 @@ namespace OctopusSurvivors
             var session = GameSession.Instance;
             bool octopusBattle = session != null && session.OctopusBossActive;
             float zoom = octopusBattle ? OctopusBossPattern.OverviewSize : GameConfig.CameraSize;
-            _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, zoom, 1f - Mathf.Exp(-5f * Time.deltaTime));
             if (octopusBattle)
             {
                 var center = OctopusBossPattern.OverviewCenter;
-                var overview = new Vector3(center.x, center.y, transform.position.z);
-                transform.position = Vector3.Lerp(transform.position, overview, 1f - Mathf.Exp(-5f * Time.deltaTime));
+                // The boss head is anchored near the top edge of the arena. A
+                // smoothed zoom leaves it outside the viewport for several frames.
+                // Switch to the authored overview atomically before rendering it.
+                _camera.orthographicSize = zoom;
+                transform.position = new Vector3(center.x, center.y, transform.position.z);
+                shakeOffset = Vector3.zero;
                 return;
             }
+            _camera.orthographicSize = Mathf.Lerp(_camera.orthographicSize, zoom, 1f - Mathf.Exp(-5f * Time.deltaTime));
             if (Target == null)
                 return;
 
