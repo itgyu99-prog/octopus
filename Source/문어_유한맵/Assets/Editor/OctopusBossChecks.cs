@@ -161,8 +161,10 @@ namespace OctopusSurvivors.EditorTools
                 var originalCenter = mapRenderer.transform.TransformPoint(
                     new Vector3((7373f * .5f - art.pivot.x) / art.pixelsPerUnit,
                         (953f + 4147f * .5f - art.pivot.y) / art.pixelsPerUnit, 0));
-                Check(((Vector2)originalCenter).sqrMagnitude < .000001f,
-                    "original 7373x4147 artwork center remains at world zero after bottom extension");
+                Check(Vector2.Distance(originalCenter, new Vector2(.4f, 3.7f)) < .001f &&
+                    Vector3.Distance(mapRenderer.transform.localScale,
+                        new Vector3(1.357988f, 1.357988f, 1f)) < .001f,
+                    "stage 5 map keeps the authored position and uniform scale");
                 Check(boss.Pos == OctopusBossPattern.Head,
                     "map replacement preserves the simulation boss world position");
                 var resizeChecks = VerifyLiveGameViewSizes(mapRenderer, camera);
@@ -199,8 +201,10 @@ namespace OctopusSurvivors.EditorTools
                     VerifyHeadDoesNotOverlapBossHud(visual, camera);
                     if (OctopusBossChecks.MapOnly)
                         Check(Vector2.Distance(visual.BodyRenderer.transform.position,
-                            OctopusBossPattern.Head + Vector2.down * (FiniteBeach.Height * .14f)) < .001f,
-                            "boss portrait stays at its existing fixed world position without HUD-driven movement");
+                            new Vector2(0f, 17.16f)) < .001f &&
+                            Vector3.Distance(visual.BodyRenderer.transform.localScale,
+                                Vector3.one * .8753439f) < .001f,
+                            "boss portrait keeps the authored position and uniform scale");
                     if (!OctopusBossChecks.MapOnly) VerifyCompleteDownFrames(visual);
                 }
                 if (shot == 4 && !OctopusBossChecks.MapOnly) VerifySideContactPose(visual);
@@ -208,7 +212,7 @@ namespace OctopusSurvivors.EditorTools
             if (OctopusBossChecks.MapOnly)
             {
                 File.WriteAllText("Logs/Stage5MapChecks.summary.txt",
-                    "PASS: unchanged 7373x5100 map; fixed 2x camera (22); combat framing and body visible; Pattern 2/0/4/0/2 keeps camera/map; lifecycle restores player follow; four live Game view sizes; unchanged boss/arm roots; HUD separation; existing limb/core combat checks; eight captured poses. Full artwork fit is intentionally not required at fixed 2x.");
+                    "PASS: 7373x5100 map at (0.4,3.7) and uniform 1.357988 scale; boss portrait at (0,17.16) and uniform 0.8753439 scale; fixed 2x camera (22); combat framing and body visible; Pattern 2/0/4/0/2 keeps camera/map; lifecycle restores player follow; four live Game view sizes; unchanged boss/arm roots; HUD separation; existing limb/core combat checks; eight captured poses. Full artwork fit is intentionally not required at fixed 2x.");
                 yield break;
             }
             // Continuous captures expose stepping/teleporting that isolated poses can hide.

@@ -8,6 +8,8 @@ namespace OctopusSurvivors
     // A small root-locked mesh follows the random target; it never cuts/reassembles the artwork.
     public sealed class OctopusBossVisual : MonoBehaviour
     {
+        static readonly Vector3 BossPortraitPosition = new Vector3(0f, 17.16f, 0f);
+        const float BossPortraitScale = .8753439f;
         sealed class Frame
         {
             public Texture2D Texture;
@@ -198,7 +200,7 @@ namespace OctopusSurvivors
             body = new GameObject("Supplied boss character").AddComponent<SpriteRenderer>();
             body.transform.SetParent(world, false); body.sortingOrder = 12;
             body.sprite = Sprite.Create(head.Texture, head.Rect, new Vector2(.5f, .5f), 100, 0, SpriteMeshType.FullRect);
-            body.transform.localScale = Vector3.one * (FiniteBeach.Width * .235f / body.sprite.bounds.size.x);
+            body.transform.localScale = Vector3.one * BossPortraitScale;
             effects = new Material(Shader.Find("Sprites/Default"));
             for (int a = 0; a < 6; a++)
             {
@@ -262,7 +264,7 @@ namespace OctopusSurvivors
             world.position = Vector3.zero;
             // Keep the boss's simulation anchor and attacks unchanged while placing its
             // large portrait below the fixed top-center boss HUD.
-            body.transform.position = OctopusBossPattern.Head + Vector2.down * (FiniteBeach.Height * .14f);
+            body.transform.position = BossPortraitPosition;
             body.color = (hitFlags & (byte)EnemyFlag.Hit) != 0 ? new Color(1, .65f, .65f) : Color.white;
             if (s.Vulnerable > 0)
             { body.transform.position += Vector3.down * .8f; body.color = new Color(.78f, .84f, .88f); }
