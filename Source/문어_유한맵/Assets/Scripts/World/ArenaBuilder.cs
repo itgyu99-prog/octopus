@@ -4,6 +4,8 @@ namespace OctopusSurvivors
 {
     public static class ArenaBuilder
     {
+        static readonly Vector3 BeachArtworkPosition = new Vector3(2.1f, 1.6f, 0f);
+        static readonly Vector3 BeachArtworkScale = new Vector3(1.357988f, 1.417603f, 1f);
         static GameObject root;
         static Sprite sprite;
         static Sprite bossSprite;
@@ -16,7 +18,6 @@ namespace OctopusSurvivors
             root = new GameObject("FiniteBeachArena");
             var texture = RuntimeArt.BeachTexture();
             float artworkWidth = OctopusBossPattern.OverviewSize * 2f * FiniteBeach.Aspect;
-            float artworkHeight = artworkWidth * texture.height / texture.width;
             BuildBackdrop(texture, artworkWidth);
             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
                 new Vector2(.5f, .5f), 100f, 0, SpriteMeshType.FullRect);
@@ -25,8 +26,8 @@ namespace OctopusSurvivors
             BeachRenderer = beach.AddComponent<SpriteRenderer>();
             BeachRenderer.sprite = sprite;
             BeachRenderer.sortingOrder = -20;
-            beach.transform.localScale = new Vector3(artworkWidth / sprite.bounds.size.x,
-                artworkHeight / sprite.bounds.size.y, 1);
+            beach.transform.localPosition = BeachArtworkPosition;
+            beach.transform.localScale = BeachArtworkScale;
         }
         public static void UseBossArtwork(bool enabled)
         {
