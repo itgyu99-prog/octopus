@@ -349,6 +349,14 @@ namespace OctopusSurvivors.EditorTools
             var follow = camera.GetComponent<PlayerCameraFollow>();
             var original = session.OctopusBoss.Value;
             var bossArt = map.sprite;
+            // Simulate a play-mode reload/Inspector edit while the boss-map state is
+            // already active. The layout must be restored even without a mode change.
+            map.transform.localPosition = Vector3.zero;
+            map.transform.localScale = Vector3.one;
+            ArenaBuilder.UseBossArtwork(true);
+            Check(Vector3.Distance(map.transform.localPosition, new Vector3(.4f, 3.7f, 0f)) < .001f &&
+                Vector3.Distance(map.transform.localScale, new Vector3(1.357988f, 1.357988f, 1f)) < .001f,
+                "active boss-map mode reapplies the authored transform after runtime state drift");
             var scale = map.transform.localScale;
             var bounds = map.bounds;
             Vector2 cameraCenter = camera.transform.position;

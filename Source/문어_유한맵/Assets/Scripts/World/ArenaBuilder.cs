@@ -33,7 +33,13 @@ namespace OctopusSurvivors
         }
         public static void UseBossArtwork(bool enabled)
         {
-            if (BeachRenderer == null || usingBossArtwork == enabled) return;
+            if (BeachRenderer == null) return;
+            // LateUpdate calls this continuously. Reapply the authored transform before
+            // the state-change shortcut so play-mode reloads and Inspector edits cannot
+            // leave the live boss map at an old position.
+            BeachRenderer.transform.localPosition = enabled ? BossBeachArtworkPosition : BeachArtworkPosition;
+            BeachRenderer.transform.localScale = enabled ? BossBeachArtworkScale : BeachArtworkScale;
+            if (usingBossArtwork == enabled) return;
             if (enabled && bossSprite == null)
             {
                 var texture = RuntimeArt.BossBeachTexture();
@@ -49,8 +55,6 @@ namespace OctopusSurvivors
                     new Vector2(.5f, pivotY), 100f, 0, SpriteMeshType.FullRect);
             }
             BeachRenderer.sprite = enabled ? bossSprite : sprite;
-            BeachRenderer.transform.localPosition = enabled ? BossBeachArtworkPosition : BeachArtworkPosition;
-            BeachRenderer.transform.localScale = enabled ? BossBeachArtworkScale : BeachArtworkScale;
             usingBossArtwork = enabled;
             foreach (string name in new[] { "Continuous outer ocean", "Upper beach continuation" })
             {

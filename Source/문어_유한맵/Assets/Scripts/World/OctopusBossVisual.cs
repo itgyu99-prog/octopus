@@ -265,6 +265,7 @@ namespace OctopusSurvivors
             // Keep the boss's simulation anchor and attacks unchanged while placing its
             // large portrait below the fixed top-center boss HUD.
             body.transform.position = BossPortraitPosition;
+            body.transform.localScale = Vector3.one * BossPortraitScale;
             body.color = (hitFlags & (byte)EnemyFlag.Hit) != 0 ? new Color(1, .65f, .65f) : Color.white;
             if (s.Vulnerable > 0)
             { body.transform.position += Vector3.down * .8f; body.color = new Color(.78f, .84f, .88f); }
