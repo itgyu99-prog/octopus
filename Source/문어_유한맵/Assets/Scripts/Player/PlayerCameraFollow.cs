@@ -25,8 +25,9 @@ namespace OctopusSurvivors
 
         public static bool ShouldUseBossMap(GameSession session) => session != null && session.IsPlaying &&
             session.Stage.Value == 5 && session.BossAlive.Value;
-        public static float BossOrthographicSize(Bounds bounds, float aspect) =>
-            Mathf.Max(bounds.extents.y, bounds.extents.x / Mathf.Max(.01f, aspect)) * 1.05f;
+        public static float BossMapAspect(Bounds bounds) =>
+            bounds.size.x / Mathf.Max(.01f, bounds.size.y);
+        public static float BossOrthographicSize(Bounds bounds) => bounds.extents.y;
         public static void StrongImpact(Vector2 point)
         {
             if (OctopusPlayer.Local != null && Vector2.Distance(OctopusPlayer.Local.Pos, point) < 10f)
@@ -58,10 +59,7 @@ namespace OctopusSurvivors
         {
             transform.position -= shakeOffset;
             shakeOffset = Vector3.zero;
-            // Fixed 16:9 gameplay viewport: the same 3 x 3 field on all clients.
             float screenAspect = (float)Screen.width / Mathf.Max(1, Screen.height);
-            _camera.rect = AspectFitViewport(screenAspect, FiniteBeach.Aspect);
-            _camera.aspect = FiniteBeach.Aspect;
             var session = GameSession.Instance;
             // Stage selects the encounter; BossAlive controls its lifetime. Pattern is
             // attack state and must not switch the camera or map when it becomes zero.
@@ -80,7 +78,7 @@ namespace OctopusSurvivors
                 if (map != null)
                 {
                     _hasLoggedMissingMapRenderer = false;
-                    FitBossMap(map);
+                    FitBossMap(map, screenAspect);
                 }
                 else if (!_hasLoggedMissingMapRenderer)
                 {
@@ -90,7 +88,13 @@ namespace OctopusSurvivors
                 // Keep boss mode even if the renderer is temporarily unavailable.
                 // Falling through would resume player tracking during the encounter.
             }
-            else FollowPlayer();
+            else
+            {
+                // Regular stages keep the fixed 16:9 gameplay viewport.
+                _camera.rect = AspectFitViewport(screenAspect, FiniteBeach.Aspect);
+                _camera.aspect = FiniteBeach.Aspect;
+                FollowPlayer();
+            }
 
             if (stateChanged)
             {
@@ -134,7 +138,7 @@ namespace OctopusSurvivors
             }
         }
 
-        void FitBossMap(SpriteRenderer map)
+        void FitBossMap(SpriteRenderer map, float screenAspect)
         {
             if (!_bossBackgroundApplied)
             {
@@ -148,10 +152,12 @@ namespace OctopusSurvivors
             }
 
             Bounds bounds = map.bounds;
-            float aspect = Mathf.Max(0.01f, _camera.aspect);
-            // Show the complete user-authored stage-5 composition instead of cropping
-            // the 100x69 map with the old fixed Size 22 camera.
-            _camera.orthographicSize = BossOrthographicSize(bounds, aspect);
+            float aspect = BossMapAspect(bounds);
+            // Stage 5 uses the artwork's own aspect ratio. The camera rectangle and
+            // orthographic height meet the map edges exactly without stretching it.
+            _camera.rect = AspectFitViewport(screenAspect, aspect);
+            _camera.aspect = aspect;
+            _camera.orthographicSize = BossOrthographicSize(bounds);
             transform.position = new Vector3(bounds.center.x, bounds.center.y, transform.position.z);
             shakeOffset = Vector3.zero;
 
@@ -169,7 +175,7 @@ namespace OctopusSurvivors
                 Debug.Log($"[Stage5MapCamera] mapBounds={bounds.size.x:F2}x{bounds.size.y:F2} " +
                     $"mapCenter=({bounds.center.x:F2},{bounds.center.y:F2}); cameraCenter={transform.position}; " +
                     $"cameraView={viewWidth:F2}x{viewHeight:F2}; aspect={aspect:F3}; " +
-                    $"fullyVisible={fullyVisible}; fit=full-map-105%; size={_camera.orthographicSize:F2}; actor positions fixed.");
+                    $"fullyVisible={fullyVisible}; fit=exact-map-bounds; size={_camera.orthographicSize:F2}; actor positions fixed.");
                 _lastLoggedAspect = aspect;
                 _lastLoggedSize = _camera.orthographicSize;
                 _lastLoggedBounds = bounds;
