@@ -25,9 +25,13 @@ namespace OctopusSurvivors
 
         public static bool ShouldUseBossMap(GameSession session) => session != null && session.IsPlaying &&
             session.Stage.Value == 5 && session.BossAlive.Value;
-        public static float BossMapAspect(Bounds bounds) =>
-            bounds.size.x / Mathf.Max(.01f, bounds.size.y);
-        public static float BossOrthographicSize(Bounds bounds) => bounds.extents.y;
+        public static float BossOrthographicSize(Bounds bounds) =>
+            bounds.extents.x / FiniteBeach.Aspect;
+        public static Vector2 BossCameraCenter(Bounds bounds)
+        {
+            float size = BossOrthographicSize(bounds);
+            return new Vector2(bounds.center.x, bounds.max.y - size);
+        }
         public static void StrongImpact(Vector2 point)
         {
             if (OctopusPlayer.Local != null && Vector2.Distance(OctopusPlayer.Local.Pos, point) < 10f)
@@ -152,20 +156,20 @@ namespace OctopusSurvivors
             }
 
             Bounds bounds = map.bounds;
-            float aspect = BossMapAspect(bounds);
-            // Stage 5 uses the artwork's own aspect ratio. The camera rectangle and
-            // orthographic height meet the map edges exactly without stretching it.
+            float aspect = FiniteBeach.Aspect;
+            // Fill the regular 16:9 gameplay rectangle from left to right without
+            // stretching the artwork. Keep the top edge and crop only lower ocean.
             _camera.rect = AspectFitViewport(screenAspect, aspect);
             _camera.aspect = aspect;
             _camera.orthographicSize = BossOrthographicSize(bounds);
-            transform.position = new Vector3(bounds.center.x, bounds.center.y, transform.position.z);
+            Vector2 cameraCenter = BossCameraCenter(bounds);
+            transform.position = new Vector3(cameraCenter.x, cameraCenter.y, transform.position.z);
             shakeOffset = Vector3.zero;
 
             float viewWidth = 2f * _camera.orthographicSize * aspect;
             float viewHeight = 2f * _camera.orthographicSize;
-            bool fullyVisible = viewWidth >= bounds.size.x && viewHeight >= bounds.size.y &&
-                Mathf.Abs(transform.position.x - bounds.center.x) <= (viewWidth - bounds.size.x) * .5f + .001f &&
-                Mathf.Abs(transform.position.y - bounds.center.y) <= (viewHeight - bounds.size.y) * .5f + .001f;
+            bool fillsWidth = Mathf.Abs(viewWidth - bounds.size.x) <= .001f;
+            bool topAligned = Mathf.Abs(transform.position.y + _camera.orthographicSize - bounds.max.y) <= .001f;
             bool fitChanged = !_hasLoggedBossMapFit || !Mathf.Approximately(_lastLoggedAspect, aspect) ||
                 !Mathf.Approximately(_lastLoggedSize, _camera.orthographicSize) ||
                 (_lastLoggedBounds.center - bounds.center).sqrMagnitude > 0.0001f ||
@@ -175,7 +179,7 @@ namespace OctopusSurvivors
                 Debug.Log($"[Stage5MapCamera] mapBounds={bounds.size.x:F2}x{bounds.size.y:F2} " +
                     $"mapCenter=({bounds.center.x:F2},{bounds.center.y:F2}); cameraCenter={transform.position}; " +
                     $"cameraView={viewWidth:F2}x{viewHeight:F2}; aspect={aspect:F3}; " +
-                    $"fullyVisible={fullyVisible}; fit=exact-map-bounds; size={_camera.orthographicSize:F2}; actor positions fixed.");
+                    $"fillsWidth={fillsWidth}; topAligned={topAligned}; fit=16:9-width; size={_camera.orthographicSize:F2}; actor positions fixed.");
                 _lastLoggedAspect = aspect;
                 _lastLoggedSize = _camera.orthographicSize;
                 _lastLoggedBounds = bounds;
