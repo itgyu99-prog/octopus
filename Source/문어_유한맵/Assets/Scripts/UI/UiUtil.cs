@@ -144,6 +144,7 @@ namespace OctopusSurvivors
             frt.offsetMin = new Vector2(3, 3);
             frt.offsetMax = new Vector2(-3, -3);
             fillImage = fillGo.GetComponent<Image>();
+            fillImage.sprite = SpriteFactory.Square(Color.white);
             fillImage.color = fill;
             fillImage.type = Image.Type.Filled;
             fillImage.fillMethod = Image.FillMethod.Horizontal;
