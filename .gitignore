@@ -1,6 +1,8 @@
 # Separate project and generated release archives
 /My project/
 *.zip
+/.codex-build/
+/output/
 
 # Unity generated files; Assets and .meta must remain tracked
 **/[Ll]ibrary/
