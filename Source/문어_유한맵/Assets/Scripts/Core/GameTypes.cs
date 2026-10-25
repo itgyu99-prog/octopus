@@ -32,7 +32,9 @@ namespace OctopusSurvivors
         Meteor = 1,
         Hellfire = 2,
         Spirit = 3,
-        DarkMatter = 4
+        DarkMatter = 4,
+        YinYang = 5,
+        Cosmos = 6
     }
 
     public enum GamePhase : byte
@@ -77,6 +79,8 @@ namespace OctopusSurvivors
         PickupHellfire = 16,
         PickupSpirit = 17,
         PickupDarkMatter = 18,
+        PickupYinYang = 19,
+        PickupCosmos = 20,
 
         Droplet = 20,
         Pepper = 21,
@@ -120,7 +124,9 @@ namespace OctopusSurvivors
         ThornPatch = 85, ThornShot = 86, Balloon = 87, Tornado = 88, Firework = 89,
         LightningWarning = 90, ComboRepeater = 91, ChiliField = 92, LemonWheel = 93,
         WaterBalloonShot = 94, WaterBalloonBurst = 95,
-        PiercingMeteor = 70
+        PiercingMeteor = 70,
+        CosmicStar = 96, CosmicMeteor = 97, CosmicTrail = 98, CosmicImpact = 99,
+        YinYangOrbit = 100, YinYangCollision = 101, YinYangBurst = 102, YinYangShockwave = 103
     }
 
     public enum DamageSource : byte { NormalEnemy, BossContact, BossSkill, Other }

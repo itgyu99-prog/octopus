@@ -1,0 +1,23 @@
+{
+  "frameSize": [
+    128,
+    128
+  ],
+  "columns": 8,
+  "rows": [
+    "cosmos_spawn",
+    "cosmos_twinkle",
+    "cosmos_meteor",
+    "cosmos_trail",
+    "cosmos_impact",
+    "yin_energy",
+    "yang_energy",
+    "yin_yang_orbit",
+    "yin_yang_collision",
+    "yin_yang_burst",
+    "yin_yang_shockwave"
+  ],
+  "fps": 12,
+  "filter": "Point",
+  "source": "Built-in image_gen; normalized with nearest-neighbor, 40-color ramps, alpha cleanup"
+}

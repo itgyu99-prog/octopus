@@ -1,0 +1,7 @@
+Tool: built-in image_gen, with the attached reference image used only for visual direction.
+
+Cosmos production prompt: top-down commercial 2D pixel-art VFX atlas, eight columns by eight rows, transparent background, clean square padding, hard edged 2-4 px pixel clusters, restrained palette. Rows show sequential star-field generation, two distinct twinkling star variants, directional white-nose blue/violet meteors, detached dissipating trail fragments, and expanding starburst collisions. Preserve the cool blue-violet look and movement of the supplied cosmic reference. No people, scene, typography, or blur.
+
+Yin & Yang production prompt: premium crisp pixel-art atlas, eight columns by eight rows, transparent background, black and white ink with subtle violet accents. Include the correct black/white taijitu inside separate black and white flame energy spheres; a perfect hollow circular paired-ribbon orbit; opposing energies converging with fissures; a large irregular circular mixed black-white burst; a fragmented circular shockwave. The two original orb rows were created separately from the orbital ribbon row. No characters or text.
+
+Image finishing: normalize every sprite to 64x64 working pixels and enlarge with Nearest Neighbor to 128x128; clip background haze using source alpha; quantize each sprite to 20 colors without dithering. Construct a stepped black-white shockwave from separated arc segments and outward-flying shards to replace a source row that clipped its cell boundaries.

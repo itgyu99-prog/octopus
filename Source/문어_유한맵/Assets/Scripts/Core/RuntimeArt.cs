@@ -132,6 +132,7 @@ namespace OctopusSurvivors
                 case SpecialId.Hellfire: return Icon("Special_Hellfire");
                 case SpecialId.Spirit: return Icon("Special_Spirit");
                 case SpecialId.DarkMatter: return Icon("Special_DarkMatter");
+                case SpecialId.YinYang: return YinYangArt.Symbol;
                 default: return null;
             }
         }

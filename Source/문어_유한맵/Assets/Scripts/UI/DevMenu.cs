@@ -56,6 +56,7 @@ namespace OctopusSurvivors
             SpecialButton(258f, 20f, "헬파이어", (byte)SpecialId.Hellfire);
             SpecialButton(258f, 250f, "정령", (byte)SpecialId.Spirit);
             SpecialButton(310f, 20f, "암흑", (byte)SpecialId.DarkMatter);
+            SpecialButton(310f, 250f, "음양", (byte)SpecialId.YinYang);
             var resetCd = TopButton(250f, 310f, 220f, 46f, "쿨 초기화");
             resetCd.onClick.AddListener(ResetSpecialCooldown);
 

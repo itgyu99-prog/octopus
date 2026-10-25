@@ -4,10 +4,10 @@ namespace OctopusSurvivors
 {
     public static class ArenaBuilder
     {
-        static readonly Vector3 BeachArtworkPosition = new Vector3(2.1f, 1.6f, 0f);
-        static readonly Vector3 BeachArtworkScale = new Vector3(1.357988f, 1.417603f, 1f);
-        static readonly Vector3 BossBeachArtworkPosition = new Vector3(.4f, 3.7f, 0f);
-        static readonly Vector3 BossBeachArtworkScale = new Vector3(1.357988f, 1.357988f, 1f);
+        public static readonly Vector3 BeachArtworkPosition = new Vector3(2.1f, 1.6f, 0f);
+        public static readonly Vector3 BeachArtworkScale = new Vector3(1.357988f, 1.417603f, 1f);
+        public static readonly Vector3 BossBeachArtworkPosition = new Vector3(.4f, 3.7f, 0f);
+        public static readonly Vector3 BossBeachArtworkScale = new Vector3(1.357988f, 1.357988f, 1f);
         static GameObject root;
         static Sprite sprite;
         static Sprite bossSprite;

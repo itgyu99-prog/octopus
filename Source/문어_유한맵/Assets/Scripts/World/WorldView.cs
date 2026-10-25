@@ -202,6 +202,8 @@ namespace OctopusSurvivors
                 _basePositions[id] = worldPos;
             }
             _target[id] = worldPos;
+            if (CelestialArt.Supports(kind))
+                CelestialArt.Show(sr, kind, age, duration, size, extra);
         }
 
         void LateUpdate()
@@ -280,6 +282,7 @@ namespace OctopusSurvivors
                 case ActorKind.PickupHellfire: return RuntimeArt.SpecialIcon(SpecialId.Hellfire);
                 case ActorKind.PickupSpirit: return RuntimeArt.SpecialIcon(SpecialId.Spirit);
                 case ActorKind.PickupDarkMatter: return RuntimeArt.SpecialIcon(SpecialId.DarkMatter);
+                case ActorKind.PickupYinYang: return RuntimeArt.SpecialIcon(SpecialId.YinYang);
                 case ActorKind.ArtifactPiece: return RuntimeArt.Icon("RelicPearl");
                 case ActorKind.Statue: return RuntimeArt.Icon("RelicSandGlyph");
                 case ActorKind.Shockwave:
@@ -332,6 +335,7 @@ namespace OctopusSurvivors
                 case ActorKind.PickupHellfire:
                 case ActorKind.PickupSpirit:
                 case ActorKind.PickupDarkMatter: return Color.white;
+                case ActorKind.PickupYinYang: return Color.white;
                 case ActorKind.Droplet: return ElementRules.Water;
                 case ActorKind.AutoBolt: return new Color(1f, 0.95f, 0.55f);
                 case ActorKind.Pepper: return new Color(1f, 0.15f, 0.1f);

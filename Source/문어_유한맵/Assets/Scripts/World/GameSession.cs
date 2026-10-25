@@ -596,7 +596,7 @@ namespace OctopusSurvivors
                 if (a.Dead)
                     continue;
 
-                if (TickUpgradeAbility(a, dt) || TickPlannedAbility(a, dt) || TickElementEffect(a, dt)) continue;
+                if (TickCelestial(a, dt) || TickUpgradeAbility(a, dt) || TickPlannedAbility(a, dt) || TickElementEffect(a, dt)) continue;
 
                 switch (a.Kind)
                 {
@@ -1033,7 +1033,7 @@ namespace OctopusSurvivors
 
         void DropBossSpecial(Vector2 pos)
         {
-            var pool = new[] { SpecialId.Meteor, SpecialId.Hellfire, SpecialId.Spirit, SpecialId.DarkMatter };
+            var pool = new[] { SpecialId.Meteor, SpecialId.Hellfire, SpecialId.Spirit, SpecialId.DarkMatter, SpecialId.YinYang };
             const int count = 2;
             for (int i = 0; i < count; i++)
             {

@@ -1,0 +1,13 @@
+{
+  "frames": 88,
+  "frameSize": "128x128",
+  "sourcePixelGrid": "64x64 nearest-neighbor enlarged 2x; opaque alpha per pixel",
+  "spritesheetRows": 11,
+  "runtimeUnityCaptureFrames": {
+    "cosmos": 33,
+    "yinYang": 40
+  },
+  "unityChecks": 98,
+  "unityStatus": "PASS",
+  "runtimeErrors": 0
+}

@@ -42,6 +42,8 @@ namespace OctopusSurvivors
         public readonly NetworkVariable<byte> Special = new NetworkVariable<byte>(0);
         public readonly NetworkVariable<bool> Transformed = new NetworkVariable<bool>(false);
         public readonly NetworkVariable<float> SpecialCd = new NetworkVariable<float>(0f);
+        public readonly NetworkVariable<Vector4> AttributeCooldownTotal = new NetworkVariable<Vector4>(Vector4.zero);
+        public readonly NetworkVariable<Vector3> ComboCooldownTotal = new NetworkVariable<Vector3>(Vector3.zero);
 
         public readonly NetworkVariable<float> HopZ = new NetworkVariable<float>(0f);
         public readonly NetworkVariable<byte> Palette = new NetworkVariable<byte>(0);
@@ -346,6 +348,19 @@ namespace OctopusSurvivors
         int waterCastCount;
         public Vector2 NextWaterDirection(Vector2 facing) => AbilityRunner.Rotate(facing, (waterCastCount++ % 30) * 12f);
         readonly float[] comboCooldowns = new float[3];
+        public static float ReadyFraction(float remaining, float total) => 1f - Mathf.Clamp01(remaining / Mathf.Max(.01f, total));
+        public float AttributeReadyFraction(int slot)
+        {
+            if (slot < 0 || slot >= attributeCooldowns.Length) return 0f;
+            float cycle = GameConfig.AttributeCycle * GameConfig.AttributeCdMul(UpAttrCd.Value);
+            return ReadyFraction(attributeCooldowns[slot], cycle);
+        }
+        public float ComboReadyFraction(int slot)
+        {
+            if (slot < 0 || slot >= comboCooldowns.Length) return 0f;
+            float cycle = (GameConfig.ComboActiveDuration + GameConfig.ComboCooldown) * GameConfig.ElementCdMul(UpElemCd.Value);
+            return ReadyFraction(comboCooldowns[slot], cycle);
+        }
         void TickAttributeCycle(float dt)
         {
             for (byte slot = 0; slot < 4; slot++)
@@ -360,6 +375,7 @@ namespace OctopusSurvivors
                 CastLevel = EffectiveAttrLevel(slot);
                 GameSession.Instance.CastBasicAbility(this, element, CastLevel);
             }
+            AttributeCooldownTotal.Value = new Vector4(attributeCooldowns[0], attributeCooldowns[1], attributeCooldowns[2], attributeCooldowns[3]);
         }
         void TickComboCycle(float dt)
         {
@@ -372,6 +388,7 @@ namespace OctopusSurvivors
                 comboCooldowns[slot] = tuning.duration + tuning.cooldown * GameConfig.ElementCdMul(UpElemCd.Value);
                 GameSession.Instance.CastPlannedCombo(this, combo);
             }
+            ComboCooldownTotal.Value = new Vector3(comboCooldowns[0], comboCooldowns[1], comboCooldowns[2]);
         }
 
         [ServerRpc]
@@ -547,7 +564,8 @@ namespace OctopusSurvivors
 
         public void DevSetSpecial(byte specialId)
         {
-            if (!IsServer || (specialId != 0 && (GameSession.Instance == null || !GameSession.Instance.SpecialUnlocked.Value)))
+            if (!IsServer || specialId > (byte)SpecialId.YinYang ||
+                (specialId != 0 && (GameSession.Instance == null || !GameSession.Instance.SpecialUnlocked.Value)))
                 return;
             Special.Value = specialId;
             SpecialCd.Value = 0f;

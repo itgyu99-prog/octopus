@@ -12,6 +12,7 @@ namespace OctopusSurvivors
                 case SpecialId.Hellfire: return "필드를 불태운다 (지속딜+둔화)";
                 case SpecialId.Spirit: return "전방 충격파 (넉백+기절)";
                 case SpecialId.DarkMatter: return "블랙홀로 적을 끌어당긴다";
+                case SpecialId.YinYang: return "음양 곡옥이 공전한 뒤 흑백 폭발을 일으킨다";
                 default: return string.Empty;
             }
         }
@@ -47,6 +48,14 @@ namespace OctopusSurvivors
                     var hole = session.SpawnPersistent(ActorKind.BlackHole, pos + facing * 3.5f, Vector2.zero,
                         3.2f + 0.3f * level, 5f, 26f * mul, player, StatusMask.Pull);
                     hole.Bounces = level;
+                    break;
+
+                case SpecialId.YinYang:
+                    session.CastCelestial(pos, player, id, level);
+                    break;
+
+                case SpecialId.Cosmos:
+                    session.CastCelestial(pos, player, id, level);
                     break;
             }
         }

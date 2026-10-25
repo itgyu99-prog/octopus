@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "symbolResolution": 256,
+  "burstFrameSize": 384,
+  "burstFrames": 24,
+  "burstGrid": [
+    6,
+    4
+  ],
+  "alpha": "smooth RGBA",
+  "filter": "bilinear",
+  "orbitLine": false,
+  "generator": "Tools/prepare_yinyang_v2.py",
+  "source": "built-in imagegen, reference-guided ink detonation"
+}

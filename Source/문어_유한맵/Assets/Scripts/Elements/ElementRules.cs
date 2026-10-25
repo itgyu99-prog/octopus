@@ -49,6 +49,7 @@ namespace OctopusSurvivors
                 case SpecialId.Hellfire: return new Color(1f, 0.25f, 0.05f);
                 case SpecialId.Spirit: return new Color(0.6f, 1f, 0.9f);
                 case SpecialId.DarkMatter: return new Color(0.45f, 0.2f, 0.7f);
+                case SpecialId.YinYang: return new Color(0.92f, 0.92f, 0.92f);
                 default: return Color.white;
             }
         }
@@ -95,6 +96,7 @@ namespace OctopusSurvivors
                 case SpecialId.Hellfire: return "헬파이어";
                 case SpecialId.Spirit: return "정령";
                 case SpecialId.DarkMatter: return "암흑물질";
+                case SpecialId.YinYang: return "음양";
                 default: return "-";
             }
         }
@@ -120,6 +122,7 @@ namespace OctopusSurvivors
                 case ActorKind.PickupHellfire: return SpecialId.Hellfire;
                 case ActorKind.PickupSpirit: return SpecialId.Spirit;
                 case ActorKind.PickupDarkMatter: return SpecialId.DarkMatter;
+                case ActorKind.PickupYinYang: return SpecialId.YinYang;
                 default: return SpecialId.None;
             }
         }
@@ -145,6 +148,7 @@ namespace OctopusSurvivors
                 case SpecialId.Hellfire: return ActorKind.PickupHellfire;
                 case SpecialId.Spirit: return ActorKind.PickupSpirit;
                 case SpecialId.DarkMatter: return ActorKind.PickupDarkMatter;
+                case SpecialId.YinYang: return ActorKind.PickupYinYang;
                 default: return ActorKind.PickupMeteor;
             }
         }
@@ -153,7 +157,7 @@ namespace OctopusSurvivors
             kind >= ActorKind.PickupFire && kind <= ActorKind.PickupElectric;
 
         public static bool IsSpecialPickup(ActorKind kind) =>
-            kind >= ActorKind.PickupMeteor && kind <= ActorKind.PickupDarkMatter;
+            kind >= ActorKind.PickupMeteor && kind <= ActorKind.PickupYinYang;
 
         public static bool TryCombo(ElementId a, ElementId b, out ComboId combo)
         {

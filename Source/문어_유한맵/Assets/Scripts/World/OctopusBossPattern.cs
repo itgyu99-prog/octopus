@@ -47,6 +47,8 @@ namespace OctopusSurvivors
         public const float HalfAttackStart = 1.65f, HalfAttackSeconds = 3f, HalfDuration = 7.3f;
         public const float SlamInterval = .26f;
         public const float SideSlamInterval = .48f;
+        public const float PortraitScale = .8753439f;
+        public static Vector2 CoreCenter(bool bossMode) => bossMode ? new Vector2(0f, 17.16f) : Head;
         public static Vector2 Head => new Vector2(0, FiniteBeach.Height * .53f);
         public static Vector2 OverviewCenter => new Vector2(0, FiniteBeach.Height * .11f);
         public static float OverviewSize => FiniteBeach.Height * .64f;
