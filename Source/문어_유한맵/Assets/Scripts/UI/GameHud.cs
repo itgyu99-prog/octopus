@@ -150,19 +150,19 @@ namespace OctopusSurvivors
             bodyRt.anchoredPosition = new Vector2(0f, -8f);
             _loadout = UiUtil.Label(_tentacleHud.transform, new Vector2(0f, -90f), new Vector2(1f, 1f), 1, Color.clear);
             _loadout.gameObject.SetActive(false);
-            UiUtil.Bar(_tentacleHud.transform, new Vector2(-410f, -20f), new Vector2(210f, 19f),
+            UiUtil.Bar(_tentacleHud.transform, new Vector2(40f, -20f), new Vector2(210f, 19f),
                 new Color(0.12f, 0.13f, 0.19f), new Color(0.96f, 0.25f, 0.4f), out _hpFill);
-            UiUtil.Bar(_tentacleHud.transform, new Vector2(-410f, -48f), new Vector2(112f, 10f),
+            UiUtil.Bar(_tentacleHud.transform, new Vector2(40f, -48f), new Vector2(112f, 10f),
                 new Color(0.12f, 0.13f, 0.19f), new Color(0.24f, 0.82f, 1f), out _dashFill);
-            _hpText = UiUtil.Label(_tentacleHud.transform, new Vector2(-410f, -2f), new Vector2(230f, 18f), 13,
+            _hpText = UiUtil.Label(_tentacleHud.transform, new Vector2(40f, -2f), new Vector2(230f, 18f), 13,
                 new Color(0.35f, 0.1f, 0.19f));
-            _dashText = UiUtil.Label(_tentacleHud.transform, new Vector2(-292f, -47f), new Vector2(115f, 22f), 12,
+            _dashText = UiUtil.Label(_tentacleHud.transform, new Vector2(160f, -47f), new Vector2(115f, 22f), 12,
                 new Color(0.25f, 0.16f, 0.22f));
-            _slot0Icon = TentacleSocket(-140f);
-            _slot1Icon = TentacleSocket(-40f);
-            _slot2Icon = TentacleSocket(60f);
-            _slot3Icon = TentacleSocket(160f);
-            _specialIcon = TentacleSocket(275f, 84f);
+            _slot0Icon = TentacleSocket(350f);
+            _slot1Icon = TentacleSocket(445f);
+            _slot2Icon = TentacleSocket(540f);
+            _slot3Icon = TentacleSocket(635f);
+            _specialIcon = TentacleSocket(755f, 84f);
         }
 
         Image TentacleSocket(float x, float size = 64f)
