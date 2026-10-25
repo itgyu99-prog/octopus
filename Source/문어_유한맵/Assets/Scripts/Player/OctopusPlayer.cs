@@ -547,7 +547,7 @@ namespace OctopusSurvivors
 
         public void DevSetSpecial(byte specialId)
         {
-            if (!IsServer || (specialId != 0 && (GameSession.Instance == null || !GameSession.Instance.SpecialUnlocked.Value)))
+            if (!IsServer || specialId > (byte)SpecialId.DarkMatter)
                 return;
             Special.Value = specialId;
             SpecialCd.Value = 0f;
