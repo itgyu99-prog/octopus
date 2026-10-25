@@ -18,6 +18,7 @@ namespace OctopusSurvivors
         GameObject _root;
         Text _hpText;
         Text _dashText;
+        GameObject _tentacleHud;
         Image _dashFill;
         Text _loadout;
         Text _keys;
@@ -85,18 +86,8 @@ namespace OctopusSurvivors
             rt.anchorMax = Vector2.one;
             rt.offsetMin = rt.offsetMax = Vector2.zero;
 
-            UiUtil.Bar(_root.transform, new Vector2(40, -30), new Vector2(420, 28), new Color(0.15f, 0.1f, 0.1f, 0.8f), new Color(0.85f, 0.2f, 0.25f), out _hpFill);
-            _hpText = UiUtil.Label(_root.transform, new Vector2(40, -62), new Vector2(420, 32), 22, Color.white);
-            _loadout = UiUtil.Label(_root.transform, new Vector2(112, -105), new Vector2(688, 365), 22, Color.white);
-            _loadout.alignment = TextAnchor.UpperLeft;
-            UiUtil.Bar(_root.transform, new Vector2(40, -490), new Vector2(220, 12), new Color(.08f,.13f,.2f,.8f), new Color(.3f,.85f,1f), out _dashFill);
-            _dashText = UiUtil.Label(_root.transform, new Vector2(40, -508), new Vector2(340, 32), 19, Color.white);
-            _slot3Icon = HudIcon(_root.transform, new Vector2(42f, -261f), 46f);
-            _slot2Icon = HudIcon(_root.transform, new Vector2(42f, -209f), 46f);
-            _slot0Icon = HudIcon(_root.transform, new Vector2(42f, -105f), 46f);
-            _slot1Icon = HudIcon(_root.transform, new Vector2(42f, -157f), 46f);
-            _specialIcon = HudIcon(_root.transform, new Vector2(42f, -334f), 46f);
-
+            BuildTentacleHud();
+            // Attribute slots and status bars are contained in the compact tentacle HUD.
             _stage = UiUtil.Label(_root.transform, Vector2.zero, new Vector2(420, 40), 26, new Color(1f, 0.95f, 0.7f), TextAnchor.UpperRight);
             var srt = _stage.rectTransform;
             srt.anchorMin = srt.anchorMax = new Vector2(1f, 1f);
@@ -139,6 +130,48 @@ namespace OctopusSurvivors
             BuildRadar();
             BuildExitConfirmation();
             _root.SetActive(false);
+        }
+
+        void BuildTentacleHud()
+        {
+            _tentacleHud = new GameObject("TentacleHud", typeof(RectTransform));
+            _tentacleHud.transform.SetParent(_root.transform, false);
+            var rt = _tentacleHud.GetComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
+            rt.pivot = new Vector2(0.5f, 1f);
+            rt.anchoredPosition = new Vector2(0f, -12f);
+            rt.sizeDelta = new Vector2(1060f, 150f);
+            var backing = UiUtil.Panel(_tentacleHud.transform, Vector2.zero, new Vector2(1060f, 116f),
+                new Color(0.96f, 0.85f, 0.83f, 0.95f));
+            backing.gameObject.name = "TentacleBody";
+            var bodyRt = backing.rectTransform;
+            bodyRt.anchorMin = bodyRt.anchorMax = new Vector2(0.5f, 0.5f);
+            bodyRt.pivot = new Vector2(0.5f, 0.5f);
+            bodyRt.anchoredPosition = new Vector2(0f, -8f);
+            _loadout = UiUtil.Label(_tentacleHud.transform, new Vector2(0f, -90f), new Vector2(1f, 1f), 1, Color.clear);
+            _loadout.gameObject.SetActive(false);
+            UiUtil.Bar(_tentacleHud.transform, new Vector2(-410f, -20f), new Vector2(210f, 19f),
+                new Color(0.12f, 0.13f, 0.19f), new Color(0.96f, 0.25f, 0.4f), out _hpFill);
+            UiUtil.Bar(_tentacleHud.transform, new Vector2(-410f, -48f), new Vector2(112f, 10f),
+                new Color(0.12f, 0.13f, 0.19f), new Color(0.24f, 0.82f, 1f), out _dashFill);
+            _hpText = UiUtil.Label(_tentacleHud.transform, new Vector2(-410f, -2f), new Vector2(230f, 18f), 13,
+                new Color(0.35f, 0.1f, 0.19f));
+            _dashText = UiUtil.Label(_tentacleHud.transform, new Vector2(-292f, -47f), new Vector2(115f, 22f), 12,
+                new Color(0.25f, 0.16f, 0.22f));
+            _slot0Icon = TentacleSocket(-140f);
+            _slot1Icon = TentacleSocket(-40f);
+            _slot2Icon = TentacleSocket(60f);
+            _slot3Icon = TentacleSocket(160f);
+            _specialIcon = TentacleSocket(275f, 84f);
+        }
+
+        Image TentacleSocket(float x, float size = 64f)
+        {
+            var ring = HudIcon(_tentacleHud.transform, new Vector2(x, -15f), size);
+            ring.sprite = SpriteFactory.Ring(Color.white);
+            ring.color = new Color(0.9f, 0.52f, 0.64f);
+            var icon = HudIcon(_tentacleHud.transform, new Vector2(x + 7f, -22f), size - 14f);
+            return icon;
         }
 
         void BuildExitConfirmation()
@@ -370,7 +403,7 @@ namespace OctopusSurvivors
             string slots = $"속성1 {SlotText(p,0)}\n\n속성2 {SlotText(p,1)}\n\n속성3 {SlotText(p,2)}\n\n속성4 {SlotText(p,3)}";
             string combos = "";
             for(byte i=0;i<3;i++) combos += (i>0 ? " · " : "") + (p.ComboAt(i)!=ComboId.None ? ElementRules.Name(p.ComboAt(i)) : "빈 칸");
-            _loadout.text = $"{slots}\n\n요소: {combos}\n{SpecialText(p)}";
+            // Attribute and special icons are now displayed in the tentacle sockets.
             _slot3Icon.sprite = RuntimeArt.ElementIcon(p.SlotElement(3));
             _slot3Icon.enabled = _slot3Icon.sprite != null;
             _slot2Icon.sprite = RuntimeArt.ElementIcon(p.SlotElement(2));
@@ -434,6 +467,7 @@ namespace OctopusSurvivors
 
             UpdateCards(p, over);
             UpdateCombine(p, session);
+            UpdateQuickCombine(p, session);
         }
 
         void UpdateCards(OctopusPlayer p, bool gameOver)
