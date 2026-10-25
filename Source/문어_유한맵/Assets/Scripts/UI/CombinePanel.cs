@@ -8,6 +8,10 @@ namespace OctopusSurvivors
         GameObject combineRoot;
         Text combineTitle;
         readonly Button[] recipeButtons = new Button[6];
+        readonly Button[] quickCombineButtons = new Button[6];
+        readonly Image[] quickCombineIcons = new Image[6];
+        readonly ComboId[] quickCombineRecipes = new ComboId[6];
+        GameObject quickCombineRoot;
         readonly byte[] firstSlots = { 0, 0, 0, 1, 1, 2 };
         readonly byte[] secondSlots = { 1, 2, 3, 2, 3, 3 };
         void BuildCombine()
@@ -31,7 +35,64 @@ namespace OctopusSurvivors
             var close=UiUtil.Button(combineRoot.transform,new Vector2(0,-265),new Vector2(220,45),"닫기 (F)");
             close.onClick.AddListener(()=>combineRoot.SetActive(false));
             combineRoot.SetActive(false);
+            BuildQuickCombine();
         }
+        void BuildQuickCombine()
+        {
+            quickCombineRoot = new GameObject("Left circular recipe icons", typeof(RectTransform));
+            quickCombineRoot.transform.SetParent(_root.transform, false);
+            var root = quickCombineRoot.GetComponent<RectTransform>();
+            root.anchorMin = root.anchorMax = new Vector2(0, .5f);
+            root.pivot = new Vector2(0, .5f); root.anchoredPosition = new Vector2(28, 0);
+            root.sizeDelta = new Vector2(82, 540);
+            for (int i = 0; i < quickCombineButtons.Length; i++)
+            {
+                int index = i;
+                var button = UiUtil.Button(root, Vector2.zero, new Vector2(76, 76), "");
+                button.name = "Combine recipe " + i;
+                var rt = button.GetComponent<RectTransform>(); rt.anchorMin = rt.anchorMax = new Vector2(.5f, .5f);
+                var background = button.GetComponent<Image>(); background.sprite = SpriteFactory.Circle(Color.white);
+                background.color = new Color(1f, .88f, .9f, .98f);
+                button.targetGraphic = background; button.transition = Selectable.Transition.None;
+                button.navigation = new Navigation { mode = Navigation.Mode.None };
+                button.GetComponentInChildren<Text>().gameObject.SetActive(false);
+                button.gameObject.AddComponent<CircularButtonHitArea>();
+                var icon = CombatImage(button.transform, "Recipe artwork", Vector2.zero, new Vector2(54, 54), null);
+                icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(.5f, .5f);
+                button.onClick.AddListener(() =>
+                {
+                    var player = OctopusPlayer.Local;
+                    if (player == null) return;
+                    for (int pair = 0; pair < 6; pair++)
+                        if (player.CanCombine(firstSlots[pair], secondSlots[pair], out var recipe) && recipe == quickCombineRecipes[index])
+                        { player.RequestCombine(firstSlots[pair], secondSlots[pair]); return; }
+                });
+                quickCombineButtons[i] = button; quickCombineIcons[i] = icon;
+                button.gameObject.SetActive(false);
+            }
+        }
+
+        void UpdateQuickCombine(OctopusPlayer player, GameSession session)
+        {
+            bool visible = session != null && session.CombatActive && !player.Downed.Value && !ExitConfirmationOpen;
+            int count = 0;
+            for (int pair = 0; pair < 6 && visible; pair++)
+            {
+                if (!player.CanCombine(firstSlots[pair], secondSlots[pair], out var recipe)) continue;
+                bool duplicate = false;
+                for (int i = 0; i < count; i++) if (quickCombineRecipes[i] == recipe) duplicate = true;
+                if (!duplicate) quickCombineRecipes[count++] = recipe;
+            }
+            for (int i = 0; i < 6; i++)
+            {
+                quickCombineButtons[i].gameObject.SetActive(i < count);
+                if (i >= count) continue;
+                quickCombineIcons[i].sprite = CombatHudArt.Combo(quickCombineRecipes[i]);
+                quickCombineIcons[i].color = Color.white;
+                quickCombineButtons[i].GetComponent<RectTransform>().anchoredPosition = new Vector2(0, ((count - 1) * .5f - i) * 88);
+            }
+        }
+
         public void ToggleCombine()
         {
             if (ExitConfirmationOpen) return;

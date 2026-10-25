@@ -10,7 +10,7 @@ namespace OctopusSurvivors
         static readonly Dictionary<string,Sprite> cache = new Dictionary<string,Sprite>();
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Reset() { foreach(var s in cache.Values) if(s!=null) { Object.Destroy(s.texture); Object.Destroy(s); } cache.Clear(); }
-        public static Sprite Frame => Extract("Frame", new RectInt(35,190,1595,550));
+        public static Sprite Frame => Extract("FrameV2", new RectInt(94,228,1855,365));
         public static Sprite Combo(ComboId id)
         {
             switch(id) {
@@ -39,7 +39,7 @@ namespace OctopusSurvivors
             while(queue.Count>0) {
                 int n=queue.Dequeue(); if(seen[n]) continue; seen[n]=true;
                 var c=pixels[n];
-                bool background=source=="Frame" ? c.r>.11f && c.r<.36f && Mathf.Abs(c.r-c.g)<.055f && Mathf.Abs(c.b-c.g)<.07f :
+                bool background=source.StartsWith("Frame") ? c.r>.11f && c.r<.36f && Mathf.Abs(c.r-c.g)<.055f && Mathf.Abs(c.b-c.g)<.07f :
                     c.r>.10f && c.r<.23f && c.g>.12f && c.g<.27f && c.b>.15f && c.b<.32f && c.b-c.r<.13f;
                 if(!background) continue;
                 pixels[n]=Color.clear;

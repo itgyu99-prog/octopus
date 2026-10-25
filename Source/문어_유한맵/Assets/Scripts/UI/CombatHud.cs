@@ -5,86 +5,118 @@ namespace OctopusSurvivors
 {
     public sealed partial class GameHud
     {
-        sealed class CombatSlot
-        {
-            public Image Dark, Ready;
-            public Text State;
-            public void Set(Sprite icon,float ready,bool usable=true)
-            {
-                Dark.sprite=Ready.sprite=icon;
-                Dark.enabled=Ready.enabled=icon!=null;
-                Ready.fillAmount=usable ? Mathf.Clamp01(ready) : 0;
-                State.text=icon==null ? "" : !usable ? "대기" : ready>=.999f ? "" : Mathf.RoundToInt(ready*100)+"%";
-            }
-        }
-        readonly CombatSlot[] combatAttributes=new CombatSlot[4],combatElements=new CombatSlot[3];
-        CombatSlot combatSpecial;
-        Image combatHp;
+        const float HudWidth = 1000f, ArtWidth = 1855f, ArtHeight = 365f;
+        readonly Image[] combatAttributes = new Image[4], combatElements = new Image[3];
+        readonly Image[] combatDash = new Image[2];
+        Image combatSpecial, combatHp;
         RectTransform combatRoot;
-        static Image CombatImage(Transform parent,string name,Vector2 position,Vector2 size,Sprite sprite)
+
+        static Image CombatImage(Transform parent, string name, Vector2 position, Vector2 size, Sprite sprite)
         {
-            var go=new GameObject(name,typeof(RectTransform),typeof(CanvasRenderer),typeof(Image));
-            go.transform.SetParent(parent,false);
-            var rt=go.GetComponent<RectTransform>(); rt.anchorMin=rt.anchorMax=new Vector2(.5f,0);
-            rt.pivot=new Vector2(.5f,.5f); rt.anchoredPosition=position; rt.sizeDelta=size;
-            var image=go.GetComponent<Image>(); image.sprite=sprite; image.preserveAspect=true; image.raycastTarget=false;
+            var go = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            go.transform.SetParent(parent, false);
+            var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = new Vector2(.5f, 0);
+            rt.pivot = new Vector2(.5f, .5f); rt.anchoredPosition = position; rt.sizeDelta = size;
+            var image = go.GetComponent<Image>(); image.sprite = sprite;
+            image.color = Color.white; image.preserveAspect = true; image.raycastTarget = false;
             return image;
         }
-        static CombatSlot CreateCombatSlot(Transform parent,string name,Vector2 position,float size)
+
+        // Coordinates on the supplied 2022 x 778 HUD artwork, cropped to its silhouette.
+        static Vector2 HudPoint(float x, float y) => new Vector2((x - 94 - ArtWidth * .5f) * HudWidth / ArtWidth,
+            (228 + ArtHeight - y) * HudWidth / ArtWidth);
+        static Vector2 HudSize(float w, float h) => new Vector2(w, h) * (HudWidth / ArtWidth);
+
+        static Image CombatSocket(Transform parent, string name, float x, float y, float diameter)
         {
-            var mask=CombatImage(parent,name,position,Vector2.one*size,SpriteFactory.Circle(Color.white));
-            mask.gameObject.AddComponent<Mask>().showMaskGraphic=false;
-            var dark=CombatImage(mask.transform,"Unavailable",new Vector2(0,size*.5f),Vector2.one*size,null);
-            dark.color=new Color(.22f,.22f,.27f,1);
-            var ready=CombatImage(mask.transform,"Ready from bottom",new Vector2(0,size*.5f),Vector2.one*size,null);
-            ready.type=Image.Type.Filled; ready.fillMethod=Image.FillMethod.Vertical; ready.fillOrigin=(int)Image.OriginVertical.Bottom;
-            var text=UiUtil.Label(parent,Vector2.zero,new Vector2(size+16,20),12,Color.white,TextAnchor.MiddleCenter);
-            text.name=name+" availability";
-            text.rectTransform.anchorMin=text.rectTransform.anchorMax=new Vector2(.5f,0);
-            text.rectTransform.pivot=new Vector2(.5f,.5f); text.rectTransform.anchoredPosition=position+Vector2.down*(size*.5f+7);
-            text.raycastTarget=false;
-            return new CombatSlot { Dark=dark,Ready=ready,State=text };
+            var mask = CombatImage(parent, name, HudPoint(x, y), HudSize(diameter, diameter), SpriteFactory.Circle(Color.white));
+            mask.gameObject.AddComponent<Mask>().showMaskGraphic = false;
+            var icon = CombatImage(mask.transform, "Full color icon", Vector2.zero, mask.rectTransform.sizeDelta, null);
+            icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(.5f, .5f);
+            return icon;
         }
+
+        Image CombatGauge(string name, float x, float y, float width, float height, Color color)
+        {
+            var track = CombatImage(combatRoot, name + " track", HudPoint(x, y), HudSize(width, height), SpriteFactory.Square(Color.white));
+            track.preserveAspect = false; track.color = new Color(.075f, .085f, .12f);
+            var fill = CombatImage(combatRoot, name, HudPoint(x, y), HudSize(width, height), SpriteFactory.Square(Color.white));
+            fill.preserveAspect = false; fill.color = color;
+            fill.type = Image.Type.Filled; fill.fillMethod = Image.FillMethod.Horizontal;
+            return fill;
+        }
+
         void BuildCombatHud()
         {
-            var go=new GameObject("Octopus combat interface",typeof(RectTransform)); go.transform.SetParent(_root.transform,false);
-            combatRoot=go.GetComponent<RectTransform>(); combatRoot.anchorMin=combatRoot.anchorMax=new Vector2(.5f,0);
-            combatRoot.pivot=new Vector2(.5f,0); combatRoot.anchoredPosition=Vector2.zero; combatRoot.sizeDelta=new Vector2(640,221);
-            CombatImage(go.transform,"Original octopus frame",new Vector2(0,110.35f),new Vector2(640,220.7f),CombatHudArt.Frame);
-            // Pixel measurements refer to the supplied 1678x937 reference, cropped at (35,190).
-            for(int i=0;i<4;i++) combatAttributes[i]=CreateCombatSlot(go.transform,"Attribute "+i,
-                new Vector2(((i==0?290:i==1?435:i==2?575:715)-35)*640f/1595-320,(740-370)*640f/1595),34);
-            for(int i=0;i<3;i++) combatElements[i]=CreateCombatSlot(go.transform,"Element "+i,
-                new Vector2(((i==0?890:i==1?1105:1320)-35)*640f/1595-320,(740-615)*640f/1595),49);
-            combatSpecial=CreateCombatSlot(go.transform,"Special",new Vector2((1295-35)*640f/1595-320,(740-370)*640f/1595),104);
-            var track=CombatImage(go.transform,"Health track",new Vector2((490-35)*640f/1595-320,(740-543)*640f/1595),new Vector2(180,29),SpriteFactory.Square(Color.white));
-            track.color=new Color(.09f,.08f,.15f); track.preserveAspect=false;
-            combatHp=CombatImage(go.transform,"Health",new Vector2((490-35)*640f/1595-320,(740-543)*640f/1595),new Vector2(176,25),SpriteFactory.Square(Color.white));
-            combatHp.preserveAspect=false; combatHp.color=new Color(.91f,.22f,.28f);
-            combatHp.type=Image.Type.Filled; combatHp.fillMethod=Image.FillMethod.Horizontal;
-            _loadout.gameObject.SetActive(false);
-            foreach(var image in new[] {_slot0Icon,_slot1Icon,_slot2Icon,_slot3Icon,_specialIcon}) image.gameObject.SetActive(false);
+            var go = new GameObject("Bottom center octopus HUD", typeof(RectTransform));
+            go.transform.SetParent(_root.transform, false); combatRoot = go.GetComponent<RectTransform>();
+            combatRoot.anchorMin = combatRoot.anchorMax = new Vector2(.5f, 0);
+            combatRoot.pivot = new Vector2(.5f, 0); combatRoot.anchoredPosition = new Vector2(0, 14);
+            combatRoot.sizeDelta = new Vector2(HudWidth, ArtHeight * HudWidth / ArtWidth);
+            CombatImage(combatRoot, "Supplied pink tentacle artwork", new Vector2(0, combatRoot.sizeDelta.y * .5f),
+                combatRoot.sizeDelta, CombatHudArt.Frame);
+            float[] attributes = { 370, 531, 693, 855 };
+            for (int i = 0; i < 4; i++) combatAttributes[i] = CombatSocket(combatRoot, "Attribute " + i, attributes[i], 334, 100);
+            float[] elements = { 1080, 1248, 1418 };
+            for (int i = 0; i < 3; i++) combatElements[i] = CombatSocket(combatRoot, "Element " + i, elements[i], 465, 108);
+            combatSpecial = CombatSocket(combatRoot, "Cosmos or YinYang", 1723, 413, 210);
+            combatHp = CombatGauge("Health", 633, 458, 420, 32, new Color(1f, .22f, .4f));
+            _hpFill = combatHp;
+            // One background covers the baked cyan fill, then each charge fills separately.
+            var dashTrack = CombatImage(combatRoot, "Dash track", HudPoint(520, 521), HudSize(190, 28), SpriteFactory.Square(Color.white));
+            dashTrack.preserveAspect = false; dashTrack.color = new Color(.075f, .085f, .12f);
+            for (int i = 0; i < 2; i++)
+            {
+                combatDash[i] = CombatImage(combatRoot, "Dash charge " + (i + 1), HudPoint(471 + i * 98, 521), HudSize(92, 28), SpriteFactory.Square(Color.white));
+                combatDash[i].preserveAspect = false; combatDash[i].color = new Color(.14f, .81f, 1f);
+                combatDash[i].type = Image.Type.Filled; combatDash[i].fillMethod = Image.FillMethod.Horizontal;
+            }
+            _dashFill = combatDash[0];
+            _hpText = UiUtil.Label(combatRoot, Vector2.zero, HudSize(420, 26), 11, Color.white, TextAnchor.MiddleCenter);
+            _hpText.rectTransform.anchorMin = _hpText.rectTransform.anchorMax = new Vector2(.5f, 0);
+            _hpText.rectTransform.pivot = new Vector2(.5f, .5f); _hpText.rectTransform.anchoredPosition = HudPoint(633, 458);
+            _dashText = UiUtil.Label(combatRoot, Vector2.zero, new Vector2(80, 18), 11, Color.white, TextAnchor.MiddleLeft);
+            _dashText.rectTransform.anchorMin = _dashText.rectTransform.anchorMax = new Vector2(.5f, 0);
+            _dashText.rectTransform.pivot = new Vector2(0, .5f); _dashText.rectTransform.anchoredPosition = HudPoint(630, 521);
+            _slot0Icon = combatAttributes[0]; _slot1Icon = combatAttributes[1];
+            _slot2Icon = combatAttributes[2]; _slot3Icon = combatAttributes[3]; _specialIcon = combatSpecial;
+            _loadout = UiUtil.Label(combatRoot, Vector2.zero, Vector2.one, 1, Color.clear); _loadout.gameObject.SetActive(false);
         }
+
+        public static float DashSegmentFill(int segment, int charges, int capacity, float rechargeLeft)
+        {
+            if (segment >= capacity) return 0;
+            if (segment < charges) return 1;
+            return segment == charges ? Mathf.Clamp01(1 - rechargeLeft / GameConfig.DashRecharge) : 0;
+        }
+
         void UpdateCombatHud(OctopusPlayer p)
         {
-            if(combatRoot==null)return;
-            float availableWidth=_root.GetComponent<RectTransform>().rect.width-48;
-            float scale=Mathf.Min(1.3f,availableWidth/640);
-            combatRoot.localScale=Vector3.one*scale;
-            // Keep the controls in the free left corner, outside the enlarged HUD.
-            float sideWidth=(_root.GetComponent<RectTransform>().rect.width-640*scale)*.5f-40;
-            _keys.gameObject.SetActive(sideWidth>=260);
-            _keys.rectTransform.sizeDelta=new Vector2(Mathf.Max(260,sideWidth),60);
-            _keys.rectTransform.anchoredPosition=new Vector2(20,10);
-            _keys.fontSize=16;
-            _keys.text="이동 방향키 · 획득 E · 합성 F\n변신 Space · 능력 1/2/3 · 나가기 Esc";
-            bool cycling=!p.Downed.Value && !p.Transformed.Value;
-            for(byte i=0;i<4;i++) combatAttributes[i].Set(RuntimeArt.ElementIcon(p.SlotElement(i)),p.AttributeReadyFraction(i),cycling);
-            for(byte i=0;i<3;i++) combatElements[i].Set(CombatHudArt.Combo(p.ComboAt(i)),p.ComboReadyFraction(i),cycling);
-            float total=GameConfig.SpecialCooldown*GameConfig.ElementCdMul(p.UpElemCd.Value);
-            float ready=1f-Mathf.Clamp01(p.SpecialCd.Value/Mathf.Max(.01f,total));
-            combatSpecial.Set(RuntimeArt.SpecialIcon((SpecialId)p.Special.Value),ready,!p.Downed.Value);
-            combatHp.fillAmount=p.Hp.Value/Mathf.Max(1,p.MaxHp.Value);
+            float canvasWidth = _root.GetComponent<RectTransform>().rect.width;
+            combatRoot.localScale = Vector3.one * Mathf.Min(1f, (canvasWidth - 48) / HudWidth);
+            for (byte i = 0; i < 4; i++) SetCombatIcon(combatAttributes[i], RuntimeArt.ElementIcon(p.SlotElement(i)));
+            for (byte i = 0; i < 3; i++) SetCombatIcon(combatElements[i], CombatHudArt.Combo(p.ComboAt(i)));
+            SetCombatIcon(combatSpecial, RuntimeArt.SpecialIcon((SpecialId)p.Special.Value));
+            combatHp.fillAmount = p.Hp.Value / Mathf.Max(1, p.MaxHp.Value);
+            _hpText.text = p.Downed.Value ? "다운" : Mathf.CeilToInt(p.Hp.Value) + " / " + Mathf.CeilToInt(p.MaxHp.Value);
+            for (int i = 0; i < 2; i++)
+            {
+                bool two = p.MaxDashCharges > 1;
+                combatDash[i].enabled = two || i == 0;
+                combatDash[i].rectTransform.anchoredPosition = HudPoint(two ? 471 + i * 98 : 520, 521);
+                combatDash[i].rectTransform.sizeDelta = HudSize(two ? 92 : 190, 28);
+                combatDash[i].fillAmount = DashSegmentFill(i, p.DashCharges.Value, p.MaxDashCharges, p.DashRechargeLeft.Value);
+            }
+            _dashText.text = p.DashCharges.Value + " / " + p.MaxDashCharges;
+            _keys.gameObject.SetActive(canvasWidth >= 1600);
+            _keys.rectTransform.sizeDelta = new Vector2(310, 62); _keys.fontSize = 15;
+            _keys.text = "이동 방향키 · 획득 E · 합성 F\n변신 Space · 대시 Shift · 나가기 Esc";
+        }
+
+        static void SetCombatIcon(Image image, Sprite sprite)
+        {
+            image.sprite = sprite; image.enabled = sprite != null; image.color = Color.white;
         }
     }
 }

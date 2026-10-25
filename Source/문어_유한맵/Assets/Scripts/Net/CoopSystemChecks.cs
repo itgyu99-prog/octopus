@@ -219,7 +219,7 @@ namespace OctopusSurvivors
             Check(Camera.main.orthographicSize==11f&&GameConfig.PlayerScreenHeight==.04f,"wide camera and compact player ratio");
             Check(GameplayRules.Data.attributeDropChance==.02f,"attribute drop chance reduced to two percent");
             Check(!s.SpecialUnlocked.Value,"specials unavailable before boss five");
-            p.DevSetSpecial((byte)SpecialId.Meteor);Check(p.Special.Value==0,"developer grant also respects special gate");
+            p.DevSetSpecial((byte)1);Check(p.Special.Value==0,"developer grant also respects special gate");
             foreach(var player in OctopusPlayer.All)
             {
                 foreach(var element in GameplayRules.BasicElements)player.GrantElement(element);

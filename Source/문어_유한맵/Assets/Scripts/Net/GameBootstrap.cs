@@ -59,7 +59,7 @@ namespace OctopusSurvivors
                 _nm.NetworkConfig = new NetworkConfig();
 
             var config = _nm.NetworkConfig;
-            config.ProtocolVersion = 4; // Match flame tracking, fruit balance and visuals; actor records remain 25 bytes.
+            config.ProtocolVersion = 5; // Two celestial specials and unique Cosmos pickup ID; actor records remain 25 bytes.
             config.EnableSceneManagement = false;
             config.ForceSamePrefabs = false;
             config.TickRate = 30;

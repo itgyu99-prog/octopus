@@ -1,0 +1,77 @@
+PASS: both commas use equal 256px smooth sprites
+PASS: smooth bilinear sampling, no nearest-neighbor enlargement
+PASS: 384px burst frame 0
+PASS: 384px burst frame 1
+PASS: 384px burst frame 2
+PASS: 384px burst frame 3
+PASS: 384px burst frame 4
+PASS: 384px burst frame 5
+PASS: 384px burst frame 6
+PASS: 384px burst frame 7
+PASS: 384px burst frame 8
+PASS: 384px burst frame 9
+PASS: 384px burst frame 10
+PASS: 384px burst frame 11
+PASS: 384px burst frame 12
+PASS: 384px burst frame 13
+PASS: 384px burst frame 14
+PASS: 384px burst frame 15
+PASS: 384px burst frame 16
+PASS: 384px burst frame 17
+PASS: 384px burst frame 18
+PASS: 384px burst frame 19
+PASS: 384px burst frame 20
+PASS: 384px burst frame 21
+PASS: 384px burst frame 22
+PASS: 384px burst frame 23
+PASS: orbit renders no parent ring and no line renderer
+PASS: opposite positions around owner
+PASS: headings differ by exactly 180 degrees
+PASS: both main commas have equal size
+PASS: rounded head follows orbital tangent
+PASS: orbit reaches exact common center for seamless taiji join
+PASS: snapshot age sampling is deterministic
+PASS: only None, Cosmos and YinYang remain
+PASS: Cosmos pickup has its own non-projectile network ID
+PASS: retired special rejected: 1
+PASS: retired special rejected: 2
+PASS: retired special rejected: 3
+PASS: retired special rejected: 4
+PASS: developer menu accepts Cosmos
+PASS: Cosmos is reachable through the player special action
+PASS: Cosmos cast starts the authoritative cooldown
+PASS: developer menu accepts YinYang
+PASS: boss rewards contain exactly Cosmos and YinYang
+PASS: HUD is anchored at bottom center
+PASS: HUD sits inside the visible bottom edge
+PASS: HUD uses the exact second supplied artwork
+PASS: two available dashes show two full charge segments
+PASS: attribute artwork retains its original bright colors
+PASS: attribute artwork retains its original bright colors
+PASS: attribute artwork retains its original bright colors
+PASS: attribute artwork retains its original bright colors
+PASS: available recipe button has supplied artwork
+PASS: recipe hit area follows its circular silhouette
+PASS: available recipe button has supplied artwork
+PASS: recipe hit area follows its circular silhouette
+PASS: available recipe button has supplied artwork
+PASS: recipe hit area follows its circular silhouette
+PASS: available recipe button has supplied artwork
+PASS: recipe hit area follows its circular silhouette
+PASS: available recipe button has supplied artwork
+PASS: recipe hit area follows its circular silhouette
+PASS: available recipe button has supplied artwork
+PASS: recipe hit area follows its circular silhouette
+PASS: clickable recipe icons are visible on the left
+PASS: circular buttons accept center clicks and reject rectangle corners
+PASS: second dash recharges independently after first charge is ready
+PASS: clicking a recipe icon performs a real authoritative combination
+PASS: orbit follows the moving owner
+PASS: downed owner cancels pending impact
+PASS: no damage before taiji lock and detonation
+PASS: authoritative orbit -> merge -> blast transitions reached
+PASS: impact damages nearby target exactly once (230)
+PASS: cosmetic debris and wave do not enlarge the damage radius
+PASS: all four effect actor kinds expire
+PASS: all local effect children cleaned up after expiry
+PASS: no runtime errors during actual Unity gameplay capture

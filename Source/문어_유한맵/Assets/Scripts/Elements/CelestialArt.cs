@@ -6,8 +6,9 @@ namespace OctopusSurvivors
     {
         static readonly Dictionary<int,Sprite> cache=new Dictionary<int,Sprite>();
         static Texture2D texture;
+        static Sprite cosmosIcon;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void Reset(){cache.Clear();texture=null;}
+        static void Reset(){cache.Clear();texture=null;cosmosIcon=null;}
         public static Sprite Frame(int row,int frame)
         {
             int key=row*8+Mathf.Clamp(frame,0,7);
@@ -21,6 +22,18 @@ namespace OctopusSurvivors
             }
             sprite=Sprite.Create(texture,new Rect((key%8)*128,(10-row)*128,128,128),new Vector2(.5f,.5f),128,0,SpriteMeshType.FullRect);
             cache[key]=sprite;return sprite;
+        }
+        public static Sprite CosmosIcon
+        {
+            get
+            {
+                if (cosmosIcon != null) return cosmosIcon;
+                var star = Frame(1, 4);
+                if (star == null) return null;
+                var rect = star.rect;
+                cosmosIcon = Sprite.Create(star.texture, new Rect(rect.x + 24, rect.y + 24, 80, 80), new Vector2(.5f, .5f), 80, 0, SpriteMeshType.FullRect);
+                return cosmosIcon;
+            }
         }
         public static bool Supports(ActorKind k)=>k>=ActorKind.CosmicStar && k<=ActorKind.YinYangShockwave;
         public static void Show(SpriteRenderer sr,ActorKind kind,float age,float duration,float size,byte direction)

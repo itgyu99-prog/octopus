@@ -41,14 +41,15 @@ def symbols():
                         q**3*p0[1]+3*q*q*t*p1[1]+3*q*t*t*p2[1]+t**3*p3[1]))
         return out
     path=[]
-    curves=[((128,18),(182,18),(220,56),(220,104)),
-            ((220,104),(220,144),(192,174),(158,183)),
-            ((158,183),(143,187),(133,194),(125,207)),
-            ((125,207),(119,216),(107,221),(98,216)),
-            ((98,216),(109,211),(116,203),(118,194)),
-            ((118,194),(121,183),(112,176),(95,170)),
-            ((95,170),(57,156),(37,128),(38,93)),
-            ((38,93),(40,50),(73,18),(128,18))]
+    # Traditional magatama: rounded drilled bead with a broad curved shoulder
+    # tapering into a short inward hook, rather than a face and a ghost-like skirt.
+    curves=[((104,32),(58,31),(29,65),(35,108)),
+            ((35,108),(40,146),(76,166),(113,151)),
+            ((113,151),(129,145),(145,151),(150,167)),
+            ((150,167),(153,184),(140,199),(119,210)),
+            ((119,210),(160,205),(198,178),(209,140)),
+            ((209,140),(222,94),(190,52),(151,38)),
+            ((151,38),(134,32),(119,32),(104,32))]
     for curve in curves: path.extend(cubic(*curve,steps=48)[:-1])
     hi=Image.new('L',(n,n)); ImageDraw.Draw(hi).polygon([(round(x*4),round(y*4)) for x,y in path],fill=255)
     alpha=hi.filter(ImageFilter.GaussianBlur(.65))
@@ -69,12 +70,23 @@ def symbols():
         rgba[:,:,3] = mask*255
         image=Image.fromarray(rgba)
         d=ImageDraw.Draw(image)
-        cx=n*(107/256);cy=n*(88/256);eye=n*(10/256)
-        d.ellipse((cx-eye,cy-eye,cx+eye,cy+eye),fill=(17,17,21,255) if white else (249,249,248,255))
+        cx=n*(92/256);cy=n*(89/256);eye=n*(15/256)
+        # A real drilled hole reads as a magatama jewel, not a pupil.
+        d.ellipse((cx-eye-4,cy-eye-4,cx+eye+4,cy+eye+4),fill=(161,161,166,255) if white else (99,99,106,255))
+        d.ellipse((cx-eye,cy-eye,cx+eye,cy+eye),fill=(0,0,0,0))
         image=image.resize((256,256),Image.Resampling.LANCZOS)
         variants.append(image);save(image,'Yang' if white else 'Yin')
-    merged=Image.new('RGBA',(256,256))
-    merged.alpha_composite(variants[0]);merged.alpha_composite(variants[1].rotate(180))
+    # The lock phase uses an exact taiji icon; orbiting beads retain their own silhouette.
+    yy,xx=np.mgrid[:n,:n].astype(float)
+    tx=(xx+.5-n/2)/(n*.435);ty=(n/2-yy-.5)/(n*.435)
+    circle=tx*tx+ty*ty<=1
+    dark=circle & (((tx>=0)&~(tx*tx+(ty+.5)**2<.25)) | (tx*tx+(ty-.5)**2<=.25))
+    icon=np.zeros((n,n,4),dtype='uint8');icon[:,:,:3]=244;icon[:,:,3]=circle*255;icon[dark,:3]=16
+    im=Image.fromarray(icon);d=ImageDraw.Draw(im)
+    for py,fill in [(.5,(244,244,244,255)),(-.5,(16,16,16,255))]:
+        cx=n/2;cy=n/2-py*n*.435;r=n*.435*.135
+        d.ellipse((cx-r,cy-r,cx+r,cy+r),fill=fill)
+    merged=im.resize((256,256),Image.Resampling.LANCZOS)
     save(merged,'Symbol')
     sheet=Image.new('RGBA',(768,256),(85,86,92,255))
     for i,img in enumerate(variants+[merged]):sheet.alpha_composite(img,(i*256,0))

@@ -128,10 +128,7 @@ namespace OctopusSurvivors
         {
             switch (id)
             {
-                case SpecialId.Meteor: return Icon("Special_Meteorite");
-                case SpecialId.Hellfire: return Icon("Special_Hellfire");
-                case SpecialId.Spirit: return Icon("Special_Spirit");
-                case SpecialId.DarkMatter: return Icon("Special_DarkMatter");
+                case SpecialId.Cosmos: return CelestialArt.CosmosIcon;
                 case SpecialId.YinYang: return YinYangArt.Symbol;
                 default: return null;
             }

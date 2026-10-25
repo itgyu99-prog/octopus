@@ -29,10 +29,6 @@ namespace OctopusSurvivors
     public enum SpecialId : byte
     {
         None = 0,
-        Meteor = 1,
-        Hellfire = 2,
-        Spirit = 3,
-        DarkMatter = 4,
         YinYang = 5,
         Cosmos = 6
     }
@@ -75,12 +71,9 @@ namespace OctopusSurvivors
         PickupStone = 13,
         PickupElectric = 14,
 
-        PickupMeteor = 15,
-        PickupHellfire = 16,
-        PickupSpirit = 17,
-        PickupDarkMatter = 18,
+        // Network IDs 15-18 are retired.
         PickupYinYang = 19,
-        PickupCosmos = 20,
+        PickupCosmos = 104,
 
         Droplet = 20,
         Pepper = 21,

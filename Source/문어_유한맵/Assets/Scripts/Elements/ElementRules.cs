@@ -45,10 +45,7 @@ namespace OctopusSurvivors
         {
             switch (id)
             {
-                case SpecialId.Meteor: return new Color(0.85f, 0.5f, 0.25f);
-                case SpecialId.Hellfire: return new Color(1f, 0.25f, 0.05f);
-                case SpecialId.Spirit: return new Color(0.6f, 1f, 0.9f);
-                case SpecialId.DarkMatter: return new Color(0.45f, 0.2f, 0.7f);
+                case SpecialId.Cosmos: return new Color(.65f, .6f, 1f);
                 case SpecialId.YinYang: return new Color(0.92f, 0.92f, 0.92f);
                 default: return Color.white;
             }
@@ -92,10 +89,7 @@ namespace OctopusSurvivors
         {
             switch (id)
             {
-                case SpecialId.Meteor: return "운석파편";
-                case SpecialId.Hellfire: return "헬파이어";
-                case SpecialId.Spirit: return "정령";
-                case SpecialId.DarkMatter: return "암흑물질";
+                case SpecialId.Cosmos: return "우주";
                 case SpecialId.YinYang: return "음양";
                 default: return "-";
             }
@@ -118,10 +112,7 @@ namespace OctopusSurvivors
         {
             switch (kind)
             {
-                case ActorKind.PickupMeteor: return SpecialId.Meteor;
-                case ActorKind.PickupHellfire: return SpecialId.Hellfire;
-                case ActorKind.PickupSpirit: return SpecialId.Spirit;
-                case ActorKind.PickupDarkMatter: return SpecialId.DarkMatter;
+                case ActorKind.PickupCosmos: return SpecialId.Cosmos;
                 case ActorKind.PickupYinYang: return SpecialId.YinYang;
                 default: return SpecialId.None;
             }
@@ -144,12 +135,9 @@ namespace OctopusSurvivors
         {
             switch (id)
             {
-                case SpecialId.Meteor: return ActorKind.PickupMeteor;
-                case SpecialId.Hellfire: return ActorKind.PickupHellfire;
-                case SpecialId.Spirit: return ActorKind.PickupSpirit;
-                case SpecialId.DarkMatter: return ActorKind.PickupDarkMatter;
+                case SpecialId.Cosmos: return ActorKind.PickupCosmos;
                 case SpecialId.YinYang: return ActorKind.PickupYinYang;
-                default: return ActorKind.PickupMeteor;
+                default: return (ActorKind)0;
             }
         }
 
@@ -157,7 +145,7 @@ namespace OctopusSurvivors
             kind >= ActorKind.PickupFire && kind <= ActorKind.PickupElectric;
 
         public static bool IsSpecialPickup(ActorKind kind) =>
-            kind >= ActorKind.PickupMeteor && kind <= ActorKind.PickupYinYang;
+            kind == ActorKind.PickupCosmos || kind == ActorKind.PickupYinYang;
 
         public static bool TryCombo(ElementId a, ElementId b, out ComboId combo)
         {

@@ -36,7 +36,7 @@ namespace OctopusSurvivors
                 if (parts != null) foreach (var p in parts) { p.enabled = false; Destroy(p.gameObject); }
                 currentKind = kind;
                 int count = kind == ActorKind.YinYangOrbit ? 2 * (EchoCount + 1) :
-                    kind == ActorKind.YinYangCollision ? 2 : kind == ActorKind.YinYangBurst ? ShardCount + 2 : 2;
+                    kind == ActorKind.YinYangCollision ? 3 : kind == ActorKind.YinYangBurst ? ShardCount + 2 : 2;
                 parts = new SpriteRenderer[count];
                 for (int i = 0; i < count; i++)
                 {
@@ -84,7 +84,7 @@ namespace OctopusSurvivors
                             Mathf.InverseLerp(.2f, .55f, u) * (1 - Mathf.InverseLerp(.84f, .97f, u));
                         float angle = OrbitAngle(t) + side * Mathf.PI;
                         Draw(side * 4 + echo, YinYangArt.Comma(side == 1), OrbitPosition(t, size, side),
-                            angle * Mathf.Rad2Deg, size * .5f * (echo == 0 ? 1 : .62f), new Color(1, 1, 1, alpha), echo == 0 ? 48 : 44 - echo);
+                            angle * Mathf.Rad2Deg - 45, size * .5f * (echo == 0 ? 1 : .62f), new Color(1, 1, 1, alpha), echo == 0 ? 48 : 44 - echo);
                     }
                 }
             }
@@ -94,8 +94,10 @@ namespace OctopusSurvivors
                 float shrink = 1 - .82f * Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.40f, .93f, u));
                 float alpha = 1 - Mathf.InverseLerp(.78f, .94f, u);
                 for (int side = 0; side < 2; side++)
-                    Draw(side, YinYangArt.Comma(side == 1), Vector2.zero, lockTurn * Mathf.Rad2Deg + side * 180,
-                        size * .5f * shrink, new Color(1, 1, 1, alpha), 48);
+                    Draw(side, YinYangArt.Comma(side == 1), Vector2.zero, lockTurn * Mathf.Rad2Deg - 45 + side * 180,
+                        size * .5f * shrink, new Color(1, 1, 1, alpha * (1 - Mathf.InverseLerp(.15f, .5f, u))), 48);
+                Draw(2, YinYangArt.Symbol, Vector2.zero, lockTurn * Mathf.Rad2Deg - 45,
+                    size * .58f * shrink, new Color(1, 1, 1, alpha * Mathf.InverseLerp(.15f, .5f, u)), 49);
             }
             else if (currentKind == ActorKind.YinYangBurst)
             {

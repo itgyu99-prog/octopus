@@ -1033,11 +1033,11 @@ namespace OctopusSurvivors
 
         void DropBossSpecial(Vector2 pos)
         {
-            var pool = new[] { SpecialId.Meteor, SpecialId.Hellfire, SpecialId.Spirit, SpecialId.DarkMatter, SpecialId.YinYang };
+            var pool = new[] { SpecialId.Cosmos, SpecialId.YinYang };
             const int count = 2;
             for (int i = 0; i < count; i++)
             {
-                var special = pool[Random.Range(0, pool.Length)];
+                var special = pool[i];
                 float side = count == 1 ? 0f : (i - (count - 1) * 0.5f) * 4.2f;
                 var actor = Create(ElementRules.PickupKind(special), pos + new Vector2(side, 1.4f), 1.35f);
                 actor.Life = 99999f;

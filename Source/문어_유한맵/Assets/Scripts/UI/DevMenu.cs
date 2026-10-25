@@ -50,14 +50,11 @@ namespace OctopusSurvivors
             LabelAt(54f, "스테이지");
             Row(92f, ("1", 1), ("5", 5), ("10", 10), ("15", 15), RequestStage);
 
-            LabelAt(168f, "특수요소 (5보스 처치 후)");
-            SpecialButton(206f, 20f, "없음", 0);
-            SpecialButton(206f, 250f, "운석", (byte)SpecialId.Meteor);
-            SpecialButton(258f, 20f, "헬파이어", (byte)SpecialId.Hellfire);
-            SpecialButton(258f, 250f, "정령", (byte)SpecialId.Spirit);
-            SpecialButton(310f, 20f, "암흑", (byte)SpecialId.DarkMatter);
-            SpecialButton(310f, 250f, "음양", (byte)SpecialId.YinYang);
-            var resetCd = TopButton(250f, 310f, 220f, 46f, "쿨 초기화");
+            LabelAt(168f, "특수요소 · 우주 / 음양");
+            SpecialButton(206f, 20f, "우주", (byte)SpecialId.Cosmos);
+            SpecialButton(206f, 250f, "음양", (byte)SpecialId.YinYang);
+            SpecialButton(258f, 20f, "없음", 0);
+            var resetCd = TopButton(250f, 258f, 220f, 46f, "쿨 초기화");
             resetCd.onClick.AddListener(ResetSpecialCooldown);
 
             LabelAt(372f, "속성1  (누른 사람만)");

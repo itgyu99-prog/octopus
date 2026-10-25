@@ -278,10 +278,7 @@ namespace OctopusSurvivors
                 case ActorKind.PickupGrass: return RuntimeArt.ElementIcon(ElementId.Grass);
                 case ActorKind.PickupStone: return RuntimeArt.ElementIcon(ElementId.Stone);
                 case ActorKind.PickupElectric: return RuntimeArt.ElementIcon(ElementId.Electric);
-                case ActorKind.PickupMeteor: return RuntimeArt.SpecialIcon(SpecialId.Meteor);
-                case ActorKind.PickupHellfire: return RuntimeArt.SpecialIcon(SpecialId.Hellfire);
-                case ActorKind.PickupSpirit: return RuntimeArt.SpecialIcon(SpecialId.Spirit);
-                case ActorKind.PickupDarkMatter: return RuntimeArt.SpecialIcon(SpecialId.DarkMatter);
+                case ActorKind.PickupCosmos: return RuntimeArt.SpecialIcon(SpecialId.Cosmos);
                 case ActorKind.PickupYinYang: return RuntimeArt.SpecialIcon(SpecialId.YinYang);
                 case ActorKind.ArtifactPiece: return RuntimeArt.Icon("RelicPearl");
                 case ActorKind.Statue: return RuntimeArt.Icon("RelicSandGlyph");
@@ -331,10 +328,7 @@ namespace OctopusSurvivors
                 case ActorKind.PickupGrass:
                 case ActorKind.PickupStone:
                 case ActorKind.PickupElectric:
-                case ActorKind.PickupMeteor:
-                case ActorKind.PickupHellfire:
-                case ActorKind.PickupSpirit:
-                case ActorKind.PickupDarkMatter: return Color.white;
+                case ActorKind.PickupCosmos:
                 case ActorKind.PickupYinYang: return Color.white;
                 case ActorKind.Droplet: return ElementRules.Water;
                 case ActorKind.AutoBolt: return new Color(1f, 0.95f, 0.55f);
@@ -360,7 +354,7 @@ namespace OctopusSurvivors
                 case ActorKind.BossArea: return new Color(1f, 0.28f, 0.12f, 0.9f);
                 case ActorKind.BossAreaFill: return new Color(1f, 0.2f, 0.08f, 0.28f);
                 case ActorKind.BossBullet: return new Color(1f, 0.85f, 0.2f);
-                case ActorKind.AllySpirit: return ElementRules.Of(SpecialId.Spirit);
+                case ActorKind.AllySpirit: return new Color(.6f, 1f, .9f);
                 case ActorKind.PiercingMeteor: return new Color(0.95f, 0.55f, 0.2f);
                 default: return Color.white;
             }

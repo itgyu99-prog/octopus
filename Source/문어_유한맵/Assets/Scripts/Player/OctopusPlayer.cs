@@ -433,7 +433,7 @@ namespace OctopusSurvivors
 
         void ToggleTransform()
         {
-            if (Special.Value == 0)
+            if (!SpecialAbilities.IsSupported((SpecialId)Special.Value))
                 return;
             Transformed.Value = !Transformed.Value;
             if (Transformed.Value)
@@ -444,7 +444,7 @@ namespace OctopusSurvivors
 
         void CastSpecial()
         {
-            if (Special.Value == 0 || !Transformed.Value || SpecialCd.Value > 0f)
+            if (!SpecialAbilities.IsSupported((SpecialId)Special.Value) || !Transformed.Value || SpecialCd.Value > 0f)
                 return;
 
             SpecialAbilities.Cast(this, GameSession.Instance, (SpecialId)Special.Value, ElementLevel);
@@ -564,8 +564,7 @@ namespace OctopusSurvivors
 
         public void DevSetSpecial(byte specialId)
         {
-            if (!IsServer || specialId > (byte)SpecialId.YinYang ||
-                (specialId != 0 && (GameSession.Instance == null || !GameSession.Instance.SpecialUnlocked.Value)))
+            if (!IsServer || (specialId != 0 && !SpecialAbilities.IsSupported((SpecialId)specialId)))
                 return;
             Special.Value = specialId;
             SpecialCd.Value = 0f;

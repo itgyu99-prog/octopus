@@ -40,7 +40,7 @@ namespace OctopusSurvivors.EditorTools
             Directory.CreateDirectory("Logs/YinYangV2");
             File.WriteAllText("Logs/YinYangV2/status.txt", "RUNNING");
             ShaderUtil.allowAsyncCompilation = false;
-            EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity");
+            // Run in the existing scene; Unity restores its edit-mode state after Play Mode.
             SessionState.SetBool(Key, true); EditorApplication.EnterPlaymode();
         }
         internal static void Finish(bool pass)
@@ -63,7 +63,7 @@ namespace OctopusSurvivors.EditorTools
         void OnDestroy() { Application.logMessageReceived -= OnLog; }
         void Update()
         {
-            if (finished) return;
+            if (finished || routine == null) return;
             try
             {
                 if (Time.realtimeSinceStartup > deadline) throw new TimeoutException("YinYang V2 capture timed out");
@@ -94,6 +94,73 @@ namespace OctopusSurvivors.EditorTools
             player.Slot0.Value = player.Slot1.Value = player.Slot2.Value = player.Slot3.Value = 0;
             Call(session, "ClearFieldForNextStage"); Actors(session).Clear();
             ValidateVisuals();
+            Check(Enum.GetValues(typeof(SpecialId)).Length == 3, "only None, Cosmos and YinYang remain");
+            Check(ActorKind.PickupCosmos != ActorKind.Droplet, "Cosmos pickup has its own non-projectile network ID");
+            for (byte retired = 1; retired <= 4; retired++)
+            {
+                player.DevSetSpecial(retired);
+                Check(player.Special.Value == 0, "retired special rejected: " + retired);
+            }
+            player.DevSetSpecial((byte)SpecialId.Cosmos);
+            Check(player.Special.Value == (byte)SpecialId.Cosmos, "developer menu accepts Cosmos");
+            player.Transformed.Value = true; player.SpecialCd.Value = 0;
+            Call(player, "CastSpecial");
+            Check(Actors(session).FindAll(a => a.Kind == ActorKind.CosmicStar).Count == 54, "Cosmos is reachable through the player special action");
+            Check(player.SpecialCd.Value > 0, "Cosmos cast starts the authoritative cooldown");
+            Actors(session).Clear(); player.Transformed.Value = false;
+            player.DevSetSpecial((byte)SpecialId.YinYang);
+            Check(player.Special.Value == (byte)SpecialId.YinYang, "developer menu accepts YinYang");
+            Call(session, "DropBossSpecial", Vector2.zero);
+            Check(Actors(session).Count == 2 && Actors(session).Exists(a => a.Kind == ActorKind.PickupCosmos) && Actors(session).Exists(a => a.Kind == ActorKind.PickupYinYang), "boss rewards contain exactly Cosmos and YinYang");
+            Actors(session).Clear();
+            player.Slot0.Value = (byte)ElementId.Fire; player.Slot1.Value = (byte)ElementId.Water;
+            player.Slot2.Value = (byte)ElementId.Grass; player.Slot3.Value = (byte)ElementId.Electric;
+            player.Combo.Value = (byte)ComboId.Fog; player.Combo1.Value = player.Combo2.Value = 0;
+            player.ExtraDash.Value = 1; player.DashCharges.Value = 2; player.DashRechargeLeft.Value = 0;
+            var hud = GameHud.Instance; Call(hud, "Update");
+            var hudRoot = (RectTransform)typeof(GameHud).GetField("combatRoot", Hidden).GetValue(hud);
+            Check(hudRoot.anchorMin == new Vector2(.5f, 0) && hudRoot.anchorMax == new Vector2(.5f, 0), "HUD is anchored at bottom center");
+            Check(hudRoot.anchoredPosition.y >= 0, "HUD sits inside the visible bottom edge");
+            Check(CombatHudArt.Frame.rect.width == 1855 && CombatHudArt.Frame.rect.height == 365, "HUD uses the exact second supplied artwork");
+            var dash = (UnityEngine.UI.Image[])typeof(GameHud).GetField("combatDash", Hidden).GetValue(hud);
+            Check(dash[0].fillAmount == 1 && dash[1].fillAmount == 1, "two available dashes show two full charge segments");
+            var icons = (UnityEngine.UI.Image[])typeof(GameHud).GetField("combatAttributes", Hidden).GetValue(hud);
+            foreach (var icon in icons) Check(icon.color == Color.white && icon.sprite != null, "attribute artwork retains its original bright colors");
+            var recipeButtons = (UnityEngine.UI.Button[])typeof(GameHud).GetField("quickCombineButtons", Hidden).GetValue(hud);
+            int available = 0;
+            foreach (var button in recipeButtons) if (button.gameObject.activeSelf)
+            {
+                available++;
+                Check(button.transform.Find("Recipe artwork").GetComponent<UnityEngine.UI.Image>().sprite != null, "available recipe button has supplied artwork");
+                Check(button.GetComponent<CircularButtonHitArea>() != null, "recipe hit area follows its circular silhouette");
+            }
+            Check(available > 0, "clickable recipe icons are visible on the left");
+            var firstButtonRect = recipeButtons[0].GetComponent<RectTransform>();
+            var hitArea = recipeButtons[0].GetComponent<CircularButtonHitArea>();
+            var center = RectTransformUtility.WorldToScreenPoint(null, firstButtonRect.TransformPoint(firstButtonRect.rect.center));
+            var corner = RectTransformUtility.WorldToScreenPoint(null, firstButtonRect.TransformPoint(firstButtonRect.rect.center + new Vector2(firstButtonRect.rect.width * .49f, firstButtonRect.rect.height * .49f)));
+            Check(hitArea.IsRaycastLocationValid(center, null) && !hitArea.IsRaycastLocationValid(corner, null), "circular buttons accept center clicks and reject rectangle corners");
+            Directory.CreateDirectory("Art/Review");
+            ScreenCapture.CaptureScreenshot("Art/Review/bottom-hud-full.png");
+            for (int wait = 0; wait < 4; wait++) yield return null;
+            player.DevSetSpecial((byte)SpecialId.Cosmos); Call(hud, "Update");
+            var devMenu = UnityEngine.Object.FindAnyObjectByType<DevMenu>();
+            var devPanel = (GameObject)typeof(DevMenu).GetField("_panel", Hidden).GetValue(devMenu);
+            devPanel.SetActive(true);
+            ScreenCapture.CaptureScreenshot("Art/Review/cosmos-yinyang-menu.png");
+            for (int wait = 0; wait < 4; wait++) yield return null;
+            devPanel.SetActive(false); player.DevSetSpecial((byte)SpecialId.YinYang);
+            player.DashCharges.Value = 1; player.DashRechargeLeft.Value = GameConfig.DashRecharge * .5f;
+            Call(hud, "Update");
+            Check(dash[0].fillAmount == 1 && Mathf.Abs(dash[1].fillAmount - .5f) < .001f, "second dash recharges independently after first charge is ready");
+            ScreenCapture.CaptureScreenshot("Art/Review/bottom-hud-second-dash.png");
+            for (int wait = 0; wait < 4; wait++) yield return null;
+            int beforeCombo = player.ComboCount;
+            foreach (var button in recipeButtons) if (button.gameObject.activeSelf) { button.onClick.Invoke(); break; }
+            for (int wait = 0; wait < 3; wait++) yield return null;
+            Check(player.ComboCount == beforeCombo + 1, "clicking a recipe icon performs a real authoritative combination");
+            player.Slot0.Value = player.Slot1.Value = player.Slot2.Value = player.Slot3.Value = 0;
+            player.Combo.Value = player.Combo1.Value = player.Combo2.Value = 0;
 
             // Owner tracking and cancellation are exercised through authoritative simulation.
             session.CastCelestial(Vector2.zero, player, SpecialId.YinYang, 1);
@@ -154,7 +221,7 @@ namespace OctopusSurvivors.EditorTools
             Check((a.localPosition + b.localPosition).magnitude < .0001f, "opposite positions around owner");
             Check(Mathf.Abs(Mathf.DeltaAngle(a.localEulerAngles.z, b.localEulerAngles.z)) > 179.99f, "headings differ by exactly 180 degrees");
             Check((a.localScale - b.localScale).sqrMagnitude < .0001f, "both main commas have equal size");
-            Check(Vector2.Dot(a.up, new Vector2(-a.localPosition.y, a.localPosition.x).normalized) > .999f, "rounded head follows orbital tangent");
+            Check(Vector2.Dot(a.TransformDirection(new Vector3(-.7071068f, .7071068f, 0)), new Vector2(-a.localPosition.y, a.localPosition.x).normalized) > .999f, "rounded head follows orbital tangent");
             Check(YinYangVisual.OrbitPosition(1, 5.85f, 0).sqrMagnitude < .0001f, "orbit reaches exact common center for seamless taiji join");
             Vector3 pose = a.localPosition;
             CelestialArt.Show(sr, ActorKind.YinYangOrbit, 1.2f, 2.8f, 5.85f, 0);

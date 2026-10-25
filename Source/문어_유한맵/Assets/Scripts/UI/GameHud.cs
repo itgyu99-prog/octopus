@@ -85,18 +85,6 @@ namespace OctopusSurvivors
             rt.anchorMax = Vector2.one;
             rt.offsetMin = rt.offsetMax = Vector2.zero;
 
-            UiUtil.Bar(_root.transform, new Vector2(40, -30), new Vector2(420, 28), new Color(0.15f, 0.1f, 0.1f, 0.8f), new Color(0.85f, 0.2f, 0.25f), out _hpFill);
-            _hpText = UiUtil.Label(_root.transform, new Vector2(40, -62), new Vector2(420, 32), 22, Color.white);
-            _loadout = UiUtil.Label(_root.transform, new Vector2(112, -105), new Vector2(688, 365), 22, Color.white);
-            _loadout.alignment = TextAnchor.UpperLeft;
-            UiUtil.Bar(_root.transform, new Vector2(40, -490), new Vector2(220, 12), new Color(.08f,.13f,.2f,.8f), new Color(.3f,.85f,1f), out _dashFill);
-            _dashText = UiUtil.Label(_root.transform, new Vector2(40, -508), new Vector2(340, 32), 19, Color.white);
-            _slot3Icon = HudIcon(_root.transform, new Vector2(42f, -261f), 46f);
-            _slot2Icon = HudIcon(_root.transform, new Vector2(42f, -209f), 46f);
-            _slot0Icon = HudIcon(_root.transform, new Vector2(42f, -105f), 46f);
-            _slot1Icon = HudIcon(_root.transform, new Vector2(42f, -157f), 46f);
-            _specialIcon = HudIcon(_root.transform, new Vector2(42f, -334f), 46f);
-
             _stage = UiUtil.Label(_root.transform, Vector2.zero, new Vector2(420, 40), 26, new Color(1f, 0.95f, 0.7f), TextAnchor.UpperRight);
             var srt = _stage.rectTransform;
             srt.anchorMin = srt.anchorMax = new Vector2(1f, 1f);
@@ -138,6 +126,7 @@ namespace OctopusSurvivors
             BuildCombine();
             BuildRadar();
             BuildExitConfirmation();
+            BuildCombatHud();
             _root.SetActive(false);
         }
 
@@ -358,30 +347,8 @@ namespace OctopusSurvivors
             if (p == null || !p.IsSpawned)
                 return;
 
-            float hp = p.Hp.Value;
-            float max = Mathf.Max(1f, p.MaxHp.Value);
-            _hpFill.fillAmount = hp / max;
-            _dashFill.fillAmount = p.DashCharges.Value == p.MaxDashCharges ? 1f : 1f - p.DashRechargeLeft.Value / GameConfig.DashRecharge;
-            _dashText.text = $"Shift 대시 {p.DashCharges.Value}/{p.MaxDashCharges}" +
-                (p.DashCharges.Value < p.MaxDashCharges ? $" · {p.DashRechargeLeft.Value:0.0}초" : " · 충전 완료");
-            _hpText.text = p.Downed.Value ? "다운" : $"HP  {Mathf.CeilToInt(hp)} / {Mathf.CeilToInt(max)}";
-
+            UpdateCombatHud(p);
             var session = GameSession.Instance;
-            string slots = $"속성1 {SlotText(p,0)}\n\n속성2 {SlotText(p,1)}\n\n속성3 {SlotText(p,2)}\n\n속성4 {SlotText(p,3)}";
-            string combos = "";
-            for(byte i=0;i<3;i++) combos += (i>0 ? " · " : "") + (p.ComboAt(i)!=ComboId.None ? ElementRules.Name(p.ComboAt(i)) : "빈 칸");
-            _loadout.text = $"{slots}\n\n요소: {combos}\n{SpecialText(p)}";
-            _slot3Icon.sprite = RuntimeArt.ElementIcon(p.SlotElement(3));
-            _slot3Icon.enabled = _slot3Icon.sprite != null;
-            _slot2Icon.sprite = RuntimeArt.ElementIcon(p.SlotElement(2));
-            _slot2Icon.enabled = _slot2Icon.sprite != null;
-            _slot0Icon.sprite = RuntimeArt.ElementIcon(p.SlotElement((byte)0));
-            _slot0Icon.enabled = _slot0Icon.sprite != null;
-            _slot1Icon.sprite = RuntimeArt.ElementIcon(p.SlotElement((byte)1));
-            _slot1Icon.enabled = _slot1Icon.sprite != null;
-            _specialIcon.sprite = RuntimeArt.SpecialIcon((SpecialId)p.Special.Value);
-            _specialIcon.enabled = _specialIcon.sprite != null;
-
             if (session != null)
             {
                 int stage = session.Stage.Value;
@@ -434,6 +401,7 @@ namespace OctopusSurvivors
 
             UpdateCards(p, over);
             UpdateCombine(p, session);
+            UpdateQuickCombine(p, session);
         }
 
         void UpdateCards(OctopusPlayer p, bool gameOver)
