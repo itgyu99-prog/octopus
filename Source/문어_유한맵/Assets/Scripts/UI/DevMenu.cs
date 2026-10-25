@@ -50,7 +50,7 @@ namespace OctopusSurvivors
             LabelAt(54f, "스테이지");
             Row(92f, ("1", 1), ("5", 5), ("10", 10), ("15", 15), RequestStage);
 
-            LabelAt(168f, "특수요소 (5보스 처치 후)");
+            LabelAt(168f, "특수요소 (개발 모드: 즉시 사용)");
             SpecialButton(206f, 20f, "없음", 0);
             SpecialButton(206f, 250f, "운석", (byte)SpecialId.Meteor);
             SpecialButton(258f, 20f, "헬파이어", (byte)SpecialId.Hellfire);
