@@ -17,8 +17,7 @@ namespace OctopusSurvivors
                 float perStar=65f*damage*(48+level*6)/count;
                 for (int i=0; i<count; i++)
                 {
-                    Vector2 skyCenter=Camera.main!=null?(Vector2)Camera.main.transform.position:center;
-                    Vector2 position=skyCenter+CosmosSequence.StarOffset(i,count);
+                    Vector2 position=CelestialField.Point(i,count);
                     var star=Effect(ActorKind.CosmicStar,position,Vector2.zero,
                         .55f+CosmosSequence.Hash(i)*.45f,4f,perStar,owner,level);
                     star.Pos=star.Anchor=position;star.SkillPoint=center;star.CelestialCast=cast;
@@ -47,9 +46,9 @@ namespace OctopusSurvivors
                     if(target!=null)
                     {
                         a.Kind=ActorKind.CosmicMeteor;a.Target=target;
-                        Vector2 radial=a.Pos-a.SkillPoint;
-                        a.Vel=new Vector2(-radial.y,radial.x).normalized*10f+(target.Pos-a.Pos).normalized*12f;
-                        a.Age=0;a.Life=a.Duration=4f;a.Size=1.05f;
+                        float heading=CosmosSequence.Hash(a.Mark+419)*Mathf.PI*2;
+                        a.Vel=new Vector2(Mathf.Cos(heading),Mathf.Sin(heading))*(7f+CosmosSequence.Hash(a.Mark+29)*7f);
+                        a.Age=0;a.Life=a.Duration=6f;a.Size=.5f+CosmosSequence.Hash(a.Mark)*.22f;
                     }
                     else {a.Kind=ActorKind.CosmicTrail;a.Age=0;a.Life=a.Duration=.35f;}
                 }
@@ -62,13 +61,21 @@ namespace OctopusSurvivors
                 for(int i=0;i<steps && !a.Dead;i++)
                 {
                     Vector2 delta=a.Target.Pos-a.Pos;
-                    a.Vel=Vector2.Lerp(a.Vel,delta.normalized*Mathf.Min(48f,24f+a.Age*10f),1-Mathf.Exp(-7f*step));
+                    float age=a.Age-dt+(i+1)*step;
+                    float phase=CosmosSequence.Hash(a.Mark+311)*Mathf.PI*2;
+                    float freedom=Mathf.Clamp01((delta.magnitude-1.5f)/8f)*Mathf.Clamp01(1.3f-age*.48f);
+                    float curl=Mathf.Sin(age*(3.6f+CosmosSequence.Hash(a.Mark+67)*3f)+phase)*.95f
+                        +Mathf.Sin(age*8.1f-phase)*.3f;
+                    Vector2 sideways=new Vector2(-delta.y,delta.x).normalized;
+                    Vector2 direction=(delta.normalized+sideways*curl*freedom).normalized;
+                    a.Vel=Vector2.Lerp(a.Vel,direction*Mathf.Min(55f,15f+age*16f),1-Mathf.Exp(-(3.8f+age*2.5f)*step));
                     Vector2 next=a.Pos+a.Vel*step;
                     if(SegmentDistanceToActor(a.Pos,next,a.Target)<=.35f)
                     {
                         a.Pos=a.Target.Pos;
                         DamageCircle(a.Pos,1.3f,a.Damage,StatusMask.None,0,0);
-                        var impact=Effect(ActorKind.CosmicImpact,a.Pos,Vector2.zero,2.5f,.32f,0,a.Owner,1);
+                        float impactSize=Mathf.Clamp(a.Target.Size*1.6f,.7f,2.1f);
+                        var impact=Effect(ActorKind.CosmicImpact,a.Pos,Vector2.zero,impactSize,.46f,0,a.Owner,1);
                         impact.Pos=a.Pos;impact.Mark=a.Mark;impact.CelestialCast=a.CelestialCast;a.Dead=true;
                     }
                     else a.Pos=next;

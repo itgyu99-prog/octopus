@@ -351,12 +351,16 @@ namespace OctopusSurvivors.EditorTools
             Check((a.localScale - b.localScale).sqrMagnitude < .0001f, "both main commas have equal size");
             Check(Vector2.Dot(a.TransformDirection(new Vector3(-.7071068f, .7071068f, 0)), new Vector2(-a.localPosition.y, a.localPosition.x).normalized) > .999f, "rounded head follows orbital tangent");
             Check(YinYangVisual.OrbitPosition(1, 5.85f, 0).sqrMagnitude < .0001f, "orbit reaches exact common center for seamless taiji join");
-            Check(go.transform.childCount==56,"orbit includes sixteen ground comma eruptions");
-            CelestialArt.Show(sr,ActorKind.YinYangOrbit,.18f,2.8f,5.85f,0);
-            var rising=go.transform.GetChild(9).GetComponent<SpriteRenderer>();
+            Check(go.transform.childCount==8,"orbit contains only the two main commas and their echoes");
+            var ground=new GameObject("World ground comma preview");ground.transform.position=YinYangVisual.MistFieldBounds.center;
+            var groundSr=ground.AddComponent<SpriteRenderer>();
+            int groundBase=YinYangVisual.MistColumns*YinYangVisual.MistRows;
+            CelestialArt.Show(groundSr,ActorKind.YinYangMist,YinYangVisual.GroundBirth(0)+.1f,3.26f,YinYangVisual.MistFieldBounds.size.x,0);
+            var rising=ground.transform.GetChild(groundBase+1).GetComponent<SpriteRenderer>();
             Check(rising.enabled && rising.sprite==YinYangArt.Comma(true),"small white comma rises before its 0.2 second detonation");
-            CelestialArt.Show(sr,ActorKind.YinYangOrbit,.31f,2.8f,5.85f,0);
-            Check(!rising.enabled && go.transform.GetChild(10).GetComponent<SpriteRenderer>().enabled,"ground comma explodes after 0.2 seconds");
+            CelestialArt.Show(groundSr,ActorKind.YinYangMist,YinYangVisual.GroundBirth(0)+.31f,3.26f,YinYangVisual.MistFieldBounds.size.x,0);
+            Check(!rising.enabled && ground.transform.GetChild(groundBase+2).GetComponent<SpriteRenderer>().enabled,"world ground comma explodes after rising");
+            ground.SetActive(false);Destroy(ground);
             CelestialArt.Show(sr,ActorKind.YinYangOrbit,1.2f,2.8f,5.85f,0);
             Vector3 pose = a.localPosition;
             CelestialArt.Show(sr, ActorKind.YinYangOrbit, 1.2f, 2.8f, 5.85f, 0);
@@ -365,7 +369,8 @@ namespace OctopusSurvivors.EditorTools
             var field=YinYangVisual.MistFieldBounds;
             var fog=new GameObject("Field fog coverage preview");fog.transform.position=field.center;
             CelestialArt.Show(fog.AddComponent<SpriteRenderer>(),ActorKind.YinYangMist,1,YinYangVisual.OrbitDuration+YinYangVisual.MergeDuration+.18f,field.size.x,0);
-            var clouds=Array.FindAll(fog.GetComponentsInChildren<SpriteRenderer>(),r=>r.enabled);
+            var clouds=new SpriteRenderer[YinYangVisual.MistColumns*YinYangVisual.MistRows];
+            for(int i=0;i<clouds.Length;i++)clouds[i]=fog.transform.GetChild(i).GetComponent<SpriteRenderer>();
             Check(clouds.Length==YinYangVisual.MistColumns*YinYangVisual.MistRows,"field mist uses a full map grid of soft wisps");
             for(int x=0;x<=4;x++)for(int y=0;y<=4;y++)
             {

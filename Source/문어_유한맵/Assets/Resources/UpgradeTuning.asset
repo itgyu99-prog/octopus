@@ -28,8 +28,8 @@ MonoBehaviour:
   fireOrbLaunchGap: 0.16
   fireOrbSpread: 32
   fireOrbRadius: 0.45
-  fireOrbDps: 24
-  fireOrbBurnDps: 4
+  fireOrbDps: 31.2
+  fireOrbBurnDps: 5.2
   fireOrbTrailTime: 0.48
   fireOrbPatrolDistance: 1.4
   fireOrbPatrolSpeed: 4.2

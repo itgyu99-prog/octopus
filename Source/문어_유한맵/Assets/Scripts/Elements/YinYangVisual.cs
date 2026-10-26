@@ -12,6 +12,10 @@ namespace OctopusSurvivors
         public const float HitInterval = .12f, BurstDuration = 1.4f;
         public const float SymbolScale = .065f;
         public const int MistColumns = 10, MistRows = 8;
+        public const int GroundCount = 144;
+        public const float GroundLifetime = .46f;
+        public static float GroundBirth(int i) => .06f+Hash(i+915)*2.34f;
+        public static Vector2 GroundPoint(int i) => CelestialField.Point(i,GroundCount);
         public static Bounds MistFieldBounds => ArenaBuilder.BeachRenderer!=null
             ? ArenaBuilder.BeachRenderer.bounds : new Bounds(Vector3.zero,new Vector3(FiniteBeach.Width,FiniteBeach.Height,0));
         const int EchoCount = 3, ShardCount = 34;
@@ -40,9 +44,9 @@ namespace OctopusSurvivors
             {
                 if (parts != null) foreach (var p in parts) { p.enabled = false; Destroy(p.gameObject); }
                 currentKind = kind;
-                int count = kind == ActorKind.YinYangOrbit ? 2 * (EchoCount + 1)+48 :
+                int count = kind == ActorKind.YinYangOrbit ? 2 * (EchoCount + 1) :
                     kind == ActorKind.YinYangCollision ? 3 : kind == ActorKind.YinYangBurst ? ShardCount + 3 :
-                    kind == ActorKind.YinYangMist ? MistColumns*MistRows :
+                    kind == ActorKind.YinYangMist ? MistColumns*MistRows+GroundCount*3 :
                     kind == ActorKind.YinYangMark || kind == ActorKind.YinYangHitWhite || kind == ActorKind.YinYangHitBlack ? 1 : 2;
                 parts = new SpriteRenderer[count];
                 for (int i = 0; i < count; i++)
@@ -93,21 +97,6 @@ namespace OctopusSurvivors
                             angle * Mathf.Rad2Deg - 45, size * .5f * (echo == 0 ? 1 : .62f), new Color(1, 1, 1, alpha), echo == 0 ? 48 : 44 - echo);
                     }
                 }
-                for(int i=0;i<16;i++)
-                {
-                    float t=time-(.08f+i*.155f);
-                    int start=2*(EchoCount+1)+i*3;
-                    if(t<0 || t>.4f){for(int j=0;j<3;j++)parts[start+j].enabled=false;continue;}
-                    float angle=Hash(i+81)*Mathf.PI*2, radius=size*(.35f+Hash(i+35)*1.1f);
-                    Vector2 floor=new Vector2(Mathf.Cos(angle),Mathf.Sin(angle))*radius;
-                    bool white=i%2==0;Color ink=white?Color.white:Color.black;
-                    float rise=Mathf.SmoothStep(0,1,t/.2f),burst=Mathf.Clamp01((t-.2f)/.2f);
-                    Draw(start,YinYangArt.Fog,floor,0,.95f,new Color(0,0,0,.3f*(1-burst)),39,.3f);
-                    ink.a=t<.2f?Mathf.Clamp01(t/.04f):0;
-                    Draw(start+1,YinYangArt.Comma(white),floor+Vector2.up*Mathf.Lerp(-.25f,.65f,rise),i*47,.7f*(.5f+.5f*rise),ink,45);
-                    ink.a=t>=.2f?1-burst:0;
-                    Draw(start+2,YinYangArt.Contact,floor+Vector2.up*.65f,i*31,Mathf.Lerp(.65f,1.6f,burst),ink,48);
-                }
             }
             else if (currentKind == ActorKind.YinYangCollision)
             {
@@ -155,7 +144,7 @@ namespace OctopusSurvivors
                     (1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(OrbitDuration+MergeDuration,duration,time)));
                 float height=MistFieldBounds.size.y;
                 float cloudWidth=Mathf.Max(size/MistColumns*2.8f,height/MistRows*3.6f);
-                for(int i=0;i<parts.Length;i++)
+                for(int i=0;i<MistColumns*MistRows;i++)
                 {
                     // A fixed world-space grid covers the entire field, including
                     // shores far from the caster. Overlapping soft edges hide the grid.
@@ -166,6 +155,21 @@ namespace OctopusSurvivors
                     p+=new Vector2(Mathf.Sin(time*.17f+i)*.65f,time*.22f);
                     Draw(i,YinYangArt.Fog,p,Hash(i+19)*360+time*(i%2==0?1:-1),
                         cloudWidth*(.9f+Hash(i+3)*.2f),new Color(.8f,.83f,.88f,.23f*fade),35, .55f+Hash(i+6)*.2f);
+                }
+                for(int i=0;i<GroundCount;i++)
+                {
+                    int start=MistColumns*MistRows+i*3;
+                    float t=time-GroundBirth(i);
+                    if(t<0 || t>GroundLifetime){for(int j=0;j<3;j++)parts[start+j].enabled=false;continue;}
+                    Vector2 floor=GroundPoint(i)-(Vector2)transform.position;
+                    bool white=i%2==0;Color ink=white?Color.white:Color.black;
+                    float rise=Mathf.SmoothStep(0,1,t/.22f),burst=Mathf.Clamp01((t-.22f)/(GroundLifetime-.22f));
+                    Draw(start,YinYangArt.Fog,floor,0,.95f,new Color(0,0,0,.26f*(1-burst)),39,.3f);
+                    ink.a=t<.22f?Mathf.Clamp01(t/.045f):0;
+                    Draw(start+1,YinYangArt.Comma(white),floor+Vector2.up*Mathf.Lerp(-.25f,.65f,rise),i*47,
+                        .7f*(.5f+.5f*rise),ink,45);
+                    ink.a=t>=.22f?1-burst:0;
+                    Draw(start+2,YinYangArt.Contact,floor+Vector2.up*.65f,i*31,Mathf.Lerp(.65f,1.3f,burst),ink,48);
                 }
             }
             else if(currentKind==ActorKind.YinYangHitWhite || currentKind==ActorKind.YinYangHitBlack)

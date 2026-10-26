@@ -17,8 +17,8 @@ namespace OctopusSurvivors
         [Header("Returning fire orbs / projectile count upgrades")]
         [Min(.1f)] public float fireOrbDuration = 4.8f, fireOrbThrowTime = .68f, fireOrbReturnTime = .9f;
         [Min(0)] public float fireOrbLaunchGap = .16f, fireOrbSpread = 32f;
-        [Min(.1f)] public float fireOrbRadius = .45f, fireOrbDps = 24f;
-        [Min(0)] public float fireOrbBurnDps = 4f;
+        [Min(.1f)] public float fireOrbRadius = .45f, fireOrbDps = 31.2f;
+        [Min(0)] public float fireOrbBurnDps = 5.2f;
         [Range(.1f, .8f)] public float fireOrbTrailTime = .48f;
         [Min(.1f)] public float fireOrbPatrolDistance = 1.4f, fireOrbPatrolSpeed = 4.2f;
         [Min(.1f)] public float fireOrbSeekSpeed = 14f, fireOrbTargetRangeMultiplier = 1.5f;
