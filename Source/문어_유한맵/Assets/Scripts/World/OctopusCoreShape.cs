@@ -39,5 +39,28 @@ namespace OctopusSurvivors
             }
             return Mathf.Max(0,Mathf.Sqrt(best)-padding);
         }
+        public static bool IntersectsCone(Vector2 center, Vector2 origin, Vector2 direction, float range, float angle)
+        {
+            Ensure(); direction = direction.sqrMagnitude > .0001f ? direction.normalized : Vector2.right;
+            float half = angle * .5f;
+            foreach (var cell in cells)
+            {
+                var point = center + cell; var to = point - origin;
+                if (to.magnitude > range + padding) continue;
+                if (to.sqrMagnitude < .0001f || Vector2.Angle(direction, to) <= half + 1f) return true;
+            }
+            return false;
+        }
+        public static bool IntersectsForwardCircle(Vector2 center, Vector2 origin, Vector2 circleCenter, float radius)
+        {
+            Ensure();
+            foreach (var cell in cells)
+            {
+                var point = center + cell;
+                if (Vector2.Dot(point - origin, circleCenter - origin) < 0f) continue;
+                if ((point - circleCenter).sqrMagnitude <= (radius + padding) * (radius + padding)) return true;
+            }
+            return false;
+        }
     }
 }

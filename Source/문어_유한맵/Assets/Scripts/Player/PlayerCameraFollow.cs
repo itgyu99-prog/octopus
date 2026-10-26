@@ -7,10 +7,9 @@ namespace OctopusSurvivors
     {
         public Transform Target;
         public float Smooth = 10f;
+        const float PlayerScreenLift = 2.1f;
 
         Camera _camera;
-        static float shakeUntil;
-        Vector3 shakeOffset;
         bool _hasLoggedBossMapFit;
         bool _hasLoggedMissingMapRenderer;
         float _lastLoggedAspect;
@@ -26,18 +25,13 @@ namespace OctopusSurvivors
         public static bool ShouldUseBossMap(GameSession session) => session != null && session.IsPlaying &&
             session.Stage.Value == 5 && session.BossAlive.Value;
         public static float BossOrthographicSize(Bounds bounds) =>
-            bounds.extents.x / FiniteBeach.Aspect;
+            BossOrthographicSize(bounds, FiniteBeach.Aspect);
+        public static float BossOrthographicSize(Bounds bounds, float aspect) =>
+            Mathf.Max(bounds.extents.y, bounds.extents.x / Mathf.Max(.01f, aspect));
         public static Vector2 BossCameraCenter(Bounds bounds)
         {
-            float size = BossOrthographicSize(bounds);
-            return new Vector2(bounds.center.x, bounds.max.y - size);
+            return bounds.center;
         }
-        public static void StrongImpact(Vector2 point)
-        {
-            if (OctopusPlayer.Local != null && Vector2.Distance(OctopusPlayer.Local.Pos, point) < 10f)
-                shakeUntil = Mathf.Max(shakeUntil, Time.time + .1f);
-        }
-
         public static Rect AspectFitViewport(float screenAspect, float targetAspect)
         {
             screenAspect = Mathf.Max(0.01f, screenAspect);
@@ -61,8 +55,6 @@ namespace OctopusSurvivors
 
         void LateUpdate()
         {
-            transform.position -= shakeOffset;
-            shakeOffset = Vector3.zero;
             float screenAspect = (float)Screen.width / Mathf.Max(1, Screen.height);
             var session = GameSession.Instance;
             // Stage selects the encounter; BossAlive controls its lifetime. Pattern is
@@ -94,9 +86,10 @@ namespace OctopusSurvivors
             }
             else
             {
-                // Regular stages keep the fixed 16:9 gameplay viewport.
-                _camera.rect = AspectFitViewport(screenAspect, FiniteBeach.Aspect);
-                _camera.aspect = FiniteBeach.Aspect;
+                // Use the complete Game view. A fixed 16:9 viewport cuts off the
+                // sides in ultrawide Unity layouts, even when the window build fits.
+                _camera.rect = new Rect(0, 0, 1, 1);
+                _camera.aspect = screenAspect;
                 FollowPlayer();
             }
 
@@ -130,16 +123,11 @@ namespace OctopusSurvivors
             if (Target == null)
                 return;
 
-            Vector3 dest = FiniteBeach.ClampCamera(Target.position, _camera);
+            Vector3 followPoint = Target.position + Vector3.down * PlayerScreenLift;
+            Vector3 dest = FiniteBeach.ClampCamera(followPoint, _camera);
             dest.z = transform.position.z;
             float t = 1f - Mathf.Exp(-Smooth * Time.deltaTime);
             transform.position = FiniteBeach.ClampCamera(Vector3.Lerp(transform.position, dest, t), _camera);
-            if (Time.time < shakeUntil)
-            {
-                float strength = Mathf.Clamp01((shakeUntil-Time.time)/.1f)*.045f;
-                shakeOffset = new Vector3(Mathf.Sin(Time.time*137),Mathf.Cos(Time.time*119),0)*strength;
-                transform.position += shakeOffset;
-            }
         }
 
         void FitBossMap(SpriteRenderer map, float screenAspect)
@@ -156,20 +144,19 @@ namespace OctopusSurvivors
             }
 
             Bounds bounds = map.bounds;
-            float aspect = FiniteBeach.Aspect;
-            // Fill the regular 16:9 gameplay rectangle from left to right without
-            // stretching the artwork. Keep the top edge and crop only lower ocean.
-            _camera.rect = AspectFitViewport(screenAspect, aspect);
+            float aspect = screenAspect;
+            // Fit the full map inside the current Game view, keeping every shore and
+            // cliff visible across editor, windowed, and portrait aspect ratios.
+            _camera.rect = new Rect(0, 0, 1, 1);
             _camera.aspect = aspect;
-            _camera.orthographicSize = BossOrthographicSize(bounds);
+            _camera.orthographicSize = BossOrthographicSize(bounds, aspect);
             Vector2 cameraCenter = BossCameraCenter(bounds);
             transform.position = new Vector3(cameraCenter.x, cameraCenter.y, transform.position.z);
-            shakeOffset = Vector3.zero;
 
             float viewWidth = 2f * _camera.orthographicSize * aspect;
             float viewHeight = 2f * _camera.orthographicSize;
-            bool fillsWidth = Mathf.Abs(viewWidth - bounds.size.x) <= .001f;
-            bool topAligned = Mathf.Abs(transform.position.y + _camera.orthographicSize - bounds.max.y) <= .001f;
+            bool fitsWidth = viewWidth + .001f >= bounds.size.x;
+            bool fitsHeight = viewHeight + .001f >= bounds.size.y;
             bool fitChanged = !_hasLoggedBossMapFit || !Mathf.Approximately(_lastLoggedAspect, aspect) ||
                 !Mathf.Approximately(_lastLoggedSize, _camera.orthographicSize) ||
                 (_lastLoggedBounds.center - bounds.center).sqrMagnitude > 0.0001f ||
@@ -179,7 +166,7 @@ namespace OctopusSurvivors
                 Debug.Log($"[Stage5MapCamera] mapBounds={bounds.size.x:F2}x{bounds.size.y:F2} " +
                     $"mapCenter=({bounds.center.x:F2},{bounds.center.y:F2}); cameraCenter={transform.position}; " +
                     $"cameraView={viewWidth:F2}x{viewHeight:F2}; aspect={aspect:F3}; " +
-                    $"fillsWidth={fillsWidth}; topAligned={topAligned}; fit=16:9-width; size={_camera.orthographicSize:F2}; actor positions fixed.");
+                    $"fitsWidth={fitsWidth}; fitsHeight={fitsHeight}; fit=full-map; size={_camera.orthographicSize:F2}; actor positions fixed.");
                 _lastLoggedAspect = aspect;
                 _lastLoggedSize = _camera.orthographicSize;
                 _lastLoggedBounds = bounds;

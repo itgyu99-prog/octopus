@@ -298,7 +298,11 @@ namespace OctopusSurvivors
             float dashStep = Mathf.Min(dt, _dashLeft);
             Vector2 travel = _dashDirection * GameConfig.DashSpeed * dashStep + move * MoveSpeedValue * (dt - dashStep);
             _dashLeft = Mathf.Max(0f, _dashLeft - dt);
-            transform.position = FiniteBeach.Move(transform.position, (Vector2)transform.position + travel, GameConfig.PlayerRadius);
+            var current = (Vector2)transform.position;
+            var next = current + travel;
+            transform.position = PlayerCameraFollow.ShouldUseBossMap(GameSession.Instance)
+                ? BeachGeometry.MoveBossArena(current, next, GameConfig.PlayerRadius)
+                : FiniteBeach.Move(current, next, GameConfig.PlayerRadius);
             NetPos.Value = transform.position;
 
             if (GameSession.Instance == null || !GameSession.Instance.CombatActive)
@@ -352,14 +356,18 @@ namespace OctopusSurvivors
         public float AttributeReadyFraction(int slot)
         {
             if (slot < 0 || slot >= attributeCooldowns.Length) return 0f;
+            if (SlotElement((byte)slot) == ElementId.None) return 0f;
             float cycle = GameConfig.AttributeCycle * GameConfig.AttributeCdMul(UpAttrCd.Value);
-            return ReadyFraction(attributeCooldowns[slot], cycle);
+            if (SlotElement((byte)slot) == ElementId.Fire) cycle += UpgradeTuning.Data.fireOrbDuration;
+            return ReadyFraction(AttributeCooldownTotal.Value[slot], cycle);
         }
         public float ComboReadyFraction(int slot)
         {
             if (slot < 0 || slot >= comboCooldowns.Length) return 0f;
-            float cycle = (GameConfig.ComboActiveDuration + GameConfig.ComboCooldown) * GameConfig.ElementCdMul(UpElemCd.Value);
-            return ReadyFraction(comboCooldowns[slot], cycle);
+            if (ComboAt((byte)slot) == ComboId.None) return 0f;
+            var tuning = GameplayRules.Tuning(ComboAt((byte)slot));
+            float cycle = tuning.duration + tuning.cooldown * GameConfig.ElementCdMul(UpElemCd.Value);
+            return ReadyFraction(ComboCooldownTotal.Value[slot], cycle);
         }
         void TickAttributeCycle(float dt)
         {

@@ -8,13 +8,13 @@ namespace OctopusSurvivors
         [Range(0, 1)] public float hiddenOfferChance = .2f;
         [Min(0)] public float attributeDamagePerLevel = .22f, elementDamagePerLevel = .3f;
         [Min(.01f)] public float repeatInterval = .22f;
-        [Min(0)] public float fireRangePerLevel = .3f;
+        [HideInInspector] public float fireRangePerLevel = .3f; // Retained only for existing serialized tuning assets.
         [Min(.1f)] public float fireSizeMultiplier = 1.5f;
         [Min(.05f)] public float fireRetargetInterval = .15f;
         [Min(1)] public float fireTurnSpeed = 180f;
         [Min(.1f)] public float fireClusterRadius = 3f;
         [Range(0, 1)] public float fireRecentTargetWeight = .35f;
-        [Header("Returning fire orbs / three shots")]
+        [Header("Returning fire orbs / projectile count upgrades")]
         [Min(.1f)] public float fireOrbDuration = 4.8f, fireOrbThrowTime = .68f, fireOrbReturnTime = .9f;
         [Min(0)] public float fireOrbLaunchGap = .16f, fireOrbSpread = 32f;
         [Min(.1f)] public float fireOrbRadius = .45f, fireOrbDps = 24f;

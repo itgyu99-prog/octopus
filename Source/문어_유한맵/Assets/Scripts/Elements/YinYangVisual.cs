@@ -8,13 +8,18 @@ namespace OctopusSurvivors
     {
         public const float OrbitDuration = 2.8f;
         public const float MergeDuration = .28f;
+        public const int BurstHits = 10;
+        public const float HitInterval = .12f, BurstDuration = 1.4f;
+        public const float SymbolScale = .065f;
+        public const int MistColumns = 10, MistRows = 8;
+        public static Bounds MistFieldBounds => ArenaBuilder.BeachRenderer!=null
+            ? ArenaBuilder.BeachRenderer.bounds : new Bounds(Vector3.zero,new Vector3(FiniteBeach.Width,FiniteBeach.Height,0));
         const int EchoCount = 3, ShardCount = 34;
         SpriteRenderer[] parts;
         ActorKind currentKind;
         float age, duration, size, receivedAt;
-        bool impacted;
 
-        public static bool Supports(ActorKind kind) => kind >= ActorKind.YinYangOrbit && kind <= ActorKind.YinYangShockwave;
+        public static bool Supports(ActorKind kind) => kind >= ActorKind.YinYangOrbit && kind <= ActorKind.YinYangHitBlack;
 
         public static float OrbitAngle(float t)
         {
@@ -36,14 +41,15 @@ namespace OctopusSurvivors
                 if (parts != null) foreach (var p in parts) { p.enabled = false; Destroy(p.gameObject); }
                 currentKind = kind;
                 int count = kind == ActorKind.YinYangOrbit ? 2 * (EchoCount + 1) :
-                    kind == ActorKind.YinYangCollision ? 3 : kind == ActorKind.YinYangBurst ? ShardCount + 2 : 2;
+                    kind == ActorKind.YinYangCollision ? 3 : kind == ActorKind.YinYangBurst ? ShardCount + 3 :
+                    kind == ActorKind.YinYangMist ? MistColumns*MistRows :
+                    kind == ActorKind.YinYangMark || kind == ActorKind.YinYangHitWhite || kind == ActorKind.YinYangHitBlack ? 1 : 2;
                 parts = new SpriteRenderer[count];
                 for (int i = 0; i < count; i++)
                 {
                     var go = new GameObject("YinYang_" + kind + "_" + i);
                     go.transform.SetParent(transform, false); parts[i] = go.AddComponent<SpriteRenderer>();
                 }
-                impacted = false;
             }
             age = actorAge; duration = Mathf.Max(.001f, actorDuration); size = actorSize;
             receivedAt = Time.time; enabled = true;
@@ -101,24 +107,59 @@ namespace OctopusSurvivors
             }
             else if (currentKind == ActorKind.YinYangBurst)
             {
-                if (!impacted && Application.isPlaying) { impacted = true; PlayerCameraFollow.StrongImpact(transform.position); }
                 int frame = Mathf.Min(YinYangArt.BurstFrames - 1, Mathf.FloorToInt(u * YinYangArt.BurstFrames));
-                Draw(0, YinYangArt.Burst(frame), Vector2.zero, 0, size, Color.white, 50);
+                float impactSize=size*.8f;
+                Draw(0, YinYangArt.Burst(frame), Vector2.zero, 0, impactSize, Color.white, 50);
                 float flash = 1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.025f, .11f, time));
-                Draw(1, YinYangArt.Flash, Vector2.zero, 0, size * Mathf.Lerp(.34f, .6f, Mathf.Clamp01(time / .08f)),
+                Draw(1, YinYangArt.Flash, Vector2.zero, 0, impactSize * Mathf.Lerp(.34f, .6f, Mathf.Clamp01(time / .08f)),
                     new Color(1, 1, 1, flash), 53);
                 for (int i = 0; i < ShardCount; i++)
                 {
                     float seed = Hash(i * 11 + 5), angle = Hash(i * 3 + 9) * Mathf.PI * 2;
                     float flight = Mathf.Max(0, time - Hash(i + 51) * .035f);
-                    float distance = size * (.05f + (.37f + seed * .19f) * (1 - Mathf.Exp(-flight * 4.4f)));
+                    float distance = impactSize * (.05f + (.37f + seed * .19f) * (1 - Mathf.Exp(-flight * 4.4f)));
                     Vector2 pos = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
-                    pos.y -= size * .1f * flight * flight;
+                    pos.y -= impactSize * .1f * flight * flight;
                     float fade = Mathf.InverseLerp(0, .035f, flight) * (1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.29f + seed * .2f, .88f, time)));
                     bool white = i % 5 == 0;
                     Draw(i + 2, YinYangArt.Shard(i), pos, angle * Mathf.Rad2Deg + flight * (seed - .5f) * 540,
-                        size * (.016f + seed * .024f), white ? new Color(1, 1, 1, fade) : new Color(.025f, .022f, .035f, fade), 52);
+                        impactSize * (.016f + seed * .024f), white ? new Color(1, 1, 1, fade) : new Color(.025f, .022f, .035f, fade), 52);
                 }
+                float beat = 1-Mathf.Repeat(time,HitInterval)/HitInterval;
+                Draw(ShardCount+2,YinYangArt.Symbol,Vector2.zero,time*12,size*SymbolScale,
+                    new Color(1,1,1,.32f*beat*(1-u)),51);
+            }
+            else if (currentKind == ActorKind.YinYangMark)
+            {
+                Draw(0,YinYangArt.Symbol,Vector2.up*.18f,0,size*(1+.06f*Mathf.Sin(u*Mathf.PI)),
+                    new Color(1,1,1,Mathf.Pow(1-u,.65f)),60);
+            }
+            else if (currentKind == ActorKind.YinYangMist)
+            {
+                float fade = Mathf.SmoothStep(0,1,time/.8f) *
+                    (1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(OrbitDuration+MergeDuration,duration,time)));
+                float height=MistFieldBounds.size.y;
+                float cloudWidth=Mathf.Max(size/MistColumns*2.8f,height/MistRows*3.6f);
+                for(int i=0;i<parts.Length;i++)
+                {
+                    // A fixed world-space grid covers the entire field, including
+                    // shores far from the caster. Overlapping soft edges hide the grid.
+                    Vector2 p=new Vector2((i%MistColumns/(MistColumns-1f)-.5f)*size*1.12f,
+                        (i/MistColumns/(MistRows-1f)-.5f)*height*1.12f);
+                    p+=new Vector2((Hash(i*7+13)-.5f)*size/MistColumns*.3f,
+                        (Hash(i*11+7)-.5f)*height/MistRows*.3f);
+                    p+=new Vector2(Mathf.Sin(time*.17f+i)*.65f,time*.22f);
+                    Draw(i,YinYangArt.Fog,p,Hash(i+19)*360+time*(i%2==0?1:-1),
+                        cloudWidth*(.9f+Hash(i+3)*.2f),new Color(.88f,.91f,.94f,.115f*fade),35, .55f+Hash(i+6)*.2f);
+                }
+            }
+            else if(currentKind==ActorKind.YinYangHitWhite || currentKind==ActorKind.YinYangHitBlack)
+            {
+                bool white=currentKind==ActorKind.YinYangHitWhite;
+                Color tint=white?Color.white:Color.black;
+                tint.a=1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(.18f,1,u));
+                Draw(0,YinYangArt.Contact,Vector2.zero,(white?18:-18)+u*25,
+                    size*Mathf.Lerp(.65f,1.15f,Mathf.SmoothStep(0,1,u)),tint,65);
             }
             else
             {
@@ -126,8 +167,8 @@ namespace OctopusSurvivors
                 float t = Mathf.Clamp01((time - .055f) / Mathf.Max(.01f, duration - .055f));
                 float expansion = 1 - Mathf.Pow(1 - t, 3);
                 float alpha = time < .055f ? 0 : Mathf.Pow(1 - t, 1.6f);
-                Draw(0, YinYangArt.Ring, Vector2.zero, -9, size * Mathf.Lerp(.18f, 1, expansion), new Color(1, 1, 1, alpha * .9f), 49, .82f);
-                Draw(1, YinYangArt.Ring, Vector2.zero, 12, size * Mathf.Lerp(.13f, .94f, expansion), new Color(.025f, .02f, .03f, alpha * .68f), 47, .82f);
+                Draw(0, YinYangArt.Ring, Vector2.zero, -9, size * .8f * Mathf.Lerp(.18f, 1, expansion), new Color(1, 1, 1, alpha * .9f), 49, .82f);
+                Draw(1, YinYangArt.Ring, Vector2.zero, 12, size * .8f * Mathf.Lerp(.13f, .94f, expansion), new Color(.025f, .02f, .03f, alpha * .68f), 47, .82f);
             }
         }
 

@@ -107,7 +107,7 @@ namespace OctopusSurvivors.EditorTools
             s.Stage.Value = 5; Call(s, "SpawnBoss", 5);
             var actors = (List<SimActor>)typeof(GameSession).GetField("_actors", Hidden).GetValue(s);
             var boss = actors.Find(a => !a.Dead && a.Kind == ActorKind.Boss);
-            Check(boss != null && boss.Duration == OctopusBossPattern.VisualMarker && boss.Pos == OctopusBossPattern.Head,
+            Check(boss != null && boss.Duration == OctopusBossPattern.VisualMarker && boss.Pos == OctopusBossPattern.CoreCenter(true),
                 "stage 5 spawns the stationary octopus, not the former charging boss");
             foreach (float dt in new[] { 1f / 120, 1f / 30, .27f })
             {
@@ -145,12 +145,13 @@ namespace OctopusSurvivors.EditorTools
             yield return null;
             yield return null;
             Bounds mapBounds = mapRenderer.bounds;
-            float expectedSize = PlayerCameraFollow.BossOrthographicSize(mapBounds);
+            float screenAspect = Screen.width / (float)Mathf.Max(1, Screen.height);
+            float expectedSize = PlayerCameraFollow.BossOrthographicSize(mapBounds, screenAspect);
             Vector2 expectedCenter = PlayerCameraFollow.BossCameraCenter(mapBounds);
             Check(camera.orthographic && Mathf.Abs(camera.orthographicSize - expectedSize) < .001f &&
-                Mathf.Abs(camera.aspect - FiniteBeach.Aspect) < .001f &&
+                Mathf.Abs(camera.aspect - screenAspect) < .001f && camera.rect == new Rect(0, 0, 1, 1) &&
                 Vector2.Distance(camera.transform.position, expectedCenter) < .001f,
-                "stage 5 camera fills the 16:9 width and keeps the boss-map top edge");
+                "stage 5 camera uses the full Game view and centers the complete boss map");
             VerifyBossCameraFrame(mapRenderer, camera);
             VerifyBossViewportAspects(mapBounds);
             if (OctopusBossChecks.MapOnly)
@@ -214,7 +215,7 @@ namespace OctopusSurvivors.EditorTools
             if (OctopusBossChecks.MapOnly)
             {
                 File.WriteAllText("Logs/Stage5MapChecks.summary.txt",
-                    "PASS: 7373x5100 map at (0.4,3.7) and uniform 1.357988 scale; boss portrait at (0,17.16) and uniform 0.8753439 scale; 16:9 camera fills the map width without stretching and crops only lower ocean; Pattern 2/0/4/0/2 keeps camera/map; lifecycle restores player follow; four live Game view sizes; unchanged boss/arm roots; HUD separation; existing limb/core combat checks; eight captured poses.");
+                    "PASS: 7373x5100 map at (0.4,3.7) and uniform 1.357988 scale; full-map camera fit across live aspect ratios; Pattern 2/0/4/0/2 keeps camera/map; lifecycle restores player follow; four live Game view sizes; evenly spaced grounded tentacles; HUD separation; existing limb/core combat checks; eight captured poses.");
                 yield break;
             }
             // Continuous captures expose stepping/teleporting that isolated poses can hide.
@@ -248,7 +249,7 @@ namespace OctopusSurvivors.EditorTools
             {
                 var pose = whip.GetValue(frame);
                 var sideRect = (Rect)pose.GetType().GetField("Rect").GetValue(pose);
-                int sourceIndex = frame == 0 ? 0 : frame + 4;
+                int sourceIndex = frame;
                 Check(sideRect.x == sourceIndex % 5 * 600 && sideRect.y == (4 - sourceIndex / 5) * 500 &&
                     sideRect.width == 600 && sideRect.height == 500,
                     "side playback frame maps to populated source cell " + sourceIndex);
@@ -266,15 +267,16 @@ namespace OctopusSurvivors.EditorTools
                 var sourceTexture = (Texture2D)source.GetType().GetField("Texture").GetValue(source);
                 int cellWidth = sourceTexture.width / 3, cellHeight = sourceTexture.height / 3;
                 int cellX = frame % 3 * cellWidth, cellY = (2 - frame / 3) * cellHeight;
-                var pixels = sourceTexture.GetPixels32(); bool unclipped = true;
+                var pixels = sourceTexture.GetPixels32(); bool unclipped = true; int outsideX = -1, outsideY = -1;
                 for (int y = 0; y < cellHeight && unclipped; y++) for (int x = 0; x < cellWidth; x++)
                 {
                     if (pixels[(cellY + y) * sourceTexture.width + cellX + x].a <= 100) continue;
                     if (cellX + x < rect.x || cellX + x >= rect.xMax || cellY + y < rect.y || cellY + y >= rect.yMax)
-                    { unclipped = false; break; }
+                    { unclipped = false; outsideX = cellX + x; outsideY = cellY + y; break; }
                 }
-                Check(unclipped, "downward source alpha remains fully inside its sliced rectangle " + frame);
-                Call(visual, "DrawMesh", arm, source, Vector2.zero, new Vector2(1, -5), 1f, mirror != 0);
+                Check(unclipped, "downward source alpha remains fully inside its sliced rectangle " + frame +
+                    " rect=" + rect + " firstOutside=(" + outsideX + "," + outsideY + ")");
+                Call(visual, "DrawMesh", arm, source, Vector2.zero, new Vector2(1, -5), 1f, mirror != 0, 1f);
                 Check(Mathf.Abs(mesh.bounds.size.x / mesh.bounds.size.y - rect.width / rect.height) < .0001f,
                     "downward frame keeps the complete source aspect and base " + frame + "/" + mirror);
                 float ppu = (float)source.GetType().GetField("Ppu").GetValue(source);
@@ -311,14 +313,23 @@ namespace OctopusSurvivors.EditorTools
         }
         static void VerifyBossCameraFrame(SpriteRenderer map, Camera camera)
         {
-            float expectedSize = PlayerCameraFollow.BossOrthographicSize(map.bounds);
+            float screenAspect = Screen.width / (float)Mathf.Max(1, Screen.height);
+            float expectedSize = PlayerCameraFollow.BossOrthographicSize(map.bounds, screenAspect);
             Check(camera.orthographic && Mathf.Abs(camera.orthographicSize - expectedSize) < .001f,
-                "boss camera width exactly matches the map without stretching");
-            Check(Mathf.Abs(camera.aspect - FiniteBeach.Aspect) < .001f,
-                "boss camera uses the full 16:9 gameplay rectangle without side borders");
+                "boss camera fits the complete map without stretching");
+            Check(Mathf.Abs(camera.aspect - screenAspect) < .001f && camera.rect == new Rect(0, 0, 1, 1),
+                "boss camera uses the entire live Game view without letterboxing");
             Check(Vector2.Distance(camera.transform.position,
                     PlayerCameraFollow.BossCameraCenter(map.bounds)) < .001f,
-                "boss camera keeps the map top edge and crops only lower ocean");
+                "boss camera centers the map so neither side nor shore is cropped");
+            foreach (var point in new[] { new Vector3(map.bounds.min.x, map.bounds.min.y, 0),
+                new Vector3(map.bounds.min.x, map.bounds.max.y, 0), new Vector3(map.bounds.max.x, map.bounds.min.y, 0),
+                new Vector3(map.bounds.max.x, map.bounds.max.y, 0) })
+            {
+                var p = camera.WorldToViewportPoint(point);
+                Check(p.z > 0 && p.x >= -.001f && p.x <= 1.001f && p.y >= -.001f && p.y <= 1.001f,
+                    "all four boss-map corners remain visible at the current Game view size");
+            }
             var arena = OctopusBossPattern.Arena;
             foreach (var point in new[] { new Vector3(arena.xMin, arena.yMin, 0), new Vector3(arena.xMax, arena.yMin, 0),
                 new Vector3(arena.xMin, arena.yMax, 0), new Vector3(arena.xMax, arena.yMax, 0) })
@@ -334,12 +345,11 @@ namespace OctopusSurvivors.EditorTools
         {
             foreach (float screenAspect in new[] { 4f / 3f, 16f / 9f, 21f / 9f, 9f / 16f })
             {
-                var viewport = PlayerCameraFollow.AspectFitViewport(screenAspect, FiniteBeach.Aspect);
-                float viewportAspect = screenAspect * viewport.width / viewport.height;
-                float viewWidth = PlayerCameraFollow.BossOrthographicSize(bounds) * 2f * viewportAspect;
-                Check(Mathf.Abs(viewportAspect - FiniteBeach.Aspect) < .001f &&
-                    Mathf.Abs(viewWidth - bounds.size.x) < .001f,
-                    "boss map fills the 16:9 camera width at screen aspect " + screenAspect.ToString("F3"));
+                float size = PlayerCameraFollow.BossOrthographicSize(bounds, screenAspect);
+                float viewWidth = size * 2f * screenAspect;
+                float viewHeight = size * 2f;
+                Check(viewWidth + .001f >= bounds.size.x && viewHeight + .001f >= bounds.size.y,
+                    "complete map fits inside the full camera at screen aspect " + screenAspect.ToString("F3"));
             }
         }
         static Type EditorType(string name)
@@ -450,7 +460,7 @@ namespace OctopusSurvivors.EditorTools
             {
                 selection.SetValue(view, prior);
                 for (int i = added - 1; i >= 0; i--)
-                    groupType.GetMethod("RemoveCustomSize", any).Invoke(group, new object[] { custom + i });
+                    groupType.GetMethod("RemoveCustomSize", any).Invoke(group, new object[] { builtins + custom + i });
                 view.Repaint();
             }
             for (int frame = 0; frame < 5; frame++) yield return null;
@@ -616,6 +626,7 @@ namespace OctopusSurvivors.EditorTools
         }
         static void Capture(Camera camera, string path)
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
             var prior = RenderTexture.active; var rt = RenderTexture.GetTemporary(1280, 720, 24);
             var tex = new Texture2D(1280, 720, TextureFormat.RGB24, false);
             try

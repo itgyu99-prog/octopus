@@ -35,9 +35,15 @@ namespace OctopusSurvivors
                 return cosmosIcon;
             }
         }
-        public static bool Supports(ActorKind k)=>k>=ActorKind.CosmicStar && k<=ActorKind.YinYangShockwave;
+        public static bool Supports(ActorKind k)=>k>=ActorKind.CosmicStar && k<=ActorKind.CosmicDusk;
         public static void Show(SpriteRenderer sr,ActorKind kind,float age,float duration,float size,byte direction)
         {
+            if(CosmosVisual.Supports(kind))
+            {
+                sr.enabled=false;sr.transform.localScale=Vector3.one;sr.transform.rotation=Quaternion.identity;
+                var cosmos=sr.GetComponent<CosmosVisual>()??sr.gameObject.AddComponent<CosmosVisual>();
+                cosmos.Configure(kind,age,duration,size,direction);return;
+            }
             if (YinYangVisual.Supports(kind))
             {
                 sr.enabled = false; // The orbit has no parent ring or trail sprite.

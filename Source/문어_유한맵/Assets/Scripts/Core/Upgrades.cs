@@ -68,7 +68,7 @@ namespace OctopusSurvivors
                 case UpgradeId.GrassTargets: return "풀 · 타겟 수 증가";
                 case UpgradeId.WaterRepeats: return "물 · 물풍선 추가";
                 case UpgradeId.ElectricRepeats: return "전기 · 방출 횟수 증가";
-                case UpgradeId.FireRange: return "불 · 공격 범위 증가";
+                case UpgradeId.FireRange: return "불 · 불덩이 개수 증가";
                 case UpgradeId.LingeringThorns: return "가시덩쿨";
                 case UpgradeId.ThornBurst: return "가시 발사";
                 case UpgradeId.WaterSplit: return "물방울 분열";
@@ -135,7 +135,7 @@ namespace OctopusSurvivors
                 case UpgradeId.GrassTargets: return "타겟 +1 · 같은 공격에 동일 대상 중복 없음";
                 case UpgradeId.WaterRepeats: return "물풍선 +1개 · 0.22초 순차 투척 · 기본 주기 유지";
                 case UpgradeId.ElectricRepeats: return "전기 방출 +1회 · 기본 주기 유지";
-                case UpgradeId.FireRange: return "불덩이 3발 사거리 증가 · 자동 조준/대상 교대 · 꼬리와 복귀 중에도 공격";
+                case UpgradeId.FireRange: return "불덩이 +1개 · 사거리 유지 · 자동 조준/대상 교대 · 꼬리와 복귀 중에도 공격";
                 case UpgradeId.LingeringThorns: return "가시가 필드에 남아 주기적으로 피해";
                 case UpgradeId.ThornBurst: return "풀 공격 처치 위치에서 가시 발사 · 재연쇄 없음";
                 case UpgradeId.WaterSplit: return "물방울이 터질 때 작은 물방울 발사 · 재분열 없음";

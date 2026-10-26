@@ -119,7 +119,9 @@ namespace OctopusSurvivors
         WaterBalloonShot = 94, WaterBalloonBurst = 95,
         PiercingMeteor = 70,
         CosmicStar = 96, CosmicMeteor = 97, CosmicTrail = 98, CosmicImpact = 99,
-        YinYangOrbit = 100, YinYangCollision = 101, YinYangBurst = 102, YinYangShockwave = 103
+        YinYangOrbit = 100, YinYangCollision = 101, YinYangBurst = 102, YinYangShockwave = 103,
+        YinYangMark = 104, YinYangMist = 105, YinYangHitWhite = 106, YinYangHitBlack = 107,
+        CosmicDusk = 108
     }
 
     public enum DamageSource : byte { NormalEnemy, BossContact, BossSkill, Other }

@@ -123,54 +123,18 @@ namespace OctopusSurvivors
     }
 
     // Shared world dimensions keep host/client terrain identical at every window size.
-    // Collision outlines use legacy 1492 x 1054 normalized coordinates; the current HD texture is 5760 x 3240.
+    // Collision follows BeachGeometry's outlines in the rendered artwork coordinates.
     public static class FiniteBeach
     {
         public const float Aspect = 16f / 9f;
         public const float Height = GameConfig.CameraSize * 2 * 2;
         public const float ArtworkAspect = 5760f / 3240f;
         public const float Width = Height * ArtworkAspect;
-        static readonly Vector2[] Shore = {
-            P(110,180), P(115,100), P(350,100), P(470,62), P(665,64),
-            P(855,113), P(1020,91), P(1270,100), P(1380,170),
-            P(1390,310), P(1380,420), P(1400,610), P(1370,735),
-            P(1320,845), P(1190,890), P(1010,935), P(920,900),
-            P(775,915), P(700,940), P(545,910), P(400,884),
-            P(285,869), P(185,829), P(119,710), P(99,610),
-            P(97,460), P(112,310)
-        };
-        // Conservative footprints include rock edges/shadows; shells and starfish are decoration.
-        static readonly Vector4[] Rocks = {
-            R(198,240,68,55), R(97,352,53,48), R(61,567,56,51),
-            R(155,790,78,72), R(1284,239,76,54), R(1400,480,47,63),
-            R(1260,707,51,42), R(1350,790,54,48), R(468,933,77,63),
-            R(862,951,85,61), R(220,308,24,19), R(1318,305,24,21),
-            R(1231,292,24,20), R(1357,332,22,18), R(1298,662,23,20),
-            R(1385,706,23,22), R(114,416,23,19), R(105,623,21,18),
-            R(132,579,23,19), R(243,774,23,22), R(110,694,23,19),
-            R(246,188,20,17), R(113,129,22,19), R(1355,132,21,19),
-            R(1404,431,21,19), R(1285,839,24,21), R(240,842,25,22)
-        };
-        static Vector2 P(float x, float y) => new Vector2((x / 1492f - .5f) * Width, (.5f - y / 1054f) * Height);
-        static Vector4 R(float x, float y, float rx, float ry)
-        { var p = P(x,y); return new Vector4(p.x,p.y,rx / 1492f * Width,ry / 1054f * Height); }
         public static bool Walkable(Vector2 p, float radius)
         {
-            bool inside = false;
-            for (int i=0,j=Shore.Length-1;i<Shore.Length;j=i++)
-            {
-                var a=Shore[j]; var b=Shore[i];
-                if ((a.y>p.y)!=(b.y>p.y) && p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x) inside=!inside;
-                var ab=b-a;
-                if ((p-(a+ab*Mathf.Clamp01(Vector2.Dot(p-a,ab)/ab.sqrMagnitude))).sqrMagnitude < radius*radius) return false;
-            }
-            if (!inside) return false;
-            foreach(var r in Rocks)
-            {
-                float x=(p.x-r.x)/(r.z+radius), y=(p.y-r.y)/(r.w+radius);
-                if (x*x+y*y<=1) return false;
-            }
-            return true;
+            // Use the rendered artwork's shore in every stage. The legacy map's
+            // smaller polygon blocked large portions of the current sandy beach.
+            return BeachGeometry.Walkable(p, radius);
         }
         public static Vector2 Clamp(Vector2 p, float radius)
         {
@@ -205,7 +169,10 @@ namespace OctopusSurvivors
         {
             float y=camera.orthographicSize, x=y*camera.aspect;
             p.x=Mathf.Clamp(p.x,-Mathf.Max(0,Width*.5f-x),Mathf.Max(0,Width*.5f-x));
-            p.y=Mathf.Clamp(p.y,-Mathf.Max(0,Height*.5f-y),Mathf.Max(0,Height*.5f-y));
+            // Leave extra room below the playable shore so the player can remain above
+            // the bottom HUD while the camera follows to the lower edge of the field.
+            float lowerLimit = -Height * .5f - GameConfig.CameraSize * .2f;
+            p.y=Mathf.Clamp(p.y,lowerLimit,Mathf.Max(0,Height*.5f-y));
             return p;
         }
     }

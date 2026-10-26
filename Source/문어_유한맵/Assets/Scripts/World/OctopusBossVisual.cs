@@ -127,7 +127,7 @@ namespace OctopusSurvivors
             }
             return frame;
         }
-        static Frame[] Sheet(string name, int cols, int rows, int count, float baseHeight, bool whiteKey = false, bool fixedWhip = false)
+        static Frame[] Sheet(string name, int cols, int rows, int count, float baseHeight, bool whiteKey = false)
         {
             var t = Load(name, whiteKey); var pixels = t.GetPixels32();
             int w = t.width / cols, h = t.height / rows;
@@ -135,22 +135,22 @@ namespace OctopusSurvivors
             float ppu = 1;
             for (int i = 0; i < count; i++)
             {
-                // The playback atlas has its first pose in the top-left cell,
-                // four empty cells after it, then the remaining twenty poses
-                // across the next four rows. Do not treat those empty cells as
-                // animation frames or the last four authored poses get dropped.
-                int sourceIndex = fixedWhip && i > 0 ? i + 4 : i;
+                // The supplied sheet has 21 contiguous populated poses (cells 0-20).
+                // Skipping cells 1-4 mapped the last four attack poses onto blank cells.
+                int sourceIndex = i;
                 int ox = sourceIndex % cols * w, oy = (rows - 1 - sourceIndex / cols) * h;
                 int bottom = h, top = 0, left = w, right = 0;
                 for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
                 {
                     var p = pixels[(oy + y) * t.width + ox + x];
-                    bool art = p.a > 100 && (name != "Slam" || Mathf.Max(p.r, Mathf.Max(p.g, p.b)) - Mathf.Min(p.r, Mathf.Min(p.g, p.b)) > 12);
+                    // Slam includes pale sand bases whose color is nearly neutral;
+                    // alpha alone must define the crop or those pixels are clipped.
+                    bool art = p.a > 100;
                     if (art) { bottom = Mathf.Min(bottom, y); top = Mathf.Max(top, y); left = Mathf.Min(left, x); right = Mathf.Max(right, x); }
                 }
                 if (i == 0) ppu = Mathf.Max(1, top - bottom + 1) / baseHeight;
                 Vector2 pivot = new Vector2(w * .5f, bottom);
-                if (fixedWhip) pivot = new Vector2(300, 39);
+                if (name == "Whip") pivot = new Vector2(300, 39);
                 else
                 {
                     float total = 0; int n = 0;
@@ -183,7 +183,7 @@ namespace OctopusSurvivors
             if (idle != null) return;
             float h = OctopusBossPattern.IdleHeight;
             idle = Sheet("Idle", 4, 1, 4, h, true);
-            whip = Sheet("Whip", 5, 5, 21, h, false, true);
+            whip = Sheet("Whip", 5, 5, 21, h);
             burrow = Sheet("Burrow", 4, 3, 12, h);
             slam = Sheet("Slam", 3, 3, 9, h);
             var texture = Load("Contact");
@@ -268,7 +268,7 @@ namespace OctopusSurvivors
             body.transform.localScale = Vector3.one * BossPortraitScale;
             body.color = (hitFlags & (byte)EnemyFlag.Hit) != 0 ? new Color(1, .65f, .65f) : Color.white;
             if (s.Vulnerable > 0)
-            { body.transform.position += Vector3.down * .8f; body.color = new Color(.78f, .84f, .88f); }
+                body.color = new Color(.78f, .84f, .88f);
             DrawArea(s);
             for (int a = 0; a < 6; a++)
             {

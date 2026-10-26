@@ -10,8 +10,8 @@ namespace OctopusSurvivors
         {
             switch (id)
             {
-                case SpecialId.Cosmos: return "별을 소환해 적에게 연속으로 낙하시킨다";
-                case SpecialId.YinYang: return "두 곡옥이 공전하고 맞물린 뒤 흑백 폭발을 일으킨다";
+                case SpecialId.Cosmos: return "어두워진 필드에 별이 차오르고, 모두 모이면 위성처럼 적을 추적하는 별똥별이 된다";
+                case SpecialId.YinYang: return "안개 속 곡옥이 접촉 피해를 주고, 넓은 음양 폭발로 10회 연타한다";
                 default: return string.Empty;
             }
         }

@@ -9,7 +9,17 @@ namespace OctopusSurvivors
             default, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         public bool OctopusBossActive => BossAlive.Value && Stage.Value == 5 && OctopusBoss.Value.Pattern != 0;
         readonly SimActor[] octopusArms = new SimActor[6];
-        static float OctopusHitPadding(SimActor a) => a.OctopusArm >= 0 ? 3 : a.Duration == OctopusBossPattern.VisualMarker ? a.Size * .45f : 0;
+        static float OctopusHitPadding(SimActor a) => a.OctopusArm >= 0 ? 1.25f : a.Duration == OctopusBossPattern.VisualMarker ? a.Size * .45f : 0;
+        static bool IsOctopusCore(SimActor a) => a != null && a.Duration == OctopusBossPattern.VisualMarker;
+        static float CenterDistanceToActor(Vector2 point, SimActor actor) => IsOctopusCore(actor)
+            ? OctopusCoreShape.Distance(point, actor.Pos)
+            : Vector2.Distance(point, actor.Pos);
+        static float DistanceToActor(Vector2 point, SimActor actor) => IsOctopusCore(actor)
+            ? OctopusCoreShape.Distance(point, actor.Pos)
+            : Mathf.Max(0, Vector2.Distance(point, actor.Pos) - OctopusHitPadding(actor));
+        static float SegmentDistanceToActor(Vector2 from, Vector2 to, SimActor actor) => IsOctopusCore(actor)
+            ? OctopusCoreShape.SegmentDistance(from, to, actor.Pos)
+            : DistToSegment(actor.Pos, from, to);
         bool CanTargetActor(SimActor actor)
         {
             if (actor == null || actor.Dead || (actor.Kind != ActorKind.Enemy && actor.Kind != ActorKind.Boss)) return false;
@@ -66,7 +76,7 @@ namespace OctopusSurvivors
 
         void StartOctopusBoss(SimActor boss)
         {
-            boss.Pos = OctopusBossPattern.Head;
+            boss.Pos = OctopusBossPattern.CoreCenter(true);
             boss.Size = FiniteBeach.Width * .235f;
             boss.Duration = OctopusBossPattern.VisualMarker;
             boss.Knockback = Vector2.zero;
@@ -75,7 +85,7 @@ namespace OctopusSurvivors
         }
         void TickOctopusBoss(SimActor boss, float dt)
         {
-            boss.Pos = OctopusBossPattern.Head;
+            boss.Pos = OctopusBossPattern.CoreCenter(true);
             boss.Knockback = boss.Vel = Vector2.zero;
             var state = OctopusBoss.Value;
             if (state.Vulnerable > 0)

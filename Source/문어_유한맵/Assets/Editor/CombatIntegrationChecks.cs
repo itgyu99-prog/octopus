@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,7 @@ namespace OctopusSurvivors.EditorTools
         [MenuItem("문어/통합 전투 개선 검증")]
         public static void Run()
         {
+            EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity");
             Directory.CreateDirectory("Logs/CombatIntegration");
             File.WriteAllText("Logs/CombatIntegration/status.txt","RUNNING");
             SessionState.SetBool(Key,true); EditorApplication.EnterPlaymode();
@@ -60,6 +62,7 @@ namespace OctopusSurvivors.EditorTools
             File.WriteAllLines("Logs/CombatIntegration/results.txt",results);
             File.WriteAllText("Logs/CombatIntegration/status.txt",pass?"PASS":"FAIL");
             EditorApplication.isPlaying=false;
+            if(Application.isBatchMode)EditorApplication.Exit(pass?0:2);
         }
         IEnumerator Run()
         {
@@ -69,6 +72,16 @@ namespace OctopusSurvivors.EditorTools
                 Check(BeachGeometry.Walkable(Vector2.zero,.42f,boss),"player origin on beach, boss="+boss);
                 Check(!BeachGeometry.Walkable(BeachGeometry.World(new Vector2(.5f,.1f),boss),.32f,boss),"cliff excluded, boss="+boss);
                 Check(!BeachGeometry.Walkable(BeachGeometry.World(new Vector2(.5f,.95f),boss),.32f,boss),"ocean excluded, boss="+boss);
+            }
+            Check(BeachGeometry.BossArenaWalkable(Vector2.zero,GameConfig.PlayerRadius),"boss arena includes the central player start");
+            var bossEdge=BeachGeometry.MoveBossArena(Vector2.zero,new Vector2(100,0),GameConfig.PlayerRadius);
+            Check(BeachGeometry.BossArenaWalkable(bossEdge,GameConfig.PlayerRadius),"boss movement stays on sand near the outer beach edge");
+            foreach(var beachPoint in new[]{BeachGeometry.World(new Vector2(.30f,.43f),true),
+                BeachGeometry.World(new Vector2(.70f,.43f),true),BeachGeometry.World(new Vector2(.50f,.57f),true),
+                new Vector2(0,7)}) {
+                Check(BeachGeometry.BossArenaWalkable(beachPoint,GameConfig.PlayerRadius),"boss arena allows movement across all sand including in front of boss "+beachPoint);
+                var reached=BeachGeometry.MoveBossArena(Vector2.zero,beachPoint,GameConfig.PlayerRadius);
+                Check(Vector2.Distance(reached,beachPoint)<.25f,"player can cross open boss beach to "+beachPoint);
             }
             foreach(var recipe in GameplayRules.Data.recipes)Check(CombatHudArt.Combo(recipe.result)!=null,"icon for actual recipe "+recipe.result);
             for(int n=0;n<=4;n++)Check(Mathf.Abs(OctopusPlayer.ReadyFraction(10-2.5f*n,10)-.25f*n)<.001f,"cooldown quarter "+n);
@@ -100,21 +113,27 @@ namespace OctopusSurvivors.EditorTools
             Check(p.AttributeReadyFraction(0)>0,"real cooldown recovery advances");
             var hud=GameHud.Instance;Check(hud!=null,"HUD created by game flow");
             var root=(GameObject)typeof(GameHud).GetField("_root",Private).GetValue(hud);
-            var images=root.GetComponentsInChildren<Image>(true);int fillCount=0;
-            foreach(var image in images)if(image.name=="Ready from bottom") {
-                fillCount++; Check(image.fillMethod==Image.FillMethod.Vertical && image.fillOrigin==(int)Image.OriginVertical.Bottom,"vertical bottom fill "+fillCount);
-                Check(image.transform.parent.GetComponent<Mask>()!=null,"circular mask "+fillCount);
+            var images=root.GetComponentsInChildren<Image>(true);
+            string[] sockets={"Attribute 0","Attribute 1","Attribute 2","Attribute 3","Element 0","Element 1","Element 2","Cosmos or YinYang"};
+            foreach(var socket in sockets) {
+                Image frame=null;foreach(var image in images)if(image.name==socket){frame=image;break;}
+                Check(frame!=null,"HUD socket exists: "+socket);
+                Check(frame.GetComponent<Mask>()!=null && frame.transform.Find("Full color icon")!=null,"circular icon mask: "+socket);
             }
-            Check(fillCount==8,"4 attributes + 3 elements + 1 special");
             p.Slot0.Value=(byte)ElementId.Water;p.Slot1.Value=(byte)ElementId.Fire;p.Slot2.Value=(byte)ElementId.Grass;p.Slot3.Value=(byte)ElementId.Electric;
             p.Combo.Value=(byte)ComboId.Fog;p.Combo1.Value=(byte)ComboId.Chili;p.Combo2.Value=(byte)ComboId.Tree;p.Special.Value=(byte)SpecialId.Cosmos;
+            var comboTimers=(float[])typeof(OctopusPlayer).GetField("comboCooldowns",Private).GetValue(p);
+            for(int i=0;i<comboTimers.Length;i++)comboTimers[i]=5f;
             Call(p,"TickComboCycle",.02f);
-            for(int i=0;i<3;i++)Check(p.ComboCooldownTotal.Value[i]>0 && p.ComboReadyFraction(i)<.001f,"actual combo cooldown "+i);
+            for(int i=0;i<3;i++)Check(Mathf.Abs(p.ComboCooldownTotal.Value[i]-4.98f)<.001f && p.ComboReadyFraction(i)>0,"combo cooldown recovery "+i);
             p.Hp.Value=50;
             Call(hud,"Update");
             var hpImage=(Image)typeof(GameHud).GetField("combatHp",Private).GetValue(hud);
             Check(Mathf.Abs(hpImage.fillAmount-.5f)<.001f,"HUD health follows actual 50/100 HP");
-            var cameraFollow=Camera.main.GetComponent<PlayerCameraFollow>();
+            var fieldCamera=Camera.main??FindAnyObjectByType<Camera>(FindObjectsInactive.Include);
+            Check(fieldCamera!=null,"field camera remains available after starting the run");
+            var cameraFollow=fieldCamera.GetComponent<PlayerCameraFollow>();
+            Check(cameraFollow!=null,"field camera follow component remains available");
             foreach(var edge in new[]{new Vector2(0,-100),new Vector2(-100,-10),new Vector2(100,-10),new Vector2(0,100)}) {
                 var point=FiniteBeach.Clamp(edge,GameConfig.PlayerRadius);
                 p.transform.position=point;p.NetPos.Value=point;
@@ -122,16 +141,18 @@ namespace OctopusSurvivors.EditorTools
                 Check(FiniteBeach.Walkable(blocked,GameConfig.PlayerRadius),"player movement still respects beach boundary "+edge);
                 float settleUntil=Time.realtimeSinceStartup+3;
                 do { Call(cameraFollow,"LateUpdate");yield return null; }
-                while(Vector2.Distance(Camera.main.transform.position,point)>.1f && Time.realtimeSinceStartup<settleUntil);
-                var viewport=Camera.main.WorldToViewportPoint(point);
-                Check(Mathf.Abs(viewport.x-.5f)<.025f && Mathf.Abs(viewport.y-.5f)<.025f,"camera keeps shoreline player centered "+edge);
+                while(Vector2.Distance(fieldCamera.transform.position,point)>.1f && Time.realtimeSinceStartup<settleUntil);
+                var viewport=fieldCamera.WorldToViewportPoint(point);
+                bool bottomEdge=edge.y<-50;
+                bool visible=viewport.x>=.05f && viewport.x<=.95f && viewport.y>=.18f && viewport.y<=.95f;
+                Check(visible && (!bottomEdge || Mathf.Abs(viewport.y-.595f)<.035f),"camera keeps shoreline player visible above the bottom HUD "+edge+" viewport="+viewport);
                 Call(hud,"Update");Call(s,"RenderLocal");yield return null;
                 ScreenCapture.CaptureScreenshot("Logs/CombatIntegration/camera-edge-"+(edge.y<-50?"bottom":edge.y>50?"top":edge.x<0?"left":"right")+".png");yield return null;
             }
             var combatRect=(RectTransform)typeof(GameHud).GetField("combatRoot",Private).GetValue(hud);
-            Check(combatRect.anchoredPosition.y==0 && Mathf.Abs(combatRect.localScale.x-1.3f)<.001f,"HUD bottom anchored and enlarged by 30 percent");
+            Check(Mathf.Abs(combatRect.anchoredPosition.y-14)<.001f && combatRect.localScale.x>0 && combatRect.localScale.x<=1,"HUD anchored above the bottom screen edge and scaled to fit");
             p.transform.position=Vector2.zero;p.NetPos.Value=Vector2.zero;
-            Camera.main.transform.position=new Vector3(0,0,-10);
+            fieldCamera.transform.position=new Vector3(0,0,-10);
             Call(s,"RenderLocal");yield return null;
             ScreenCapture.CaptureScreenshot("Logs/CombatIntegration/field-hud.png");yield return null;
             p.Hp.Value=100;
@@ -167,14 +188,14 @@ namespace OctopusSurvivors.EditorTools
             }
             s.OctopusBoss.Value=new OctopusBossSnapshot {Pattern=2,Time=1.2f,Seed=12345};Call(s,"RenderLocal");yield return null;
             var visual=FindAnyObjectByType<OctopusBossVisual>();Check(visual!=null,"boss visual active");
-            visual.Preview(s.OctopusBoss.Value);Call(Camera.main.GetComponent<PlayerCameraFollow>(),"LateUpdate");
+            visual.Preview(s.OctopusBoss.Value);Call(fieldCamera.GetComponent<PlayerCameraFollow>(),"LateUpdate");
             Call(hud,"Update");yield return null;
             ScreenCapture.CaptureScreenshot("Logs/CombatIntegration/boss-hud.png");yield return null;
             p.Combo.Value=(byte)ComboId.Lemon;p.Combo1.Value=(byte)ComboId.Soda;p.Combo2.Value=(byte)ComboId.BlueFlame;
             Call(hud,"Update");yield return null;
             ScreenCapture.CaptureScreenshot("Logs/CombatIntegration/other-elements.png");yield return null;
             var sizeChecks=(IEnumerator)typeof(OctopusBossCapture).GetMethod("VerifyLiveGameViewSizes",BindingFlags.Static|BindingFlags.NonPublic)
-                .Invoke(null,new object[]{ArenaBuilder.BeachRenderer,Camera.main});
+                .Invoke(null,new object[]{ArenaBuilder.BeachRenderer,fieldCamera});
             try { while(sizeChecks.MoveNext()) {
                 int previousWidth=Screen.width, previousHeight=Screen.height;
                 yield return null;

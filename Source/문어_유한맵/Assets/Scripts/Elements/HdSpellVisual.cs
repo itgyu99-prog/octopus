@@ -159,8 +159,6 @@ namespace OctopusSurvivors
             if(!initialized)
             {
                 initialized=true;previous=transform.position;
-                if(kind==ActorKind.MicrowaveBlast || kind==ActorKind.MagnetBlast || kind==ActorKind.LavaImpact)
-                    PlayerCameraFollow.StrongImpact(transform.position);
             }
         }
         SpriteRenderer Layer(string name,int order)

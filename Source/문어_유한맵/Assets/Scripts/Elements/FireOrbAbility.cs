@@ -50,11 +50,12 @@ namespace OctopusSurvivors
         void CastFireOrbs(OctopusPlayer player, Vector2 direction, int level, float multiplier)
         {
             var tuning = UpgradeTuning.Data;
-            float reach = (4.3f + tuning.fireRangePerLevel * (level - 1)) * tuning.fireSizeMultiplier;
-            var group = new List<SimActor>(3);
-            for (int i = 0; i < 3; i++)
+            float reach = 4.3f * tuning.fireSizeMultiplier;
+            int count = 3 + Mathf.Clamp(level - 1, 0, 5);
+            var group = new List<SimActor>(count);
+            for (int i = 0; i < count; i++)
             {
-                Vector2 heading = AbilityRunner.Rotate(direction, (i - 1) * tuning.fireOrbSpread);
+                Vector2 heading = AbilityRunner.Rotate(direction, (i - (count - 1) * .5f) * tuning.fireOrbSpread * 2f / (count - 1));
                 var orb = Effect(ActorKind.FlameAura, player.Pos, heading, tuning.fireOrbRadius,
                     tuning.fireOrbDuration, tuning.fireOrbDps * multiplier, player, level);
                 orb.SkillPoint = heading; orb.SkillTime = reach; orb.Bounces = i;

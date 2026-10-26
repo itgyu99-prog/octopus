@@ -32,8 +32,13 @@ namespace OctopusSurvivors
         {
             var mask = CombatImage(parent, name, HudPoint(x, y), HudSize(diameter, diameter), SpriteFactory.Circle(Color.white));
             mask.gameObject.AddComponent<Mask>().showMaskGraphic = false;
+            var background = CombatImage(mask.transform, "Cooldown background", Vector2.zero, mask.rectTransform.sizeDelta, null);
+            background.rectTransform.anchorMin = background.rectTransform.anchorMax = new Vector2(.5f, .5f);
+            background.color = new Color(.28f, .28f, .32f, .85f);
             var icon = CombatImage(mask.transform, "Full color icon", Vector2.zero, mask.rectTransform.sizeDelta, null);
             icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(.5f, .5f);
+            icon.type = Image.Type.Filled; icon.fillMethod = Image.FillMethod.Vertical;
+            icon.fillOrigin = (int)Image.OriginVertical.Bottom;
             return icon;
         }
 
@@ -95,9 +100,10 @@ namespace OctopusSurvivors
         {
             float canvasWidth = _root.GetComponent<RectTransform>().rect.width;
             combatRoot.localScale = Vector3.one * Mathf.Min(1f, (canvasWidth - 48) / HudWidth);
-            for (byte i = 0; i < 4; i++) SetCombatIcon(combatAttributes[i], RuntimeArt.ElementIcon(p.SlotElement(i)));
-            for (byte i = 0; i < 3; i++) SetCombatIcon(combatElements[i], CombatHudArt.Combo(p.ComboAt(i)));
-            SetCombatIcon(combatSpecial, RuntimeArt.SpecialIcon((SpecialId)p.Special.Value));
+            for (byte i = 0; i < 4; i++) SetCombatIcon(combatAttributes[i], RuntimeArt.ElementIcon(p.SlotElement(i)), p.AttributeReadyFraction(i));
+            for (byte i = 0; i < 3; i++) SetCombatIcon(combatElements[i], CombatHudArt.Combo(p.ComboAt(i)), p.ComboReadyFraction(i));
+            SetCombatIcon(combatSpecial, RuntimeArt.SpecialIcon((SpecialId)p.Special.Value),
+                OctopusPlayer.ReadyFraction(p.SpecialCd.Value, GameConfig.SpecialCooldown * GameConfig.ElementCdMul(p.UpElemCd.Value)));
             combatHp.fillAmount = p.Hp.Value / Mathf.Max(1, p.MaxHp.Value);
             _hpText.text = p.Downed.Value ? "다운" : Mathf.CeilToInt(p.Hp.Value) + " / " + Mathf.CeilToInt(p.MaxHp.Value);
             for (int i = 0; i < 2; i++)
@@ -114,9 +120,12 @@ namespace OctopusSurvivors
             _keys.text = "이동 방향키 · 획득 E · 합성 F\n변신 Space · 대시 Shift · 나가기 Esc";
         }
 
-        static void SetCombatIcon(Image image, Sprite sprite)
+        static void SetCombatIcon(Image image, Sprite sprite, float ready)
         {
             image.sprite = sprite; image.enabled = sprite != null; image.color = Color.white;
+            image.fillAmount = Mathf.Clamp01(ready);
+            var background = image.transform.parent.Find("Cooldown background").GetComponent<Image>();
+            background.sprite = sprite; background.enabled = sprite != null;
         }
     }
 }

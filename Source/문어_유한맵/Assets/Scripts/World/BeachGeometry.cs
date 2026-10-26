@@ -52,5 +52,45 @@ namespace OctopusSurvivors
             }
             return inside;
         }
+
+        public static bool BossArenaWalkable(Vector2 p, float radius)
+        {
+            // The entire sandy boss beach is playable. Walkable still excludes the
+            // cliffs, ocean, and rocks, without the old narrow central polygon.
+            return Walkable(p, radius, true);
+        }
+
+        public static Vector2 MoveBossArena(Vector2 from, Vector2 to, float radius)
+        {
+            Vector2 p = ClampBossArena(from, radius);
+            int steps = Mathf.Max(1, Mathf.CeilToInt(Vector2.Distance(from, to) / .12f));
+            Vector2 step = (to - from) / steps;
+            for (int i = 0; i < steps; i++)
+            {
+                if (BossArenaWalkable(p + step, radius)) p += step;
+                else
+                {
+                    var x = p + new Vector2(step.x, 0); if (BossArenaWalkable(x, radius)) p = x;
+                    var y = p + new Vector2(0, step.y); if (BossArenaWalkable(y, radius)) p = y;
+                }
+            }
+            return p;
+        }
+
+        static Vector2 ClampBossArena(Vector2 p, float radius)
+        {
+            if (BossArenaWalkable(p, radius)) return p;
+            Vector2 best = World(new Vector2(.5f, .5f), true);
+            float bestDistance = float.MaxValue;
+            for (float y = .20f; y <= .80f; y += .008f)
+            for (float x = .18f; x <= .82f; x += .008f)
+            {
+                var candidate = World(new Vector2(x, y), true);
+                if (!BossArenaWalkable(candidate, radius)) continue;
+                float distance = (candidate - p).sqrMagnitude;
+                if (distance < bestDistance) { bestDistance = distance; best = candidate; }
+            }
+            return best;
+        }
     }
 }

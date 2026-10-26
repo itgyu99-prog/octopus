@@ -53,11 +53,20 @@ namespace OctopusSurvivors
         public static Vector2 OverviewCenter => new Vector2(0, FiniteBeach.Height * .11f);
         public static float OverviewSize => FiniteBeach.Height * .64f;
         public static float IdleHeight => FiniteBeach.Height * .245f;
-        public static Rect Arena => Rect.MinMaxRect(-FiniteBeach.Width * .25f, -FiniteBeach.Height * .30f,
-            FiniteBeach.Width * .25f, FiniteBeach.Height * .335f);
-        public static Vector2 RestRoot(int arm) => new Vector2(
-            (arm < 3 ? -1 : 1) * FiniteBeach.Width * (arm % 3 == 1 ? .345f : .315f),
-            Mathf.Lerp(FiniteBeach.Height * .26f, -FiniteBeach.Height * .245f, arm % 3 / 2f));
+        // Keep every authored strike footprint on the central sand, away from
+        // the cliff wall and the lower shoreline.
+        public static Rect Arena => Rect.MinMaxRect(-FiniteBeach.Width * .16f, -FiniteBeach.Height * .14f,
+            FiniteBeach.Width * .16f, FiniteBeach.Height * .14f);
+        public static Vector2 RestRoot(int arm)
+        {
+            int lane = arm % 3;
+            float side = arm < 3 ? -1f : 1f;
+            // Spread the three complete idle poses diagonally and shift the whole
+            // group lower, so their tall silhouettes no longer stack on each other.
+            float x = FiniteBeach.Width * (lane == 0 ? .275f : lane == 1 ? .34f : .20f);
+            float y = FiniteBeach.Height * (lane == 0 ? .105f : lane == 1 ? .025f : -.055f);
+            return new Vector2(side * x, y);
+        }
         public static bool ArmsVisible(OctopusBossSnapshot s) => s.Pattern != 5 &&
             !(s.Pattern == 4 && ((s.Time >= .55f && s.Time < 1.1f) || (s.Time >= 5.2f && s.Time < 5.65f)));
         public static Vector2 ArmRoot(OctopusBossSnapshot s, int arm) => s.Pattern == 4 && s.Time >= 1.1f && s.Time < 5.2f ? HalfRoot(s.Half, arm) : RestRoot(arm);
@@ -104,8 +113,8 @@ namespace OctopusSurvivors
         public static Vector2 RelayTarget(uint seed, int strike)
         {
             var r = Arena;
-            return new Vector2(Mathf.Lerp(r.xMin + 1.2f, r.xMax - 1.2f, Sample(seed, strike * 2)),
-                Mathf.Lerp(r.yMin + 1.2f, r.yMax - 1.2f, Sample(seed, strike * 2 + 1)));
+            return new Vector2(Mathf.Lerp(r.xMin + 3f, r.xMax - 3f, Sample(seed, strike * 2)),
+                Mathf.Lerp(r.yMin + 2.4f, r.yMax - 2.4f, Sample(seed, strike * 2 + 1)));
         }
         public static Vector2 HalfTarget(uint seed, int half, int arm, int cycle)
         {

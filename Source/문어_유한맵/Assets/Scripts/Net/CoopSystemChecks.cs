@@ -379,8 +379,9 @@ namespace OctopusSurvivors
             Call(s,"TickPlannedAbility",fire,.1f);
             Check(fire.Pos==p.Pos,"fire breath follows caster");
             p.transform.position=Vector3.zero;p.NetPos.Value=Vector2.zero;
-            float baseRadius=fire.Size;s.CastBasicAbility(p,ElementId.Fire,3);
-            Check(Actors(s).Exists(a=>a.Kind==ActorKind.FlameAura&&a.Size>baseRadius),"flame range grows with attribute upgrade");
+            float baseReach=fire.SkillTime;int baseShots=Actors(s).FindAll(a=>a.Kind==ActorKind.FlameAura).Count;s.CastBasicAbility(p,ElementId.Fire,3);
+            Check(Actors(s).FindAll(a=>a.Kind==ActorKind.FlameAura).Count==baseShots+5 &&
+                Actors(s).TrueForAll(a=>a.Kind!=ActorKind.FlameAura || Mathf.Abs(a.SkillTime-baseReach)<.001f),"fire upgrade adds shots while retaining reach");
             Call(p,"DashServerRpc",Vector2.right);p.MoveInput.Value=Vector2.zero;
             p.ServerTick(GameConfig.DashDuration);
             Check(p.Pos.x>3f&&p.DashCharges.Value==0,"dash moves quickly and consumes one charge");
@@ -480,8 +481,9 @@ namespace OctopusSurvivors
                 flame.Bounces, flame.Age, flame.Duration, p.Pos)) < .01f, "fire preserves initial throw geometry before auto-target acquisition");
             Check(GameConfig.ActorBytes == 25, "returning fire keeps existing snapshot layout");
             ResetField(s); s.CastBasicAbility(p, ElementId.Fire, 6);
-            Check(Mathf.Abs(Actors(s).Find(a => a.Kind == ActorKind.FlameAura).SkillTime - 8.7f) < .001f,
-                "fire range upgrades extend throw distance");
+            Check(Actors(s).FindAll(a=>a.Kind==ActorKind.FlameAura).Count==8 &&
+                Mathf.Abs(Actors(s).Find(a => a.Kind == ActorKind.FlameAura).SkillTime - 4.3f*UpgradeTuning.Data.fireSizeMultiplier) < .001f,
+                "fire upgrades add five orbs at maximum level without extending range");
 
             ResetField(s);
             Target(s, new Vector2(3, 1)); Target(s, new Vector2(4, 0)); Target(s, new Vector2(2, -1));
