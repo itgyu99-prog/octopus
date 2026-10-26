@@ -17,7 +17,8 @@ namespace OctopusSurvivors
                 float perStar=65f*damage*(48+level*6)/count;
                 for (int i=0; i<count; i++)
                 {
-                    Vector2 position=center+CosmosSequence.StarOffset(i,count);
+                    Vector2 skyCenter=Camera.main!=null?(Vector2)Camera.main.transform.position:center;
+                    Vector2 position=skyCenter+CosmosSequence.StarOffset(i,count);
                     var star=Effect(ActorKind.CosmicStar,position,Vector2.zero,
                         .55f+CosmosSequence.Hash(i)*.45f,4f,perStar,owner,level);
                     star.Pos=star.Anchor=position;star.SkillPoint=center;star.CelestialCast=cast;
@@ -158,7 +159,7 @@ namespace OctopusSurvivors
             // Keep sustained contact readable without creating an effect every damage substep.
             foreach(var actor in _actors)
                 if(!actor.Dead && actor.Kind==kind && actor.Target==target && actor.Owner==source.Owner)return;
-            var hit=Effect(kind,target.Pos,Vector2.zero,Mathf.Clamp(target.Size*1.35f,.8f,1.8f),.18f,0,source.Owner,1);
+            var hit=Effect(kind,target.Pos,Vector2.zero,Mathf.Clamp(target.Size*1.35f,.8f,1.8f)*1.5f,.18f,0,source.Owner,1);
             hit.Target=target;
         }
 
@@ -176,15 +177,6 @@ namespace OctopusSurvivors
                 if(CanTargetActor(actor) && DistanceToActor(source.Pos,actor)<=source.Size*.5f)targets.Add(actor);
             foreach(var target in targets)
             {
-                SimActor mark=null;
-                foreach(var actor in _actors)
-                    if(!actor.Dead && actor.Kind==ActorKind.YinYangMark && actor.Target==target && actor.Owner==source.Owner){mark=actor;break;}
-                if(mark==null)
-                {
-                    mark=Effect(ActorKind.YinYangMark,target.Pos,Vector2.zero,source.Size*YinYangVisual.SymbolScale,.22f,0,source.Owner,1);
-                    mark.Target=target;
-                }
-                else {mark.Pos=target.Pos;mark.Size=source.Size*YinYangVisual.SymbolScale;mark.Age=0;mark.Life=mark.Duration=.22f;}
                 ApplyDamage(target,source.Damage/YinYangVisual.BurstHits,StatusMask.None,0,0);
                 // Repeated impacts must not push the victim outside later pulses.
                 target.Knockback=Vector2.zero;

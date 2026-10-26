@@ -330,9 +330,7 @@ namespace OctopusSurvivors.EditorTools
                 Check(burst.Mark==10 && Mathf.Abs(target.MaxHp-target.Hp-345)<.05f,"exact ten-hit total stays stable at timestep "+dt);
                 Check(outside.Hp==outside.MaxHp,"burst excludes enemies outside its expanded radius");
                 Check(target.Knockback==Vector2.zero,"multi-hit burst does not knock targets out of subsequent hits");
-                Check(Actors(session).Exists(a=>a.Kind==ActorKind.YinYangMark && a.Target==target),"burst places a small mark on the actual hit target");
-                Check(Mathf.Abs(Actors(session).Find(a=>a.Kind==ActorKind.YinYangMark && a.Target==target).Size-burst.Size*YinYangVisual.SymbolScale)<.001f,
-                    "monster mark uses the same symbol size as the player-centered burst");
+                Check(!Actors(session).Exists(a=>a.Kind==ActorKind.YinYangMark),"hits no longer create YinYang image marks on monsters");
             }
             Actors(session).Clear();
         }
@@ -353,6 +351,13 @@ namespace OctopusSurvivors.EditorTools
             Check((a.localScale - b.localScale).sqrMagnitude < .0001f, "both main commas have equal size");
             Check(Vector2.Dot(a.TransformDirection(new Vector3(-.7071068f, .7071068f, 0)), new Vector2(-a.localPosition.y, a.localPosition.x).normalized) > .999f, "rounded head follows orbital tangent");
             Check(YinYangVisual.OrbitPosition(1, 5.85f, 0).sqrMagnitude < .0001f, "orbit reaches exact common center for seamless taiji join");
+            Check(go.transform.childCount==56,"orbit includes sixteen ground comma eruptions");
+            CelestialArt.Show(sr,ActorKind.YinYangOrbit,.18f,2.8f,5.85f,0);
+            var rising=go.transform.GetChild(9).GetComponent<SpriteRenderer>();
+            Check(rising.enabled && rising.sprite==YinYangArt.Comma(true),"small white comma rises before its 0.2 second detonation");
+            CelestialArt.Show(sr,ActorKind.YinYangOrbit,.31f,2.8f,5.85f,0);
+            Check(!rising.enabled && go.transform.GetChild(10).GetComponent<SpriteRenderer>().enabled,"ground comma explodes after 0.2 seconds");
+            CelestialArt.Show(sr,ActorKind.YinYangOrbit,1.2f,2.8f,5.85f,0);
             Vector3 pose = a.localPosition;
             CelestialArt.Show(sr, ActorKind.YinYangOrbit, 1.2f, 2.8f, 5.85f, 0);
             Check((a.localPosition - pose).sqrMagnitude < .0001f, "snapshot age sampling is deterministic");
@@ -383,7 +388,7 @@ namespace OctopusSurvivors.EditorTools
             burstPreview.SetActive(false);Destroy(burstPreview);
             var markPreview=new GameObject("Monster symbol scale preview");
             CelestialArt.Show(markPreview.AddComponent<SpriteRenderer>(),ActorKind.YinYangMark,0,.22f,diameter*YinYangVisual.SymbolScale,0);
-            Check(Mathf.Abs(markPreview.transform.GetChild(0).localScale.x-playerSymbol)<.001f,"monster symbol is rendered at the player symbol's scale");
+            Check(!markPreview.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled,"retired monster symbol remains invisible");
             markPreview.SetActive(false);Destroy(markPreview);
             Destroy(go);
         }

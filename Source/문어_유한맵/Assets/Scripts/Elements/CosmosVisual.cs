@@ -13,12 +13,17 @@ namespace OctopusSurvivors
         public static float Hash(int index)=>Mathf.Repeat(Mathf.Sin(index*127.1f+311.7f)*43758.5453f,1);
         public static Vector2 StarOffset(int index,int count)
         {
-            float angle=index*137.50776f*Mathf.Deg2Rad, radius=Mathf.Sqrt((index+.5f)/count);
-            return new Vector2(Mathf.Cos(angle)*16f,Mathf.Sin(angle)*8f)*radius+Vector2.down*1.5f;
+            var camera=Camera.main;
+            float height=camera!=null?camera.orthographicSize*2:GameConfig.CameraSize*2;
+            float width=height*(camera!=null?camera.aspect:16f/9);
+            int columns=Mathf.CeilToInt(Mathf.Sqrt(count*width/height)),rows=Mathf.CeilToInt(count/(float)columns);
+            float x=((index%columns+.12f+Hash(index)*.76f)/columns-.5f)*width;
+            float y=((index/columns+.12f+Hash(index+217)*.76f)/rows-.5f)*height;
+            return new Vector2(x,y);
         }
     }
 
-    // Smooth light masks keep the warm cosmic palette independent of the old blue atlas.
+    // Smooth light masks keep the high contrast cosmic palette independent of the old atlas.
     public static class CosmosArt
     {
         static readonly Dictionary<string,Sprite> cache=new Dictionary<string,Sprite>();
@@ -48,10 +53,10 @@ namespace OctopusSurvivors
         {
             switch(index&3)
             {
-                case 0:return new Color(1,.91f,.74f);
-                case 1:return new Color(1,.68f,.49f);
-                case 2:return new Color(.98f,.59f,.71f);
-                default:return new Color(.86f,.65f,.82f);
+                case 0:return new Color(.95f,.97f,1);
+                case 1:return new Color(.13f,.19f,.38f);
+                case 2:return new Color(.015f,.018f,.035f);
+                default:return new Color(.55f,.63f,.8f);
             }
         }
     }
@@ -98,11 +103,11 @@ namespace OctopusSurvivors
                 float fade=flags==1?1-Mathf.SmoothStep(0,1,u):Mathf.SmoothStep(0,1,time/.65f);
                 var bounds=YinYangVisual.MistFieldBounds;
                 Draw(0,SpriteFactory.Square(Color.white),Vector2.zero,new Vector2(bounds.size.x,bounds.size.y)*1.6f,0,
-                    new Color(.035f,.015f,.045f,.34f*fade),30);
+                    new Color(.008f,.012f,.04f,.58f*fade),30);
                 for(int i=0;i<6;i++)
                 {
                     Vector2 p=new Vector2((CosmosSequence.Hash(i+11)-.5f)*bounds.size.x,(CosmosSequence.Hash(i+39)-.5f)*bounds.size.y);
-                    Color cloud=i%2==0?new Color(.51f,.22f,.36f):new Color(.58f,.37f,.17f);
+                    Color cloud=i%2==0?new Color(.08f,.12f,.25f):new Color(.3f,.34f,.43f);
                     Draw(i+1,YinYangArt.Fog,p,new Vector2(bounds.size.x*.65f,bounds.size.y*.55f),i*47+time*.4f,Alpha(cloud,.055f*fade),31);
                 }
                 for(int i=0;i<48;i++)
@@ -119,7 +124,7 @@ namespace OctopusSurvivors
                 float visible=Mathf.SmoothStep(0,1,time/.25f),twinkle=.88f+.12f*Mathf.Sin(time*7+size*19);
                 Draw(0,CosmosArt.Glow,Vector2.zero,Vector2.one*size*2.4f,0,Alpha(tint,.22f*visible),44);
                 Draw(1,CosmosArt.Star,Vector2.zero,Vector2.one*size*twinkle,0,Alpha(tint,visible),46);
-                Draw(2,CosmosArt.Star,Vector2.zero,Vector2.one*size*.4f,45,Alpha(Color.white,visible*.9f),47);
+                Draw(2,CosmosArt.Star,Vector2.zero,Vector2.one*size*.4f,45,Alpha((flags>>6)==2?new Color(.22f,.25f,.32f):Color.white,visible*.9f),47);
             }
             else if(kind==ActorKind.CosmicMeteor)
             {
@@ -127,7 +132,7 @@ namespace OctopusSurvivors
                 Vector2 direction=new Vector2(Mathf.Cos(radians),Mathf.Sin(radians));float fade=Mathf.Clamp01((duration-time)/.15f);
                 Draw(0,CosmosArt.Streak,-direction*size*1.7f,new Vector2(size*4.5f,size*.65f),angle,Alpha(tint,.65f*fade),45);
                 Draw(1,CosmosArt.Glow,Vector2.zero,Vector2.one*size*2,0,Alpha(tint,.28f*fade),46);
-                Draw(2,CosmosArt.Star,Vector2.zero,Vector2.one*size,angle,Alpha(Color.white,fade),49);
+                Draw(2,CosmosArt.Star,Vector2.zero,Vector2.one*size,angle,Alpha((flags>>6)==2?new Color(.04f,.05f,.09f):Color.white,fade),49);
                 for(int i=0;i<3;i++)
                 {
                     Vector2 side=new Vector2(-direction.y,direction.x)*Mathf.Sin(time*8+i)*size*.15f;

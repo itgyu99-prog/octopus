@@ -40,7 +40,7 @@ namespace OctopusSurvivors
             {
                 if (parts != null) foreach (var p in parts) { p.enabled = false; Destroy(p.gameObject); }
                 currentKind = kind;
-                int count = kind == ActorKind.YinYangOrbit ? 2 * (EchoCount + 1) :
+                int count = kind == ActorKind.YinYangOrbit ? 2 * (EchoCount + 1)+48 :
                     kind == ActorKind.YinYangCollision ? 3 : kind == ActorKind.YinYangBurst ? ShardCount + 3 :
                     kind == ActorKind.YinYangMist ? MistColumns*MistRows :
                     kind == ActorKind.YinYangMark || kind == ActorKind.YinYangHitWhite || kind == ActorKind.YinYangHitBlack ? 1 : 2;
@@ -93,6 +93,21 @@ namespace OctopusSurvivors
                             angle * Mathf.Rad2Deg - 45, size * .5f * (echo == 0 ? 1 : .62f), new Color(1, 1, 1, alpha), echo == 0 ? 48 : 44 - echo);
                     }
                 }
+                for(int i=0;i<16;i++)
+                {
+                    float t=time-(.08f+i*.155f);
+                    int start=2*(EchoCount+1)+i*3;
+                    if(t<0 || t>.4f){for(int j=0;j<3;j++)parts[start+j].enabled=false;continue;}
+                    float angle=Hash(i+81)*Mathf.PI*2, radius=size*(.35f+Hash(i+35)*1.1f);
+                    Vector2 floor=new Vector2(Mathf.Cos(angle),Mathf.Sin(angle))*radius;
+                    bool white=i%2==0;Color ink=white?Color.white:Color.black;
+                    float rise=Mathf.SmoothStep(0,1,t/.2f),burst=Mathf.Clamp01((t-.2f)/.2f);
+                    Draw(start,YinYangArt.Fog,floor,0,.95f,new Color(0,0,0,.3f*(1-burst)),39,.3f);
+                    ink.a=t<.2f?Mathf.Clamp01(t/.04f):0;
+                    Draw(start+1,YinYangArt.Comma(white),floor+Vector2.up*Mathf.Lerp(-.25f,.65f,rise),i*47,.7f*(.5f+.5f*rise),ink,45);
+                    ink.a=t>=.2f?1-burst:0;
+                    Draw(start+2,YinYangArt.Contact,floor+Vector2.up*.65f,i*31,Mathf.Lerp(.65f,1.6f,burst),ink,48);
+                }
             }
             else if (currentKind == ActorKind.YinYangCollision)
             {
@@ -132,7 +147,7 @@ namespace OctopusSurvivors
             else if (currentKind == ActorKind.YinYangMark)
             {
                 Draw(0,YinYangArt.Symbol,Vector2.up*.18f,0,size*(1+.06f*Mathf.Sin(u*Mathf.PI)),
-                    new Color(1,1,1,Mathf.Pow(1-u,.65f)),60);
+                    new Color(1,1,1,0),60);
             }
             else if (currentKind == ActorKind.YinYangMist)
             {
@@ -150,7 +165,7 @@ namespace OctopusSurvivors
                         (Hash(i*11+7)-.5f)*height/MistRows*.3f);
                     p+=new Vector2(Mathf.Sin(time*.17f+i)*.65f,time*.22f);
                     Draw(i,YinYangArt.Fog,p,Hash(i+19)*360+time*(i%2==0?1:-1),
-                        cloudWidth*(.9f+Hash(i+3)*.2f),new Color(.88f,.91f,.94f,.115f*fade),35, .55f+Hash(i+6)*.2f);
+                        cloudWidth*(.9f+Hash(i+3)*.2f),new Color(.8f,.83f,.88f,.23f*fade),35, .55f+Hash(i+6)*.2f);
                 }
             }
             else if(currentKind==ActorKind.YinYangHitWhite || currentKind==ActorKind.YinYangHitBlack)
