@@ -158,6 +158,9 @@ namespace OctopusSurvivors
                 _enemyBodies[id]=new Vector3(pos.x,pos.y,Mathf.Max(.15f,size)*spriteDiameter);
                 var impact = sr.GetComponent<ElementHitVisual>() ?? sr.gameObject.AddComponent<ElementHitVisual>();
                 impact.Configure(extra, duration < 1000 ? (ElementId)Mathf.RoundToInt(duration) : ElementId.None);
+                var mark=sr.GetComponent<RiftMarkVisual>();bool marked=(extra&(byte)EnemyFlag.RiftMarked)!=0;
+                if(marked && mark==null)mark=sr.gameObject.AddComponent<RiftMarkVisual>();
+                if(mark!=null)mark.Configure(marked);
             }
             if (TreeSkillVisual.Supports(kind))
             {
@@ -204,6 +207,18 @@ namespace OctopusSurvivors
             _target[id] = worldPos;
             if (CelestialArt.Supports(kind))
                 CelestialArt.Show(sr, kind, age, duration, size, extra);
+            if(SpecialSkillVisual.Supports(kind))
+            {
+                sr.enabled=false;sr.transform.localScale=Vector3.one;sr.transform.rotation=Quaternion.identity;
+                var special=sr.GetComponent<SpecialSkillVisual>()??sr.gameObject.AddComponent<SpecialSkillVisual>();
+                special.Configure(kind,age,duration,size,extra);
+            }
+            if(DimensionRiftVisual.Supports(kind))
+            {
+                sr.enabled=false;sr.transform.localScale=Vector3.one;sr.transform.rotation=Quaternion.identity;
+                var rift=sr.GetComponent<DimensionRiftVisual>()??sr.gameObject.AddComponent<DimensionRiftVisual>();
+                rift.Configure(kind,age,duration,size);
+            }
         }
 
         void LateUpdate()
@@ -280,6 +295,7 @@ namespace OctopusSurvivors
                 case ActorKind.PickupElectric: return RuntimeArt.ElementIcon(ElementId.Electric);
                 case ActorKind.PickupCosmos: return RuntimeArt.SpecialIcon(SpecialId.Cosmos);
                 case ActorKind.PickupYinYang: return RuntimeArt.SpecialIcon(SpecialId.YinYang);
+                case ActorKind.PickupDimensionRift: return RuntimeArt.SpecialIcon(SpecialId.DimensionRift);
                 case ActorKind.ArtifactPiece: return RuntimeArt.Icon("RelicPearl");
                 case ActorKind.Statue: return RuntimeArt.Icon("RelicSandGlyph");
                 case ActorKind.Shockwave:

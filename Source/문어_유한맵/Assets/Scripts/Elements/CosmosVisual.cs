@@ -6,10 +6,10 @@ namespace OctopusSurvivors
 {
     public static class CosmosSequence
     {
-        public const float ReleaseTime=2.75f, RestoreDuration=.55f;
-        public static int StarCount(int level)=>168+Mathf.Clamp(level,1,6)*12;
-        public static float BirthTime(int index,int count)=>index<8 ? .12f+index*.16f :
-            Mathf.Lerp(1.35f,2.05f,(index-8f)/Mathf.Max(1,count-9));
+        public static float ReleaseTime=>SpecialSkillTuning.Data.cosmosBuildDuration+SpecialSkillTuning.Data.cosmosHoldDuration;
+        public const float RestoreDuration=.55f;
+        public static int StarCount(int level)=>Mathf.Max(8,SpecialSkillTuning.Data.cosmosBaseStars)+Mathf.Clamp(level,1,6)*12;
+        public static float BirthTime(int index,int count)=>SpecialSkillTuning.StarSpawnTime(index,count);
         public static float Hash(int index)=>Mathf.Repeat(Mathf.Sin(index*127.1f+311.7f)*43758.5453f,1);
         public static Vector2 StarOffset(int index,int count)
         {
@@ -140,17 +140,17 @@ namespace OctopusSurvivors
                 float fade=flags==1?1-Mathf.SmoothStep(0,1,u):Mathf.SmoothStep(0,1,time/.65f);
                 var bounds=YinYangVisual.MistFieldBounds;
                 Draw(0,SpriteFactory.Square(Color.white),Vector2.zero,new Vector2(bounds.size.x,bounds.size.y)*1.6f,0,
-                    new Color(.008f,.012f,.04f,.72f*fade),30);
+                    new Color(.008f,.012f,.04f,SpecialSkillTuning.Data.cosmosDarkness*fade),-10);
                 for(int i=0;i<6;i++)
                 {
                     Vector2 p=new Vector2((CosmosSequence.Hash(i+11)-.5f)*bounds.size.x,(CosmosSequence.Hash(i+39)-.5f)*bounds.size.y);
                     Color cloud=i%2==0?new Color(.08f,.12f,.25f):new Color(.3f,.34f,.43f);
-                    Draw(i+1,YinYangArt.Fog,p,new Vector2(bounds.size.x*.65f,bounds.size.y*.55f),i*47+time*.4f,Alpha(cloud,.055f*fade),31);
+                    Draw(i+1,YinYangArt.Fog,p,new Vector2(bounds.size.x*.65f,bounds.size.y*.55f),i*47+time*.4f,Alpha(cloud,.055f*fade),-9);
                 }
                 for(int i=0;i<BackgroundStars;i++)
                 {
                     Vector2 p=BackdropPoint(i,bounds);
-                    float born=Mathf.SmoothStep(0,1,(time-.2f-p.magnitude*.018f-CosmosSequence.Hash(i)*.35f)/.9f);
+                    float born=Mathf.SmoothStep(0,1,(time-CosmosSequence.BirthTime(i,BackgroundStars))/.35f);
                     float twinkle=.72f+.28f*Mathf.Sin(time*2.1f+i*1.7f);
                     float diameter=.10f+CosmosSequence.Hash(i)*.18f;
                     Draw(i+7,CosmosArt.Star,p,Vector2.one*diameter,45,Alpha(CosmosArt.Palette(i),fade*born*twinkle*.6f),40);
@@ -159,7 +159,7 @@ namespace OctopusSurvivors
                 {
                     int index=i*3+2;
                     Vector2 a=BackdropPoint(index,bounds),b=BackdropPoint(index+1,bounds),delta=b-a;
-                    float born=Mathf.SmoothStep(0,1,(time-.5f-a.magnitude*.018f)/1.1f);
+                    float born=Mathf.SmoothStep(0,1,(time-SpecialSkillTuning.Data.cosmosBuildDuration*.65f)/1.1f);
                     Draw(7+BackgroundStars+i,CosmosArt.Streak,(a+b)*.5f,
                         new Vector2(delta.magnitude,.035f+CosmosSequence.Hash(i)*.035f),Mathf.Atan2(delta.y,delta.x)*Mathf.Rad2Deg,
                         new Color(.8f,.87f,1,.16f*fade*born),39);

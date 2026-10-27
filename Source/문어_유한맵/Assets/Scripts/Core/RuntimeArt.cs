@@ -130,6 +130,7 @@ namespace OctopusSurvivors
             {
                 case SpecialId.Cosmos: return CelestialArt.CosmosIcon;
                 case SpecialId.YinYang: return YinYangArt.Symbol;
+                case SpecialId.DimensionRift: return DimensionRiftArt.Icon;
                 default: return null;
             }
         }

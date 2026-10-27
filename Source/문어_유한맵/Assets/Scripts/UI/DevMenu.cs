@@ -56,6 +56,12 @@ namespace OctopusSurvivors
             SpecialButton(258f, 20f, "없음", 0);
             var resetCd = TopButton(250f, 258f, 220f, 46f, "쿨 초기화");
             resetCd.onClick.AddListener(ResetSpecialCooldown);
+            SpecialButton(310f,20f,"차원 균열",(byte)SpecialId.DimensionRift);
+            var joint=TopButton(250f,310f,220f,46f,"합동 필살기 테스트");
+            joint.onClick.AddListener(()=>{
+                if(GameSession.Instance!=null)GameSession.Instance.RequestDevSpecialConvergence();
+                SetStatus("합동기 연출 테스트 · 1인 사용 가능 · 추가 피해 없음");
+            });
 
             LabelAt(372f, "속성1  (누른 사람만)");
             ElementRow(408f, 0);

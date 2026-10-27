@@ -6,16 +6,20 @@ namespace OctopusSurvivors
     // TrailRenderer, or orbit line: host, client and preview use exactly the same poses.
     public sealed class YinYangVisual : MonoBehaviour
     {
-        public const float OrbitDuration = 2.8f;
-        public const float MergeDuration = .28f;
+        public static float OrbitDuration => SpecialSkillTuning.Data.orbitDuration;
+        public static float MergeDuration => SpecialSkillTuning.Data.mergeDuration;
         public const int BurstHits = 10;
-        public const float HitInterval = .12f, BurstDuration = 1.4f;
+        public static float BurstDuration => SpecialSkillTuning.Data.burstDuration;
+        public static float HitInterval => Mathf.Max(.01f,BurstDuration/1.4f*.12f);
         public const float SymbolScale = .065f;
         public const int MistColumns = 10, MistRows = 8;
-        public const int GroundCount = 144;
-        public const float GroundLifetime = .46f;
+        public static int GroundCount => Mathf.Clamp(SpecialSkillTuning.Data.smallCommaCount,2,256);
+        public static float GroundLifetime => Mathf.Max(.1f,SpecialSkillTuning.Data.smallCommaDuration);
         public static float GroundBirth(int i) => .06f+Hash(i+915)*2.34f;
         public static Vector2 GroundPoint(int i) => CelestialField.Point(i,GroundCount);
+        public static Vector2 GroundAttackPoint(int i,float t) => GroundPoint(i)+
+            new Vector2(Mathf.Sin(t*SpecialSkillTuning.Data.smallCommaSpeed+i)*.18f,
+                Mathf.Lerp(-.25f,.65f,Mathf.SmoothStep(0,1,t/.22f)));
         public static Bounds MistFieldBounds => ArenaBuilder.BeachRenderer!=null
             ? ArenaBuilder.BeachRenderer.bounds : new Bounds(Vector3.zero,new Vector3(FiniteBeach.Width,FiniteBeach.Height,0));
         const int EchoCount = 3, ShardCount = 34;
@@ -23,7 +27,7 @@ namespace OctopusSurvivors
         ActorKind currentKind;
         float age, duration, size, receivedAt;
 
-        public static bool Supports(ActorKind kind) => kind >= ActorKind.YinYangOrbit && kind <= ActorKind.YinYangHitBlack;
+        public static bool Supports(ActorKind kind) => (kind >= ActorKind.YinYangOrbit && kind <= ActorKind.YinYangShockwave) || kind==ActorKind.YinYangMark || kind==ActorKind.YinYangMist || kind==ActorKind.YinYangHitWhite || kind==ActorKind.YinYangHitBlack;
 
         public static float OrbitAngle(float t)
         {
@@ -112,7 +116,7 @@ namespace OctopusSurvivors
             else if (currentKind == ActorKind.YinYangBurst)
             {
                 int frame = Mathf.Min(YinYangArt.BurstFrames - 1, Mathf.FloorToInt(u * YinYangArt.BurstFrames));
-                float impactSize=size*.8f;
+                float impactSize=size;
                 Draw(0, YinYangArt.Burst(frame), Vector2.zero, 0, impactSize, Color.white, 50);
                 float flash = 1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.025f, .11f, time));
                 Draw(1, YinYangArt.Flash, Vector2.zero, 0, impactSize * Mathf.Lerp(.34f, .6f, Mathf.Clamp01(time / .08f)),
@@ -124,6 +128,7 @@ namespace OctopusSurvivors
                     float distance = impactSize * (.05f + (.37f + seed * .19f) * (1 - Mathf.Exp(-flight * 4.4f)));
                     Vector2 pos = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
                     pos.y -= impactSize * .1f * flight * flight;
+                    pos=Vector2.ClampMagnitude(pos,size*.48f);
                     float fade = Mathf.InverseLerp(0, .035f, flight) * (1 - Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.29f + seed * .2f, .88f, time)));
                     bool white = i % 5 == 0;
                     Draw(i + 2, YinYangArt.Shard(i), pos, angle * Mathf.Rad2Deg + flight * (seed - .5f) * 540,
@@ -152,9 +157,10 @@ namespace OctopusSurvivors
                         (i/MistColumns/(MistRows-1f)-.5f)*height*1.12f);
                     p+=new Vector2((Hash(i*7+13)-.5f)*size/MistColumns*.3f,
                         (Hash(i*11+7)-.5f)*height/MistRows*.3f);
-                    p+=new Vector2(Mathf.Sin(time*.17f+i)*.65f,time*.22f);
+                    p+=new Vector2(Mathf.Sin(time*SpecialSkillTuning.Data.mistFlowSpeed+i)*.65f,time*.22f);
+                    p+=p.normalized*Mathf.Max(0,time-OrbitDuration-MergeDuration)*2.5f;
                     Draw(i,YinYangArt.Fog,p,Hash(i+19)*360+time*(i%2==0?1:-1),
-                        cloudWidth*(.9f+Hash(i+3)*.2f),new Color(.8f,.83f,.88f,.23f*fade),35, .55f+Hash(i+6)*.2f);
+                        cloudWidth*(.9f+Hash(i+3)*.2f),(i%3==0?new Color(.07f,.06f,.09f,SpecialSkillTuning.Data.mistOpacity*fade*(.6f+.4f*Mathf.Sin(time*.5f+i))):new Color(.8f,.83f,.88f,SpecialSkillTuning.Data.mistOpacity*fade*(.6f+.4f*Mathf.Sin(time*.5f+i)))),-4+i%3, .55f+Hash(i+6)*.2f);
                 }
                 for(int i=0;i<GroundCount;i++)
                 {
@@ -166,7 +172,7 @@ namespace OctopusSurvivors
                     float rise=Mathf.SmoothStep(0,1,t/.22f),burst=Mathf.Clamp01((t-.22f)/(GroundLifetime-.22f));
                     Draw(start,YinYangArt.Fog,floor,0,.95f,new Color(0,0,0,.26f*(1-burst)),39,.3f);
                     ink.a=t<.22f?Mathf.Clamp01(t/.045f):0;
-                    Draw(start+1,YinYangArt.Comma(white),floor+Vector2.up*Mathf.Lerp(-.25f,.65f,rise),i*47,
+                    Draw(start+1,YinYangArt.Comma(white),GroundAttackPoint(i,t)-(Vector2)transform.position,i*47+t*SpecialSkillTuning.Data.smallCommaSpeed*90,
                         .7f*(.5f+.5f*rise),ink,45);
                     ink.a=t>=.22f?1-burst:0;
                     Draw(start+2,YinYangArt.Contact,floor+Vector2.up*.65f,i*31,Mathf.Lerp(.65f,1.3f,burst),ink,48);

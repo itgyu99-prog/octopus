@@ -47,6 +47,7 @@ namespace OctopusSurvivors
             {
                 case SpecialId.Cosmos: return new Color(.65f, .6f, 1f);
                 case SpecialId.YinYang: return new Color(0.92f, 0.92f, 0.92f);
+                case SpecialId.DimensionRift: return new Color(.72f,.70f,.78f);
                 default: return Color.white;
             }
         }
@@ -91,6 +92,7 @@ namespace OctopusSurvivors
             {
                 case SpecialId.Cosmos: return "우주";
                 case SpecialId.YinYang: return "음양";
+                case SpecialId.DimensionRift: return "차원 균열";
                 default: return "-";
             }
         }
@@ -114,6 +116,7 @@ namespace OctopusSurvivors
             {
                 case ActorKind.PickupCosmos: return SpecialId.Cosmos;
                 case ActorKind.PickupYinYang: return SpecialId.YinYang;
+                case ActorKind.PickupDimensionRift: return SpecialId.DimensionRift;
                 default: return SpecialId.None;
             }
         }
@@ -137,6 +140,7 @@ namespace OctopusSurvivors
             {
                 case SpecialId.Cosmos: return ActorKind.PickupCosmos;
                 case SpecialId.YinYang: return ActorKind.PickupYinYang;
+                case SpecialId.DimensionRift: return ActorKind.PickupDimensionRift;
                 default: return (ActorKind)0;
             }
         }
@@ -145,7 +149,7 @@ namespace OctopusSurvivors
             kind >= ActorKind.PickupFire && kind <= ActorKind.PickupElectric;
 
         public static bool IsSpecialPickup(ActorKind kind) =>
-            kind == ActorKind.PickupCosmos || kind == ActorKind.PickupYinYang;
+            kind == ActorKind.PickupCosmos || kind == ActorKind.PickupYinYang || kind == ActorKind.PickupDimensionRift;
 
         public static bool TryCombo(ElementId a, ElementId b, out ComboId combo)
         {

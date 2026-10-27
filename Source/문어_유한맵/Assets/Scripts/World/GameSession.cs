@@ -40,6 +40,11 @@ namespace OctopusSurvivors
         public int EffectLevel = 1;
         public SimActor Target, LastHit;
         public SimActor CelestialCast;
+        public SimActor RiftSource, DamageGroup;
+        public bool RiftExecuting;
+        public Vector2 RiftStart;
+        public float RiftExecutionAge,RiftExecutionDuration,RiftOriginalSize;
+        public Dictionary<ushort,float> ContactHitTimes;
         public Vector2 Anchor;
         public byte SkillPhase;
         public float SkillTime;
@@ -562,7 +567,7 @@ namespace OctopusSurvivors
 
         void CheckTeamUltimate()
         {
-            if (TeamUltCooldown.Value > 0f)
+            if (!IsServer || !CombatActive)
                 return;
 
             OctopusPlayer a = null;
@@ -577,15 +582,16 @@ namespace OctopusSurvivors
             }
 
             if (a == null || b == null)
-                return;
-            if (a.Special.Value == 0 || b.Special.Value == 0 || a.Special.Value == b.Special.Value)
-                return;
-            if (Vector2.Distance(a.Pos, b.Pos) > GameConfig.PlayerRadius * 2.6f)
-                return;
-
-            int level = Mathf.Max(a.ElementLevel, b.ElementLevel);
-            SpecialAbilities.CastPair(this, (a.Pos + b.Pos) * 0.5f, (SpecialId)a.Special.Value, (SpecialId)b.Special.Value, level);
-            TeamUltCooldown.Value = GameConfig.TeamUltimateCooldown;
+            { specialContactLatched=false;return; }
+            if (!SpecialSkillTuning.EligiblePair(PlayerCount.Value, !a.Downed.Value, !b.Downed.Value,
+                a.Transformed.Value,b.Transformed.Value,(SpecialId)a.Special.Value,(SpecialId)b.Special.Value,
+                Vector2.Distance(a.Pos,b.Pos), GameConfig.PlayerRadius*2))
+            { specialContactLatched=false;return; }
+            if(specialContactLatched || TeamUltCooldown.Value>0)return;
+            if (_actors.Exists(actor => !actor.Dead && actor.Kind == ActorKind.SpecialConvergence)) return;
+            CastSpecialConvergence((a.Pos+b.Pos)*.5f);
+            specialContactLatched=true;
+            TeamUltCooldown.Value = Mathf.Max(SpecialSkillTuning.Data.convergenceDuration,SpecialSkillTuning.Data.convergenceCooldown);
         }
 
         void TickActors(float dt)
@@ -597,7 +603,7 @@ namespace OctopusSurvivors
                 if (a.Dead)
                     continue;
 
-                if (TickCelestial(a, dt) || TickUpgradeAbility(a, dt) || TickPlannedAbility(a, dt) || TickElementEffect(a, dt)) continue;
+                if (TickSpecialEnhancement(a,dt) || TickDimensionRift(a,dt) || TickCelestial(a, dt) || TickUpgradeAbility(a, dt) || TickPlannedAbility(a, dt) || TickElementEffect(a, dt)) continue;
 
                 switch (a.Kind)
                 {
@@ -1035,8 +1041,8 @@ namespace OctopusSurvivors
 
         void DropBossSpecial(Vector2 pos)
         {
-            var pool = new[] { SpecialId.Cosmos, SpecialId.YinYang };
-            const int count = 2;
+            var pool = new[] { SpecialId.Cosmos, SpecialId.YinYang, SpecialId.DimensionRift };
+            int count = pool.Length;
             for (int i = 0; i < count; i++)
             {
                 var special = pool[i];
@@ -1459,6 +1465,7 @@ namespace OctopusSurvivors
                 return true;
             }
 
+            TryBeginRiftExecution(enemy);
             return false;
         }
 
@@ -2231,6 +2238,7 @@ namespace OctopusSurvivors
 
         static byte PackFlags(SimActor a)
         {
+            if(a.Kind==ActorKind.YinYangMote)return (byte)((Mathf.RoundToInt(Mathf.Repeat(Mathf.Atan2(a.Vel.y,a.Vel.x)*Mathf.Rad2Deg,360)/360*127)&127)|(a.Mark%2)*128);
             if(a.Kind==ActorKind.CosmicDusk)return (byte)a.Mark;
             if(a.Kind>=ActorKind.CosmicStar && a.Kind<=ActorKind.CosmicImpact)
             {
@@ -2257,6 +2265,7 @@ namespace OctopusSurvivors
                 if (a.SpicyTime > 0f) f |= (byte)EnemyFlag.Spicy;
                 if (a.Kind == ActorKind.Boss) f |= (byte)EnemyFlag.Boss;
                 if (a.HitFlash > 0f) f |= (byte)EnemyFlag.Hit;
+                if(a.RiftSource!=null && !a.RiftSource.Dead)f|=(byte)EnemyFlag.RiftMarked;
             }
 
             return f;

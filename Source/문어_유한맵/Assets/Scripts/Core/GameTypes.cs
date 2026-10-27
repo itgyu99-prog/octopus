@@ -30,7 +30,7 @@ namespace OctopusSurvivors
     {
         None = 0,
         YinYang = 5,
-        Cosmos = 6
+        Cosmos = 6, DimensionRift = 7
     }
 
     public enum GamePhase : byte
@@ -120,8 +120,9 @@ namespace OctopusSurvivors
         PiercingMeteor = 70,
         CosmicStar = 96, CosmicMeteor = 97, CosmicTrail = 98, CosmicImpact = 99,
         YinYangOrbit = 100, YinYangCollision = 101, YinYangBurst = 102, YinYangShockwave = 103,
-        YinYangMark = 104, YinYangMist = 105, YinYangHitWhite = 106, YinYangHitBlack = 107,
-        CosmicDusk = 108
+        YinYangMark = 109, YinYangMist = 105, YinYangHitWhite = 106, YinYangHitBlack = 107,
+        CosmicDusk = 108, PickupDimensionRift = 110, DimensionRift = 111, RiftWave = 112,
+        YinYangMote = 113, CosmosField = 114, SpecialConvergence = 115
     }
 
     public enum DamageSource : byte { NormalEnemy, BossContact, BossSkill, Other }
@@ -135,7 +136,7 @@ namespace OctopusSurvivors
         Spicy = 1 << 3,
         Boss = 1 << 4,
         Hit = 1 << 5,
-        BlackFlame = 1 << 6
+        BlackFlame = 1 << 6, RiftMarked = 1 << 7
     }
 
     public static class NetHashes

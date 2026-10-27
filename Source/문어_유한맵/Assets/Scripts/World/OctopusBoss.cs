@@ -22,7 +22,7 @@ namespace OctopusSurvivors
             : DistToSegment(actor.Pos, from, to);
         bool CanTargetActor(SimActor actor)
         {
-            if (actor == null || actor.Dead || (actor.Kind != ActorKind.Enemy && actor.Kind != ActorKind.Boss)) return false;
+            if (actor == null || actor.Dead || actor.RiftExecuting || (actor.Kind != ActorKind.Enemy && actor.Kind != ActorKind.Boss)) return false;
             if (actor.OctopusArm >= 0) return actor.Hp > 0 && OctopusBossPattern.ArmsVisible(OctopusBoss.Value);
             return actor.Duration != OctopusBossPattern.VisualMarker || OctopusBoss.Value.Vulnerable > 0;
         }

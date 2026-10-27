@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a7ae02660973264eb12babf24ceb5a8, type: 3}
+  m_Name: SpecialSkillTuning
+  m_EditorClassIdentifier: Assembly-CSharp::OctopusSurvivors.SpecialSkillTuning
+  riftBlackOpacity: 0.8
+  riftBlackScale: 1.035
+  riftPulseInterval: 1.2
+  riftPulseDamage: 50
+  riftExecutionThreshold: 0.1
+  riftExecuteNormalMonsters: 1
+  riftExecuteBosses: 0
+  riftDuration: 10
+  riftDiameter: 16
+  orbitDuration: 2.8
+  mergeDuration: 0.28
+  burstDamage: 345
+  burstRadiusMultiplier: 1.8
+  burstDuration: 1.4
+  smallCommaCount: 144
+  smallCommaDuration: 0.46
+  smallCommaDamage: 28
+  smallCommaHitInterval: 0.35
+  smallCommaHitRadius: 0.34
+  smallCommaFieldRadius: 7.5
+  smallCommaSpeed: 0.72
+  mistOpacity: 0.22
+  mistRadius: 8
+  mistDuration: 5.2
+  mistFlowSpeed: 0.13
+  cosmosDarkness: 0.8
+  cosmosBaseStars: 168
+  cosmosBuildDuration: 4.8
+  cosmosHoldDuration: 0.7
+  cosmosFieldRadius: 13
+  cosmosStarScale: 1.65
+  cosmosDamage: 65
+  cosmosImpactRadius: 1.3
+  convergenceDuration: 6
+  convergenceRadius: 12
+  convergenceCooldown: 30
+  convergenceDarkness: 0.76
+  convergenceDamage: 0

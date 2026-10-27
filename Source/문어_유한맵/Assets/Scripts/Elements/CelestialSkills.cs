@@ -10,16 +10,16 @@ namespace OctopusSurvivors
             if (id == SpecialId.Cosmos)
             {
                 var field=YinYangVisual.MistFieldBounds;
-                var cast=Effect(ActorKind.CosmicDusk,field.center,Vector2.zero,field.size.x,12f,0,owner,level);
+                var cast=Effect(ActorKind.CosmicDusk,field.center,Vector2.zero,field.size.x,CosmosSequence.ReleaseTime+7f,0,owner,level);
                 cast.Pos=field.center;
                 if(cast.Dead)return;
                 int count=CosmosSequence.StarCount(level);
-                float perStar=65f*damage*(48+level*6)/count;
+                float perStar=SpecialSkillTuning.Data.cosmosDamage*damage*(48+level*6)/count;
                 for (int i=0; i<count; i++)
                 {
                     Vector2 position=CelestialField.Point(i,count);
                     var star=Effect(ActorKind.CosmicStar,position,Vector2.zero,
-                        .55f+CosmosSequence.Hash(i)*.45f,4f,perStar,owner,level);
+                        .55f+CosmosSequence.Hash(i)*.45f,CosmosSequence.ReleaseTime+6f,perStar,owner,level);
                     star.Pos=star.Anchor=position;star.SkillPoint=center;star.CelestialCast=cast;
                     float birth=CosmosSequence.BirthTime(i,count);
                     star.Pulse=CosmosSequence.ReleaseTime-birth+i*.003f;
@@ -28,14 +28,14 @@ namespace OctopusSurvivors
             }
             else if (id == SpecialId.YinYang)
             {
-                Effect(ActorKind.YinYangOrbit,center,Vector2.zero,5.5f+level*.35f,YinYangVisual.OrbitDuration,345f*damage,owner,level);
+                Effect(ActorKind.YinYangOrbit,center,Vector2.zero,5.5f+level*.35f,YinYangVisual.OrbitDuration,SpecialSkillTuning.Data.burstDamage*damage,owner,level);
                 var field=YinYangVisual.MistFieldBounds;
-                Effect(ActorKind.YinYangMist,field.center,Vector2.zero,field.size.x,YinYangVisual.OrbitDuration+YinYangVisual.MergeDuration+.18f,0,owner,level);
+                Effect(ActorKind.YinYangMist,field.center,Vector2.zero,field.size.x,Mathf.Max(SpecialSkillTuning.Data.mistDuration,YinYangVisual.OrbitDuration+YinYangVisual.MergeDuration+YinYangVisual.BurstDuration),SpecialSkillTuning.Data.smallCommaDamage*damage,owner,level);
             }
         }
         bool TickCelestial(SimActor a,float dt)
         {
-            if(a.Kind<ActorKind.CosmicStar || a.Kind>ActorKind.CosmicDusk)return false;
+            if(!CelestialArt.Supports(a.Kind))return false;
             a.Age+=dt; a.Life-=dt;
             if(a.Kind==ActorKind.CosmicStar)
             {
@@ -73,7 +73,7 @@ namespace OctopusSurvivors
                     if(SegmentDistanceToActor(a.Pos,next,a.Target)<=.35f)
                     {
                         a.Pos=a.Target.Pos;
-                        DamageCircle(a.Pos,1.3f,a.Damage,StatusMask.None,0,0);
+                        DamageCircle(a.Pos,SpecialSkillTuning.Data.cosmosImpactRadius,a.Damage,StatusMask.None,0,0);
                         float impactSize=Mathf.Clamp(a.Target.Size*1.6f,.7f,2.1f);
                         var impact=Effect(ActorKind.CosmicImpact,a.Pos,Vector2.zero,impactSize,.46f,0,a.Owner,1);
                         impact.Pos=a.Pos;impact.Mark=a.Mark;impact.CelestialCast=a.CelestialCast;a.Dead=true;
@@ -105,9 +105,9 @@ namespace OctopusSurvivors
             }
             else if(a.Kind==ActorKind.YinYangCollision && a.Life<=0)
             {
-                float radius = a.Size * 1.8f;
+                float radius = a.Size * SpecialSkillTuning.Data.burstRadiusMultiplier;
                 Effect(ActorKind.YinYangBurst,a.Pos,Vector2.zero,radius*2f,YinYangVisual.BurstDuration,a.Damage,a.Owner,a.EffectLevel);
-                Effect(ActorKind.YinYangShockwave,a.Pos,Vector2.zero,radius*2.2f,.96f,0,a.Owner,1);
+                Effect(ActorKind.YinYangShockwave,a.Pos,Vector2.zero,radius*2f,.96f,0,a.Owner,1);
             }
             else if(a.Kind==ActorKind.YinYangBurst)
             {
@@ -121,9 +121,10 @@ namespace OctopusSurvivors
             {
                 if(a.Target!=null && !a.Target.Dead)a.Pos=a.Target.Pos;
             }
-            else if(a.Kind==ActorKind.YinYangMist && a.Owner!=null)
+            else if(a.Kind==ActorKind.YinYangMist)
             {
-                if(!a.Owner.IsSpawned || a.Owner.Downed.Value){a.Dead=true;return true;}
+                DamageGroundCommas(a,dt);
+                if(a.Owner!=null && (!a.Owner.IsSpawned || a.Owner.Downed.Value))a.Dead=true;
             }
             if(a.Life<=0)a.Dead=true;
             return true;

@@ -35,7 +35,7 @@ namespace OctopusSurvivors
                 return cosmosIcon;
             }
         }
-        public static bool Supports(ActorKind k)=>k>=ActorKind.CosmicStar && k<=ActorKind.CosmicDusk;
+        public static bool Supports(ActorKind k)=>CosmosVisual.Supports(k) || YinYangVisual.Supports(k);
         public static void Show(SpriteRenderer sr,ActorKind kind,float age,float duration,float size,byte direction)
         {
             if(CosmosVisual.Supports(kind))
