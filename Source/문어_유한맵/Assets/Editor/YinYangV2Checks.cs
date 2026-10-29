@@ -95,7 +95,7 @@ namespace OctopusSurvivors.EditorTools
             Call(session, "ClearFieldForNextStage"); Actors(session).Clear();
             ValidateCombatChanges(session,player);
             ValidateVisuals();
-            Check(Enum.GetValues(typeof(SpecialId)).Length == 3, "only None, Cosmos and YinYang remain");
+            Check(Enum.GetValues(typeof(SpecialId)).Length == 4 && !SpecialAbilities.IsSupported(SpecialId.DimensionRift), "Rift identity remains for the joint attack but cannot be individually selected");
             Check(ActorKind.PickupCosmos != ActorKind.Droplet, "Cosmos pickup has its own non-projectile network ID");
             for (byte retired = 1; retired <= 4; retired++)
             {
@@ -332,6 +332,30 @@ namespace OctopusSurvivors.EditorTools
                 Check(target.Knockback==Vector2.zero,"multi-hit burst does not knock targets out of subsequent hits");
                 Check(!Actors(session).Exists(a=>a.Kind==ActorKind.YinYangMark),"hits no longer create YinYang image marks on monsters");
             }
+            ValidateGroundCommaDamage(session,player);
+            Actors(session).Clear();
+        }
+
+        void ValidateGroundCommaDamage(GameSession session,OctopusPlayer player)
+        {
+            var tuning=SpecialSkillTuning.Data;
+            float oldBurstRadius=tuning.smallCommaBurstRadius;
+            tuning.smallCommaBurstRadius=1.15f;
+            Actors(session).Clear();
+            float birth=YinYangVisual.GroundBirth(0);
+            Vector2 strike=YinYangVisual.GroundAttackPoint(0,.1f);
+            var target=(SimActor)Call(session,"Create",ActorKind.Enemy,strike+Vector2.right*.7f,.8f);
+            target.Hp=target.MaxHp=1000;
+            var splash=(SimActor)Call(session,"Create",ActorKind.Enemy,strike+Vector2.right*1.35f,.8f);
+            splash.Hp=splash.MaxHp=1000;
+            var mist=(SimActor)Call(session,"Effect",ActorKind.YinYangMist,Vector2.zero,Vector2.zero,
+                tuning.mistRadius,8f,28f,player,1);
+            mist.Age=birth+.09f;
+            Call(session,"TickCelestial",mist,.02f);
+            Check(target.Hp==972,"ground comma swept hit includes monster body radius beyond its centerline");
+            Check(splash.Hp==972,"ground comma burst damages a nearby monster within the expanded blast");
+            Check(YinYangArt.Comma(false).rect.width==256,"small comma art size stays unchanged while damage reach expands");
+            tuning.smallCommaBurstRadius=oldBurstRadius;
             Actors(session).Clear();
         }
 
@@ -354,10 +378,12 @@ namespace OctopusSurvivors.EditorTools
             Check(go.transform.childCount==8,"orbit contains only the two main commas and their echoes");
             var ground=new GameObject("World ground comma preview");ground.transform.position=YinYangVisual.MistFieldBounds.center;
             var groundSr=ground.AddComponent<SpriteRenderer>();
-            int groundBase=YinYangVisual.MistColumns*YinYangVisual.MistRows;
+            int groundBase=1; // The full-field atlas occupies the parent child; each comma has three layers.
             CelestialArt.Show(groundSr,ActorKind.YinYangMist,YinYangVisual.GroundBirth(0)+.1f,3.26f,YinYangVisual.MistFieldBounds.size.x,0);
             var rising=ground.transform.GetChild(groundBase+1).GetComponent<SpriteRenderer>();
             Check(rising.enabled && rising.sprite==YinYangArt.Comma(true),"small white comma rises before its 0.2 second detonation");
+            float expectedCommaScale=.7f*(.5f+.5f*Mathf.SmoothStep(0,1,.1f/.22f));
+            Check(Mathf.Abs(rising.transform.localScale.x-expectedCommaScale)<.001f,"small comma visual scale stays fixed during damage update");
             CelestialArt.Show(groundSr,ActorKind.YinYangMist,YinYangVisual.GroundBirth(0)+.31f,3.26f,YinYangVisual.MistFieldBounds.size.x,0);
             Check(!rising.enabled && ground.transform.GetChild(groundBase+2).GetComponent<SpriteRenderer>().enabled,"world ground comma explodes after rising");
             ground.SetActive(false);Destroy(ground);
@@ -369,14 +395,14 @@ namespace OctopusSurvivors.EditorTools
             var field=YinYangVisual.MistFieldBounds;
             var fog=new GameObject("Field fog coverage preview");fog.transform.position=field.center;
             CelestialArt.Show(fog.AddComponent<SpriteRenderer>(),ActorKind.YinYangMist,1,YinYangVisual.OrbitDuration+YinYangVisual.MergeDuration+.18f,field.size.x,0);
-            var clouds=new SpriteRenderer[YinYangVisual.MistColumns*YinYangVisual.MistRows];
-            for(int i=0;i<clouds.Length;i++)clouds[i]=fog.transform.GetChild(i).GetComponent<SpriteRenderer>();
-            Check(clouds.Length==YinYangVisual.MistColumns*YinYangVisual.MistRows,"field mist uses a full map grid of soft wisps");
-            for(int x=0;x<=4;x++)for(int y=0;y<=4;y++)
-            {
-                var point=new Vector3(Mathf.Lerp(field.min.x,field.max.x,x/4f),Mathf.Lerp(field.min.y,field.max.y,y/4f),0);
-                Check(Array.Exists(clouds,r=>r.bounds.Contains(point)),"fog reaches field sample "+x+"/"+y);
-            }
+            var fogSprite=fog.transform.GetChild(0).GetComponent<SpriteRenderer>();
+            Check(fog.transform.childCount==1+YinYangVisual.GroundCount*3,"one continuous field atlas plus three render layers per ground comma");
+            Check(fogSprite.bounds.min.x<field.min.x && fogSprite.bounds.max.x>field.max.x &&
+                fogSprite.bounds.min.y<field.min.y && fogSprite.bounds.max.y>field.max.y,"single fog bank covers the entire field through sea and cliff edges");
+            Check(fogSprite.sortingOrder==80,"mist overlays players and monsters");
+            var uiSource=File.ReadAllText("Assets/Scripts/UI/UiUtil.cs");
+            Check(System.Text.RegularExpressions.Regex.IsMatch(uiSource,@"canvas\.renderMode\s*=\s*RenderMode.ScreenSpaceOverlay"),
+                "overlay HUD, combine buttons and developer menu remain above the world fog");
             fog.SetActive(false);Destroy(fog);
             foreach(bool white in new[]{false,true})
             {

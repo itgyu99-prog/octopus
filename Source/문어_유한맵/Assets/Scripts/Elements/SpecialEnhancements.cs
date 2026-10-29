@@ -7,9 +7,8 @@ namespace OctopusSurvivors
         bool specialContactLatched;
         public void CastSpecialConvergence(Vector2 center)
         {
-            if (!IsServer || !CombatActive || _actors.Exists(a=>!a.Dead && a.Kind==ActorKind.SpecialConvergence)) return;
-            var t=SpecialSkillTuning.Data;
-            Effect(ActorKind.SpecialConvergence,center,Vector2.zero,t.convergenceRadius,Mathf.Max(2,t.convergenceDuration),0,null,1);
+            if (!IsServer || !CombatActive || _actors.Exists(a=>!a.Dead && a.Kind==ActorKind.DimensionRift)) return;
+            CastDimensionRift(center,null,1);
         }
         void DamageGroundCommas(SimActor source,float dt)
         {
@@ -28,10 +27,23 @@ namespace OctopusSurvivors
                     if(end<start)continue;
                     Vector2 a=YinYangVisual.GroundAttackPoint(i,start-birth);
                     Vector2 b=YinYangVisual.GroundAttackPoint(i,end-birth);
-                    if(SegmentDistanceToActor(a,b,enemy)>tuning.smallCommaHitRadius)continue;
-                    source.ContactHitTimes[enemy.Id]=source.Age+Mathf.Max(.08f,tuning.smallCommaHitInterval);
-                    ApplyDamage(enemy,source.Damage,StatusMask.None,0,0);
-                    ShowYinYangContact(source,enemy,i%2==0);break;
+                    Vector2 segment=b-a;
+                    float u=segment.sqrMagnitude>.00001f?Mathf.Clamp01(Vector2.Dot(enemy.Pos-a,segment)/segment.sqrMagnitude):0f;
+                    Vector2 closest=a+segment*u;
+                    float contactRadius=Mathf.Max(.05f,tuning.smallCommaHitRadius)+Mathf.Max(0,enemy.Size)*.5f;
+                    if((enemy.Pos-closest).sqrMagnitude>contactRadius*contactRadius)continue;
+                    Vector2 impact=enemy.Pos;float radius=tuning.smallCommaBurstRadius;
+                    for(int j=0;j<count;j++)
+                    {
+                        var nearby=_actors[j];if(!CanTargetActor(nearby))continue;
+                        if(source.ContactHitTimes.TryGetValue(nearby.Id,out float ready) && source.Age<ready)continue;
+                        float reach=radius+Mathf.Max(0,nearby.Size)*.5f;
+                        if((nearby.Pos-impact).sqrMagnitude>reach*reach)continue;
+                        source.ContactHitTimes[nearby.Id]=source.Age+Mathf.Max(.08f,tuning.smallCommaHitInterval);
+                        ApplyDamage(nearby,source.Damage,StatusMask.None,0,0);
+                        ShowYinYangContact(source,nearby,i%2==0);
+                    }
+                    break;
                 }
             }
         }

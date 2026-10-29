@@ -588,10 +588,10 @@ namespace OctopusSurvivors
                 Vector2.Distance(a.Pos,b.Pos), GameConfig.PlayerRadius*2))
             { specialContactLatched=false;return; }
             if(specialContactLatched || TeamUltCooldown.Value>0)return;
-            if (_actors.Exists(actor => !actor.Dead && actor.Kind == ActorKind.SpecialConvergence)) return;
+            if (_actors.Exists(actor => !actor.Dead && actor.Kind == ActorKind.DimensionRift)) return;
             CastSpecialConvergence((a.Pos+b.Pos)*.5f);
             specialContactLatched=true;
-            TeamUltCooldown.Value = Mathf.Max(SpecialSkillTuning.Data.convergenceDuration,SpecialSkillTuning.Data.convergenceCooldown);
+            TeamUltCooldown.Value = Mathf.Max(DimensionRiftSettings.Duration,SpecialSkillTuning.Data.convergenceCooldown);
         }
 
         void TickActors(float dt)
@@ -1041,7 +1041,7 @@ namespace OctopusSurvivors
 
         void DropBossSpecial(Vector2 pos)
         {
-            var pool = new[] { SpecialId.Cosmos, SpecialId.YinYang, SpecialId.DimensionRift };
+            var pool = new[] { SpecialId.Cosmos, SpecialId.YinYang };
             int count = pool.Length;
             for (int i = 0; i < count; i++)
             {

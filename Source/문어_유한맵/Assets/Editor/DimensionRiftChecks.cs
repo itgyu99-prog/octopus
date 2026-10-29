@@ -97,10 +97,10 @@ namespace OctopusSurvivors.EditorTools
             Actors(s).Clear();
             Check(DimensionRiftArt.Tear(31) != null && DimensionRiftArt.Wave(.5f) != null && DimensionRiftArt.Smoke(5) != null, "runtime artwork loads from Resources");
             Check(ElementRules.SpecialFromPickup(ElementRules.PickupKind(SpecialId.DimensionRift)) == SpecialId.DimensionRift, "pickup identity round trip");
-            p.DevSetSpecial((byte)SpecialId.DimensionRift); p.Transformed.Value = true; p.SpecialCd.Value = 0;
-            Call(p, "CastSpecial");
+            Check(!SpecialAbilities.IsSupported(SpecialId.DimensionRift), "Rift is no longer an individually selectable special");
+            s.CastSpecialConvergence(p.Pos);
             var rift = Actors(s).Find(a => a.Kind == ActorKind.DimensionRift);
-            Check(rift != null && p.SpecialCd.Value > 0, "real player action casts Rift and starts cooldown");
+            Check(rift != null, "joint skill creates the original damaging Rift");
             Vector2 anchored = rift.Pos;
             p.transform.position = Vector2.right * 3;
             var far = Enemy(s, new Vector2(100, 100), 1000);
@@ -141,7 +141,7 @@ namespace OctopusSurvivors.EditorTools
             Check(!(bool)Call(s, "TryBeginRiftExecution", far), "expired source cannot execute a previously marked enemy");
             Actors(s).Clear();
             Call(s, "DropBossSpecial", Vector2.zero);
-            Check(Actors(s).Count == 3 && Actors(s).Exists(a => a.Kind == ActorKind.PickupDimensionRift), "boss reward includes Rift alongside existing specials");
+            Check(Actors(s).Count == 2 && !Actors(s).Exists(a => a.Kind == ActorKind.PickupDimensionRift), "boss rewards contain only selectable specials");
             Actors(s).Clear(); p.transform.position = Vector3.zero; p.NetPos.Value = Vector2.zero;
             var target = Enemy(s, new Vector2(5, 1), 1000);
             var execute = Enemy(s, new Vector2(-5, 0), 140);

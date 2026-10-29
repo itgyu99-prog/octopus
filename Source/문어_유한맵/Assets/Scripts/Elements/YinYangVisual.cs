@@ -27,6 +27,8 @@ namespace OctopusSurvivors
         ActorKind currentKind;
         float age, duration, size, receivedAt;
 
+        public static int FogFrame(float age,float speed)=>Mathf.Clamp(Mathf.FloorToInt(Mathf.Max(0,age)*8*Mathf.Max(0,speed)/.13f),0,63);
+
         public static bool Supports(ActorKind kind) => (kind >= ActorKind.YinYangOrbit && kind <= ActorKind.YinYangShockwave) || kind==ActorKind.YinYangMark || kind==ActorKind.YinYangMist || kind==ActorKind.YinYangHitWhite || kind==ActorKind.YinYangHitBlack;
 
         public static float OrbitAngle(float t)
@@ -50,7 +52,7 @@ namespace OctopusSurvivors
                 currentKind = kind;
                 int count = kind == ActorKind.YinYangOrbit ? 2 * (EchoCount + 1) :
                     kind == ActorKind.YinYangCollision ? 3 : kind == ActorKind.YinYangBurst ? ShardCount + 3 :
-                    kind == ActorKind.YinYangMist ? MistColumns*MistRows+GroundCount*3 :
+                    kind == ActorKind.YinYangMist ? 1+GroundCount*3 :
                     kind == ActorKind.YinYangMark || kind == ActorKind.YinYangHitWhite || kind == ActorKind.YinYangHitBlack ? 1 : 2;
                 parts = new SpriteRenderer[count];
                 for (int i = 0; i < count; i++)
@@ -145,26 +147,16 @@ namespace OctopusSurvivors
             }
             else if (currentKind == ActorKind.YinYangMist)
             {
-                float fade = Mathf.SmoothStep(0,1,time/.8f) *
-                    (1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(OrbitDuration+MergeDuration,duration,time)));
-                float height=MistFieldBounds.size.y;
-                float cloudWidth=Mathf.Max(size/MistColumns*2.8f,height/MistRows*3.6f);
-                for(int i=0;i<MistColumns*MistRows;i++)
-                {
-                    // A fixed world-space grid covers the entire field, including
-                    // shores far from the caster. Overlapping soft edges hide the grid.
-                    Vector2 p=new Vector2((i%MistColumns/(MistColumns-1f)-.5f)*size*1.12f,
-                        (i/MistColumns/(MistRows-1f)-.5f)*height*1.12f);
-                    p+=new Vector2((Hash(i*7+13)-.5f)*size/MistColumns*.3f,
-                        (Hash(i*11+7)-.5f)*height/MistRows*.3f);
-                    p+=new Vector2(Mathf.Sin(time*SpecialSkillTuning.Data.mistFlowSpeed+i)*.65f,time*.22f);
-                    p+=p.normalized*Mathf.Max(0,time-OrbitDuration-MergeDuration)*2.5f;
-                    Draw(i,YinYangArt.Fog,p,Hash(i+19)*360+time*(i%2==0?1:-1),
-                        cloudWidth*(.9f+Hash(i+3)*.2f),(i%3==0?new Color(.07f,.06f,.09f,SpecialSkillTuning.Data.mistOpacity*fade*(.6f+.4f*Mathf.Sin(time*.5f+i))):new Color(.8f,.83f,.88f,SpecialSkillTuning.Data.mistOpacity*fade*(.6f+.4f*Mathf.Sin(time*.5f+i)))),-4+i%3, .55f+Hash(i+6)*.2f);
-                }
+                float fade=Mathf.SmoothStep(0,1,time/2.8f) *
+                    (1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(duration-1.6f,duration,time)));
+                var bounds=MistFieldBounds;
+                var sprite=YinYangArt.FieldFog(FogFrame(time,SpecialSkillTuning.Data.mistFlowSpeed));
+                Vector2 extent=(Vector2)bounds.size+Vector2.one*2;
+                Vector2 scale=new Vector2(extent.x/sprite.bounds.size.x,extent.y/sprite.bounds.size.y);
+                Draw(0,sprite,(Vector2)(bounds.center-transform.position),0,scale.x, new Color(1,1,1,fade*Mathf.Clamp01(SpecialSkillTuning.Data.mistOpacity/.73f)),80,scale.y/scale.x);
                 for(int i=0;i<GroundCount;i++)
                 {
-                    int start=MistColumns*MistRows+i*3;
+                    int start=1+i*3;
                     float t=time-GroundBirth(i);
                     if(t<0 || t>GroundLifetime){for(int j=0;j<3;j++)parts[start+j].enabled=false;continue;}
                     Vector2 floor=GroundPoint(i)-(Vector2)transform.position;

@@ -9,11 +9,27 @@ namespace OctopusSurvivors
         static readonly Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
         static readonly Dictionary<string, Sprite> sprites = new Dictionary<string, Sprite>();
         static Sprite fog;
+        static Sprite[] fogFrames;
         public const int BurstFrames = 24;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void Reset() { textures.Clear(); sprites.Clear(); fog=null; }
+        static void Reset() { textures.Clear(); sprites.Clear(); fog=null; fogFrames=null; }
 
+        public static Sprite FieldFog(int frame)
+        {
+            if(fogFrames==null)
+            {
+                var data=Resources.Load<TextAsset>("Art/YinYang/Fog");
+                if(data==null)return Fog;
+                var texture=new Texture2D(2,2,TextureFormat.RGBA32,false){name="Approved full field YinYang fog",filterMode=FilterMode.Bilinear,wrapMode=TextureWrapMode.Clamp};
+                ImageConversion.LoadImage(texture,data.bytes,true);
+                fogFrames=new Sprite[64];
+                for(int i=0;i<64;i++)fogFrames[i]=Sprite.Create(texture,new Rect((i%8)*512,(7-i/8)*288,512,288),new Vector2(.5f,.5f),512,0,SpriteMeshType.FullRect);
+            }
+            return fogFrames[Mathf.Clamp(frame,0,63)];
+        }
+
+        // Retain the soft local fog sprite used by CosmosVisual and ground comma effects.
         public static Sprite Fog
         {
             get

@@ -73,14 +73,14 @@ namespace OctopusSurvivors
                 }
                 else if(!seen)
                 {
-                    var visuals=UnityEngine.Object.FindObjectsByType<SpecialSkillVisual>();
+                    var visuals=UnityEngine.Object.FindObjectsByType<DimensionRiftVisual>();
                     bool joint=false;
                     foreach(var v in visuals)
-                        if((ActorKind)typeof(SpecialSkillVisual).GetField("kind",Hidden).GetValue(v)==ActorKind.SpecialConvergence)joint=true;
-                    if(joint && OctopusPlayer.All.Count==2 && OctopusPlayer.All.TrueForAll(p=>p.IsSpawned&&p.Transformed.Value) && OctopusPlayer.All[0].Special.Value!=OctopusPlayer.All[1].Special.Value)
+                        if((ActorKind)typeof(DimensionRiftVisual).GetField("kind",Hidden).GetValue(v)==ActorKind.DimensionRift)joint=true;
+                    if(joint && OctopusPlayer.All.Count==2 && OctopusPlayer.All.TrueForAll(p=>p.IsSpawned&&p.Transformed.Value) && OctopusPlayer.All[0].Special.Value==OctopusPlayer.All[1].Special.Value)
                     {
                         Check(OctopusPlayer.All.Count==2 && OctopusPlayer.All.TrueForAll(p=>p.IsSpawned&&p.Transformed.Value),"both transformed players are replicated on guest");
-                        Check(OctopusPlayer.All[0].Special.Value!=OctopusPlayer.All[1].Special.Value,"different special elements are replicated on guest");
+                        Check(OctopusPlayer.All[0].Special.Value==OctopusPlayer.All[1].Special.Value,"matching active special elements are replicated on guest");
                         Check(visuals.Length>0,"guest reconstructs convergence visual layers from actor snapshots");
                         Send("special.seen",NetworkManager.ServerClientId);seen=true;
                     }
@@ -100,24 +100,25 @@ namespace OctopusSurvivors
             a.Transformed.Value=b.Transformed.Value=true;
             a.transform.position=Vector2.left*.2f;b.transform.position=Vector2.right*.2f;
             a.NetPos.Value=a.Pos;b.NetPos.Value=b.Pos;
-            Call(s,"CheckTeamUltimate");Check(Actors(s).Count==0,"same elements do not activate convergence on real server");
+            Call(s,"CheckTeamUltimate");Check(Actors(s).FindAll(x=>x.Kind==ActorKind.DimensionRift).Count==1,"matching active specials trigger the dimension rift");
+            Actors(s).Clear();s.TeamUltCooldown.Value=0;b.transform.position=Vector2.right*4;Call(s,"CheckTeamUltimate");
             b.Special.Value=(byte)SpecialId.Cosmos;b.Transformed.Value=false;
             Call(s,"CheckTeamUltimate");Check(Actors(s).Count==0,"untransformed guest cannot activate convergence");
             b.Transformed.Value=true;b.transform.position=Vector2.right*4;b.NetPos.Value=b.Pos;
             Call(s,"CheckTeamUltimate");Check(Actors(s).Count==0,"separated players cannot activate convergence");
             b.transform.position=Vector2.right*.2f;b.NetPos.Value=b.Pos;
-            Call(s,"CheckTeamUltimate");Check(Actors(s).FindAll(x=>!x.Dead&&x.Kind==ActorKind.SpecialConvergence).Count==1,"touching different transformed players activate exactly one convergence");
+            Call(s,"CheckTeamUltimate");Check(Actors(s).FindAll(x=>!x.Dead&&x.Kind==ActorKind.DimensionRift).Count==1,"touching different transformed players activate exactly one convergence");
             Call(s,"CheckTeamUltimate");Check(Actors(s).Count==1,"active convergence and cooldown block duplicate contact");
             Actors(s)[0].Dead=true;s.TeamUltCooldown.Value=0;
-            Call(s,"CheckTeamUltimate");Check(!Actors(s).Exists(x=>!x.Dead&&x.Kind==ActorKind.SpecialConvergence),"held contact remains latched after effect ends");
+            Call(s,"CheckTeamUltimate");Check(!Actors(s).Exists(x=>!x.Dead&&x.Kind==ActorKind.DimensionRift),"held contact remains latched after effect ends");
             b.transform.position=Vector2.right*4;Call(s,"CheckTeamUltimate");
             b.transform.position=Vector2.right*.2f;b.NetPos.Value=b.Pos;Call(s,"CheckTeamUltimate");
-            Check(Actors(s).Exists(x=>!x.Dead&&x.Kind==ActorKind.SpecialConvergence),"separating and retouching rearms the contact latch");
+            Check(Actors(s).Exists(x=>!x.Dead&&x.Kind==ActorKind.DimensionRift),"separating and retouching rearms the contact latch");
             float age=0;
-            while(age<SpecialSkillTuning.Data.convergenceDuration+.4f)
+            while(age<DimensionRiftSettings.Duration+.4f)
             {
                 float dt=Mathf.Min(.05f,Time.deltaTime);age+=dt;
-                foreach(var actor in Actors(s).ToArray())if(!actor.Dead)Call(s,"TickSpecialEnhancement",actor,dt);
+                foreach(var actor in Actors(s).ToArray())if(!actor.Dead)Call(s,"TickDimensionRift",actor,dt);
                 Call(s,"RenderLocal");Call(s,"BroadcastActors");yield return null;
             }
             float until=Time.realtimeSinceStartup+4;
@@ -126,8 +127,8 @@ namespace OctopusSurvivors
             Actors(s).Clear();
             foreach(var id in NetworkManager.Singleton.ConnectedClientsIds)if(id!=NetworkManager.ServerClientId)Send("special.devrequest",id);
             until=Time.realtimeSinceStartup+5;
-            while(!Actors(s).Exists(x=>!x.Dead&&x.Kind==ActorKind.SpecialConvergence)&&Time.realtimeSinceStartup<until)yield return null;
-            Check(Actors(s).FindAll(x=>!x.Dead&&x.Kind==ActorKind.SpecialConvergence).Count==1,"guest developer button RPC reaches server and rejects overlapping requests");
+            while(!Actors(s).Exists(x=>!x.Dead&&x.Kind==ActorKind.DimensionRift)&&Time.realtimeSinceStartup<until)yield return null;
+            Check(Actors(s).FindAll(x=>!x.Dead&&x.Kind==ActorKind.DimensionRift).Count==1,"guest developer button RPC reaches server and rejects overlapping requests");
             foreach(var id in NetworkManager.Singleton.ConnectedClientsIds)if(id!=NetworkManager.ServerClientId)Send("special.done",id);
             float end=Time.realtimeSinceStartup+.6f;while(Time.realtimeSinceStartup<end)yield return null;
         }
