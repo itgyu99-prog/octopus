@@ -29,6 +29,30 @@ namespace OctopusSurvivors
             return fogFrames[Mathf.Clamp(frame,0,63)];
         }
 
+        // Retain the soft local fog sprite used by CosmosVisual and ground comma effects.
+        public static Sprite Fog
+        {
+            get
+            {
+                if(fog!=null)return fog;
+                const int resolution=128;
+                var texture=new Texture2D(resolution,resolution,TextureFormat.RGBA32,false)
+                    {name="Soft layered YinYang mist",filterMode=FilterMode.Bilinear,wrapMode=TextureWrapMode.Clamp};
+                var pixels=new Color[resolution*resolution];
+                for(int y=0;y<resolution;y++)for(int x=0;x<resolution;x++)
+                {
+                    float u=x/(float)(resolution-1),v=y/(float)(resolution-1);
+                    float edge=Mathf.SmoothStep(0,1,Mathf.Clamp01((1-new Vector2(u*2-1,v*2-1).magnitude)*1.5f));
+                    float noise=Mathf.PerlinNoise(u*3.1f+8.2f,v*3.7f+2.6f)*.65f+
+                        Mathf.PerlinNoise(u*7.7f+17,v*6.3f+3)*.25f+Mathf.PerlinNoise(u*15+4,v*13+8)*.1f;
+                    pixels[y*resolution+x]=new Color(1,1,1,edge*Mathf.SmoothStep(0,1,Mathf.InverseLerp(.18f,.85f,noise)));
+                }
+                texture.SetPixels(pixels);texture.Apply(false,true);
+                fog=Sprite.Create(texture,new Rect(0,0,resolution,resolution),new Vector2(.5f,.5f),resolution,0,SpriteMeshType.FullRect);
+                return fog;
+            }
+        }
+
         static Sprite Load(string name, int index = 0, int columns = 1, int rows = 1)
         {
             string key = name + ":" + index;
