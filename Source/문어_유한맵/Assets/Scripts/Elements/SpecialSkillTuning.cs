@@ -24,14 +24,13 @@ namespace OctopusSurvivors
         [Min(.1f)] public float smallCommaDuration = .46f;
         [Min(0)] public float smallCommaDamage = 28f;
         [Min(.08f)] public float smallCommaHitInterval = .35f;
-        [Min(.05f)] public float smallCommaHitRadius = .44f;
-        [Min(.05f)] public float smallCommaBurstRadius = .7f;
+        [Min(.05f)] public float smallCommaHitRadius = .34f;
         [Min(.1f)] public float smallCommaFieldRadius = 7.5f;
         [Min(.05f)] public float smallCommaSpeed = .72f;
         [Header("Layered YinYang mist / entities stay above mist")]
-        [Range(0,.9f)] public float mistOpacity = .73f;
+        [Range(0,.5f)] public float mistOpacity = .22f;
         [Min(.1f)] public float mistRadius = 8f;
-        [Min(.1f)] public float mistDuration = 8f;
+        [Min(.1f)] public float mistDuration = 5.2f;
         [Min(.01f)] public float mistFlowSpeed = .13f;
         [Header("Cosmos / accelerating star creation")]
         [Range(0,.9f)] public float cosmosDarkness = .8f;
@@ -69,6 +68,6 @@ namespace OctopusSurvivors
         }
         public static bool EligiblePair(int playerCount, bool aUp, bool bUp, bool aForm, bool bForm,
             SpecialId a, SpecialId b, float distance, float contactRadius) => playerCount == 2 && aUp && bUp && aForm && bForm &&
-            SpecialAbilities.IsSupported(a) && SpecialAbilities.IsSupported(b) && distance <= contactRadius;
+            a != b && SpecialAbilities.IsSupported(a) && SpecialAbilities.IsSupported(b) && distance <= contactRadius;
     }
 }

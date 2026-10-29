@@ -9,24 +9,32 @@ namespace OctopusSurvivors
         static readonly Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
         static readonly Dictionary<string, Sprite> sprites = new Dictionary<string, Sprite>();
         static Sprite fog;
-        static Sprite[] fogFrames;
         public const int BurstFrames = 24;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void Reset() { textures.Clear(); sprites.Clear(); fog=null; fogFrames=null; }
+        static void Reset() { textures.Clear(); sprites.Clear(); fog=null; }
 
-        public static Sprite FieldFog(int frame)
+        public static Sprite Fog
         {
-            if(fogFrames==null)
+            get
             {
-                var data=Resources.Load<TextAsset>("Art/YinYang/Fog");
-                if(data==null)return Fog;
-                var texture=new Texture2D(2,2,TextureFormat.RGBA32,false){name="Approved full field YinYang fog",filterMode=FilterMode.Bilinear,wrapMode=TextureWrapMode.Clamp};
-                ImageConversion.LoadImage(texture,data.bytes,true);
-                fogFrames=new Sprite[64];
-                for(int i=0;i<64;i++)fogFrames[i]=Sprite.Create(texture,new Rect((i%8)*512,(7-i/8)*288,512,288),new Vector2(.5f,.5f),512,0,SpriteMeshType.FullRect);
+                if(fog!=null)return fog;
+                const int resolution=128;
+                var texture=new Texture2D(resolution,resolution,TextureFormat.RGBA32,false)
+                    {name="Soft layered YinYang mist",filterMode=FilterMode.Bilinear,wrapMode=TextureWrapMode.Clamp};
+                var pixels=new Color[resolution*resolution];
+                for(int y=0;y<resolution;y++)for(int x=0;x<resolution;x++)
+                {
+                    float u=x/(float)(resolution-1),v=y/(float)(resolution-1);
+                    float edge=Mathf.SmoothStep(0,1,Mathf.Clamp01((1-new Vector2(u*2-1,v*2-1).magnitude)*1.5f));
+                    float noise=Mathf.PerlinNoise(u*3.1f+8.2f,v*3.7f+2.6f)*.65f+
+                        Mathf.PerlinNoise(u*7.7f+17,v*6.3f+3)*.25f+Mathf.PerlinNoise(u*15+4,v*13+8)*.1f;
+                    pixels[y*resolution+x]=new Color(1,1,1,edge*Mathf.SmoothStep(0,1,Mathf.InverseLerp(.18f,.85f,noise)));
+                }
+                texture.SetPixels(pixels);texture.Apply(false,true);
+                fog=Sprite.Create(texture,new Rect(0,0,resolution,resolution),new Vector2(.5f,.5f),resolution,0,SpriteMeshType.FullRect);
+                return fog;
             }
-            return fogFrames[Mathf.Clamp(frame,0,63)];
         }
 
         static Sprite Load(string name, int index = 0, int columns = 1, int rows = 1)

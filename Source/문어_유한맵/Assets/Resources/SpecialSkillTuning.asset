@@ -30,12 +30,12 @@ MonoBehaviour:
   smallCommaDuration: 0.46
   smallCommaDamage: 28
   smallCommaHitInterval: 0.35
-  smallCommaHitRadius: 0.44
+  smallCommaHitRadius: 0.34
   smallCommaFieldRadius: 7.5
   smallCommaSpeed: 0.72
-  mistOpacity: 0.73
+  mistOpacity: 0.22
   mistRadius: 8
-  mistDuration: 8
+  mistDuration: 5.2
   mistFlowSpeed: 0.13
   cosmosDarkness: 0.8
   cosmosBaseStars: 168
