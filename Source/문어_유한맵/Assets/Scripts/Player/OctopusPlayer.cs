@@ -88,6 +88,8 @@ namespace OctopusSurvivors
         public readonly NetworkVariable<float> DashRechargeLeft = new NetworkVariable<float>(0f);
         float _dashLeft;
         Vector2 _dashDirection;
+        float _dashVisualClock = -1f;
+        bool _dashVisualFacingLeft;
         public int MaxDashCharges => 1 + ExtraDash.Value;
         PlayerInputReader _input;
         public readonly NetworkVariable<ulong> SkillLevels = new NetworkVariable<ulong>(0);
@@ -283,7 +285,9 @@ namespace OctopusSurvivors
             Vector2 move = MoveInput.Value;
             if (move.sqrMagnitude > 1f)
                 move.Normalize();
-            if (move.sqrMagnitude > 0.01f)
+            if (_dashLeft > 0f)
+                Facing.Value = _dashDirection;
+            else if (move.sqrMagnitude > 0.01f)
                 Facing.Value = move.normalized;
 
             if (DashCharges.Value < MaxDashCharges)
@@ -425,8 +429,24 @@ namespace OctopusSurvivors
             _dashDirection = direction.normalized;
             Facing.Value = _dashDirection;
             _dashLeft = GameConfig.DashDuration;
+            DashVisualClientRpc(_dashDirection, NetworkManager.ServerTime.Time);
             if (DashCharges.Value == MaxDashCharges) DashRechargeLeft.Value = GameConfig.DashRecharge;
             DashCharges.Value--;
+        }
+
+        [ClientRpc]
+        void DashVisualClientRpc(Vector2 direction, double serverStartedAt)
+        {
+            BeginDashVisual(direction, Mathf.Max(0f, (float)(NetworkManager.ServerTime.Time - serverStartedAt)));
+        }
+
+        void BeginDashVisual(Vector2 direction, float elapsed)
+        {
+            // Vertical dashes retain the most recent horizontal facing.
+            _dashVisualFacingLeft = Mathf.Abs(direction.x) > .01f ? direction.x < 0f : _facingLeft;
+            _dashVisualClock = elapsed;
+            _stopLeft = 0f;
+            _poseClock = 0f;
         }
 
         public void Revive()
@@ -785,6 +805,13 @@ namespace OctopusSurvivors
                 return OctopusSheet.Frame(OctopusAnim.Death, death);
             }
 
+            if (_dashVisualClock >= 0f && _dashVisualClock < OctopusSheet.DashAnimationDuration && _hurtLeft <= 0f)
+            {
+                _visualPose = OctopusAnim.Dash;
+                _poseClock = 0f;
+                return OctopusSheet.Frame(OctopusAnim.Dash, OctopusSheet.DashFrameAt(_dashVisualClock));
+            }
+
             var session = GameSession.Instance;
             bool victory = session != null && session.IsPlaying && !session.GameOver.Value &&
                 session.Stage.Value > 0 && session.Stage.Value % GameConfig.BossEvery == 0 &&
@@ -819,7 +846,9 @@ namespace OctopusSurvivors
         {
             // Facing is replicated by the server, including dash direction.
             // Retain the last horizontal direction when moving vertically or stopping.
-            if (!Downed.Value && Mathf.Abs(Facing.Value.x) > .01f)
+            if (!Downed.Value && _dashVisualClock >= 0f && _dashVisualClock < OctopusSheet.DashAnimationDuration)
+                _facingLeft = _dashVisualFacingLeft;
+            else if (!Downed.Value && Mathf.Abs(Facing.Value.x) > .01f)
                 _facingLeft = Facing.Value.x < 0f;
             // The supplied character art faces left before mirroring.
             _bodySr.flipX = !_facingLeft;
@@ -833,6 +862,13 @@ namespace OctopusSurvivors
             float z = HopZ.Value;
             _body.localPosition = new Vector3(0f, _bodyGroundOffset + z * 0.35f, 0f);
             _hurtLeft = Mathf.Max(0f, _hurtLeft - Time.deltaTime);
+            if (_dashVisualClock >= 0f)
+            {
+                _dashVisualClock += Time.deltaTime;
+                if (Downed.Value || _hurtLeft > 0f || GameSession.Instance == null ||
+                    !GameSession.Instance.CombatActive || _dashVisualClock >= OctopusSheet.DashAnimationDuration)
+                    _dashVisualClock = -1f;
+            }
             if (Downed.Value)
                 _downedClock += Time.deltaTime;
             else
@@ -844,7 +880,8 @@ namespace OctopusSurvivors
             if (_bodySr != null)
             {
                 bool moving = MoveInput.Value.sqrMagnitude > 0.01f && !Downed.Value;
-                if (_wasMoving && !moving && !Downed.Value) _stopLeft = .3f;
+                if (_wasMoving && !moving && !Downed.Value && _dashVisualClock < 0f) _stopLeft = .3f;
+                if (_dashVisualClock >= 0f) _stopLeft = 0f;
                 if (moving || Downed.Value) _stopLeft = 0f;
                 _wasMoving = moving;
                 _bodySr.sprite = PoseSprite(moving);

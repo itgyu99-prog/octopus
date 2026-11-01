@@ -3,13 +3,37 @@ using System.Collections.Generic;
 
 namespace OctopusSurvivors
 {
-    public enum OctopusAnim { Idle, Move, Hit, Attack, Think, Death, Revive, Stop, Victory }
+    public enum OctopusAnim { Idle, Move, Hit, Attack, Think, Death, Revive, Stop, Victory, Dash }
 
     public static class OctopusSheet
     {
         public const int Columns = 8;
         public const float PixelsPerUnit = 100f;
         public const float BodyRadius = 0.22f;
+        public const int DashFrameCount = 14;
+        public const float DashLandingDuration = .34f;
+        public static float DashAnimationDuration => GameConfig.DashDuration + DashLandingDuration;
+        static readonly float[] DashRollWeights = { 70, 60, 55, 55, 50, 50, 50, 50, 50, 55, 45 };
+        static readonly int[] DashFootMargins = { 42, 43, 42, 43, 43, 42, 42, 42, 43, 42, 43, 40, 40, 40 };
+
+        public static int DashFrameAt(float elapsed)
+        {
+            if (elapsed >= GameConfig.DashDuration)
+            {
+                float landing = elapsed - GameConfig.DashDuration;
+                return landing < .09f ? 11 : landing < .20f ? 12 : 13;
+            }
+            float total = 0f;
+            foreach (float weight in DashRollWeights) total += weight;
+            float time = Mathf.Max(0f, elapsed) / GameConfig.DashDuration * total;
+            float end = 0f;
+            for (int i = 0; i < DashRollWeights.Length; i++)
+            {
+                end += DashRollWeights[i];
+                if (time < end) return i;
+            }
+            return 10;
+        }
 
         public static Sprite Frame(OctopusAnim animation, int index)
         {
@@ -20,6 +44,7 @@ namespace OctopusSurvivors
                 case OctopusAnim.Victory:
                 case OctopusAnim.Move:
                 case OctopusAnim.Hit:
+                case OctopusAnim.Dash:
                     var frames = Frames(animation);
                     return frames[Mathf.Clamp(index, 0, frames.Length - 1)];
                 case OctopusAnim.Think: return RuntimeArt.Basic(3, index);
@@ -42,6 +67,15 @@ namespace OctopusSurvivors
         {
             switch (animation)
             {
+                case OctopusAnim.Dash:
+                    var dashCells = new RectInt[DashFrameCount];
+                    for (int i = 0; i < dashCells.Length; i++)
+                    {
+                        // Align visible feet, excluding faint export fringe; Idle retains three pixels below them.
+                        int bottom = DashFootMargins[i] - 3;
+                        dashCells[i] = new RectInt(i % 4 * 320, 1280 - (i / 4 + 1) * 320 + bottom, 320, 320 - bottom);
+                    }
+                    return Load("CharacterDash", dashCells, 254f);
                 case OctopusAnim.Idle: return Load("CharacterIdle", new RectInt[] { new RectInt(98,733,236,254), new RectInt(437,733,238,254), new RectInt(771,733,239,254), new RectInt(1108,733,242,254), new RectInt(95,409,239,250), new RectInt(435,409,240,250), new RectInt(771,409,239,250), new RectInt(1108,409,243,250), new RectInt(99,80,236,238), new RectInt(439,80,236,238), new RectInt(771,80,239,238), new RectInt(1112,80,237,238) });
                 case OctopusAnim.Move: return Load("CharacterMove", new RectInt[] { new RectInt(34,602,266,303), new RectInt(345,602,269,303), new RectInt(650,602,265,303), new RectInt(961,602,264,303), new RectInt(35,233,267,287), new RectInt(345,233,267,287), new RectInt(650,233,264,287), new RectInt(962,233,264,287) });
                 case OctopusAnim.Stop: return Load("CharacterStop", new RectInt[] { new RectInt(109,86,552,543), new RectInt(811,86,548,543), new RectInt(1489,86,546,543) });
@@ -50,7 +84,7 @@ namespace OctopusSurvivors
                 default: throw new System.ArgumentOutOfRangeException(nameof(animation));
             }
         }
-        static Sprite[] Load(string name, RectInt[] cells)
+        static Sprite[] Load(string name, RectInt[] cells, float pixelsPerUnit = 0f)
         {
             var source = Resources.Load<TextAsset>("Art/" + name);
             if (source == null) throw new System.InvalidOperationException("Missing character sheet: " + name);
@@ -69,7 +103,7 @@ namespace OctopusSurvivors
                     sheet.GetPixels(cell.x, cell.y, cell.width, cell.height));
                 texture.Apply();
                 frames[i] = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-                    new Vector2(.5f, .5f), height);
+                    new Vector2(.5f, .5f), pixelsPerUnit > 0f ? pixelsPerUnit : height);
             }
             Object.Destroy(sheet);
             return frames;

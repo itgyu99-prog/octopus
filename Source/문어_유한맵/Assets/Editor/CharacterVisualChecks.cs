@@ -11,6 +11,7 @@ namespace OctopusSurvivors.EditorTools
         public static void Verify()
         {
             CheckPlayerPoses();
+            CheckDashVisuals();
             var animations = new[] { OctopusAnim.Idle, OctopusAnim.Move, OctopusAnim.Stop, OctopusAnim.Hit, OctopusAnim.Victory };
             var counts = new[] { 12, 8, 3, 3, 16 };
             for (int a = 0; a < animations.Length; a++)
@@ -108,6 +109,66 @@ namespace OctopusSurvivors.EditorTools
                 UnityEngine.Object.DestroyImmediate(root);
                 instance.SetValue(null, previous);
             }
+        }
+
+        static void CheckDashVisuals()
+        {
+            const BindingFlags hidden = BindingFlags.Instance | BindingFlags.NonPublic;
+            if (OctopusSheet.FrameCount(OctopusAnim.Dash) != 14) throw new Exception("Dash must include roll and landing");
+            for (int i = 0; i < 14; i++)
+            {
+                var sprite = OctopusSheet.Frame(OctopusAnim.Dash, i);
+                if (sprite.pixelsPerUnit != 254f) throw new Exception("Dash changed player pixel scale");
+                int lowest = sprite.texture.height;
+                var pixels = sprite.texture.GetPixels32();
+                for (int y = 0; y < sprite.texture.height; y++)
+                for (int x = 0; x < sprite.texture.width; x++)
+                {
+                    if (pixels[y * sprite.texture.width + x].a <= 16) continue;
+                    lowest = Mathf.Min(lowest, y);
+                    if (x == 0 || y == 0 || x == sprite.texture.width - 1 || y == sprite.texture.height - 1)
+                        throw new Exception("Dash frame clipped: " + i);
+                }
+                if (Mathf.Abs(lowest - 11) > 2) throw new Exception("Dash foot baseline shifted: " + i + ": " + lowest);
+            }
+            float[] times = { 0f, GameConfig.DashDuration - .0001f, GameConfig.DashDuration + .001f,
+                GameConfig.DashDuration + .091f, GameConfig.DashDuration + .201f };
+            int[] frames = { 0, 10, 11, 12, 13 };
+            var root = new GameObject("DashVisualCheck");
+            try
+            {
+                var player = root.AddComponent<OctopusPlayer>();
+                var renderer = root.AddComponent<SpriteRenderer>();
+                typeof(OctopusPlayer).GetField("_bodySr", hidden).SetValue(player, renderer);
+                var begin = typeof(OctopusPlayer).GetMethod("BeginDashVisual", hidden);
+                var facing = typeof(OctopusPlayer).GetMethod("UpdateSpriteFacing", hidden);
+                var pose = typeof(OctopusPlayer).GetMethod("PoseSprite", hidden);
+                var clock = typeof(OctopusPlayer).GetField("_dashVisualClock", hidden);
+                foreach (var direction in new[] { Vector2.left, Vector2.right })
+                {
+                    begin.Invoke(player, new object[] { direction, 0f });
+                    player.Facing.Value = -direction; // Input reversal must not flip the active roll.
+                    facing.Invoke(player, null);
+                    if (renderer.flipX != (direction.x > 0f)) throw new Exception("Dash mirror/direction lock failed");
+                    for (int i = 0; i < times.Length; i++)
+                    {
+                        clock.SetValue(player, times[i]);
+                        if (OctopusSheet.DashFrameAt(times[i]) != frames[i] ||
+                            (Sprite)pose.Invoke(player, new object[] { true }) != OctopusSheet.Frame(OctopusAnim.Dash, frames[i]))
+                            throw new Exception("Dash roll/landing timing failed");
+                    }
+                }
+                begin.Invoke(player, new object[] { Vector2.left, 0f });
+                facing.Invoke(player, null);
+                begin.Invoke(player, new object[] { Vector2.up, 0f });
+                facing.Invoke(player, null);
+                if (renderer.flipX) throw new Exception("Vertical dash lost last horizontal facing");
+                clock.SetValue(player, -1f);
+                if ((Sprite)pose.Invoke(player, new object[] { true }) != OctopusSheet.Frame(OctopusAnim.Move, 0))
+                    throw new Exception("Dash did not return to walking");
+            }
+            finally { UnityEngine.Object.DestroyImmediate(root); }
+            Debug.Log("DASH_VISUALS_PASSED: 14 frames, Idle pixel scale/feet, left/right mirroring, direction lock, vertical facing, roll/landing timing, and walking recovery.");
         }
 
         static void CheckSheet(string name, int rows, Func<int, int, Sprite> frame)
